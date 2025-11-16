@@ -7,7 +7,8 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        Console.WriteLine("Hello from Main");
-        // Your startup code here
+        Console.WriteLine("Hello from Meaamdddamamdjdjdjjddin");
+        // Your startup code hered
     }
 }
+//bkabaass

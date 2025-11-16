@@ -17,6 +17,6 @@ public class Program
       
         builder.Services.AddBlazoredLocalStorage();
 
-        await builder.Build().RunAsync();
+        await builder.Build().RunAsync();       
     }
 }
