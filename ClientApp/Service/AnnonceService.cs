@@ -17,18 +17,18 @@ public class AnnonceService : IAnnonce
     public async Task<Annonce[]> GetAll()
     {
         Console.WriteLine("GetAll from mock");
-        var todoitemlist = await http.GetFromJsonAsync<Annonce[]>($"{url}/api/todo");
+        var todoitemlist = await http.GetFromJsonAsync<Annonce[]>($"{url}/api/annonce/");
        
         return todoitemlist;
     }
 
     public async Task Add(Annonce item)
     {
-        await http.PostAsJsonAsync($"{url}/api/todo", item);
+        await http.PostAsJsonAsync($"{url}/api/annonce/", item);
     }
 
     public async Task Delete(string todoid)
     {
-        await http.DeleteAsync($"{url}/api/todo/{todoid}");
+        await http.DeleteAsync($"{url}/api/annonce/{todoid}");
     }
 }
