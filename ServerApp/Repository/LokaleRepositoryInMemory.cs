@@ -25,8 +25,8 @@ internal class LokaleRepositoryInMemory : ILokaleRepository
         var existingItem = todos.FirstOrDefault(t => t.Id == lokale.Id);
         if (existingItem != null)
         {
-            existingItem.Title = lokale.Title;
-            existingItem.IsDone = lokale.IsDone;
+            existingItem.Name = lokale.Name;
+            existingItem.Adgang = lokale.Adgang;
         }
 
         return existingItem!;

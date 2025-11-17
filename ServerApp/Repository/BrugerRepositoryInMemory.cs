@@ -25,8 +25,8 @@ internal class BrugerRepositoryInMemory : IBrugerRepository
         var existingItem = todos.FirstOrDefault(t => t.Id == bruger.Id);
         if (existingItem != null)
         {
-            existingItem.Title = bruger.Title;
-            existingItem.IsDone = bruger.IsDone;
+            existingItem.Name = bruger.Name;
+            existingItem.Password = bruger.Password;
         }
 
         return existingItem!;

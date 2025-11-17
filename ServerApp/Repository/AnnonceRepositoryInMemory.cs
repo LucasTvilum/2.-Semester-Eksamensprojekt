@@ -25,8 +25,8 @@ internal class AnnonceRepositoryInMemory : IAnnonceRepository
         var existingItem = todos.FirstOrDefault(t => t.Id == annonce.Id);
         if (existingItem != null)
         {
-            existingItem.Title = annonce.Title;
-            existingItem.IsDone = annonce.IsDone;
+            existingItem.Description = annonce.Description;
+            existingItem.Status = annonce.Status;
         }
 
         return existingItem!;
