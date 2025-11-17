@@ -50,6 +50,7 @@
     private async Task HandleSubmit()
     {
         Annonce annoncetoadd = new() { Description = "Sort Jakke", Price = 150, Image = "" };
+        Console.WriteLine("handle submit");
         await annonceService.Add(annoncetoadd);
     }
     

@@ -7,7 +7,7 @@ public class AnnonceService : IAnnonce
 {
     private HttpClient http;
     
-    private string url = "http://localhost:5267";
+    private string url = "http://localhost:5107";
 
     public AnnonceService(HttpClient http)
     {
@@ -24,6 +24,7 @@ public class AnnonceService : IAnnonce
 
     public async Task Add(Annonce item)
     {
+        Console.WriteLine("Service kald");
         await http.PostAsJsonAsync($"{url}/api/annonce/", item);
     }
 
