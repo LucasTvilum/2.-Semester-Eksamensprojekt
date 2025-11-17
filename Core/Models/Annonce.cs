@@ -1,13 +1,9 @@
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
 
 namespace Core.Models
 {
     public class Annonce
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        public string Id { get; set; } = Guid.NewGuid().ToString();
 
         public string Description { get; set; }
         public double Price { get; set; }
@@ -18,5 +14,9 @@ namespace Core.Models
         public string Status { get; set; }
         public string Sælger_Id { get; set; }
         public string Køber_Id { get; set; }
+        public string Bruger_Id { get; set; } = Guid.NewGuid().ToString();
+        public Bruger bruger { get; set; }
+        public string Lokale_Id { get; set; } = Guid.NewGuid().ToString();
+        public Lokale lokale { get; set; }
     }
 }
