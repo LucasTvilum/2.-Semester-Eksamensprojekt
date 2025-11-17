@@ -1,0 +1,40 @@
+@using Core.Models
+
+<h3>Annoncer</h3>
+
+
+@foreach (var a in Annonce)
+{
+    <div class="annonce-card">
+        <img src="@a.BilledeUrl" width="200" />
+        <h3>@a.Titel</h3>
+        <p>@a.Pris kr.</p>
+
+        <button @onclick="() => Køb(a.Id)">KØB</button>
+    </div>
+}
+
+@code {
+    bool modalWindow = false;
+    int selectedId;
+
+// fake data indtil backend er klar
+    List<Annonce> Annonce = new()
+    {
+        new() { Id = 1, Titel = "Sort Jakke", Pris = 150, BilledeUrl = "" },
+        new() { Id = 2, Titel = "Taske", Pris = 80, BilledeUrl = "" }
+    };
+
+    private void Køb(int id)
+    {
+        selectedId = id;
+        modalWindow = true;
+    }
+
+    private void Luk()
+    {
+        modalWindow = false;
+    }
+}
+
+}
