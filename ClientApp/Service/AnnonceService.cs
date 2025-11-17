@@ -22,14 +22,13 @@ public class AnnonceService : IAnnonce
         return todoitemlist;
     }
 
-    public async Task Add(Annonce item)
+    public async Task Add(Annonce annonce)
     {
-        Console.WriteLine("Service kald");
-        await http.PostAsJsonAsync($"{url}/api/annonce/", item);
+        await http.PostAsJsonAsync($"{url}/api/annonce", annonce);
     }
 
-    public async Task Delete(string todoid)
+    public async Task Delete(string id)
     {
-        await http.DeleteAsync($"{url}/api/annonce/{todoid}");
+        await http.DeleteAsync($"{url}/api/annonce/{id}");
     }
 }

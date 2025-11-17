@@ -9,6 +9,6 @@ public interface IAnnonceRepository
     
     Annonce Update(Annonce annonce);
     
-    void Delete(Annonce annonce);
+    void Delete(string id);
     
 }

@@ -31,8 +31,8 @@ public class AnnonceMongoDB : IAnnonceRepository
         return annonce;
     }
 
-    public void Delete(Annonce annonce)
+    public void Delete(string id)
     {
-        _collection.DeleteOne(annonce.Id);
+        _collection.DeleteOne(id);
     }
 }

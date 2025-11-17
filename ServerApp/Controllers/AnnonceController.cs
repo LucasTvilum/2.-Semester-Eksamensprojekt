@@ -10,42 +10,39 @@ namespace ServerApp.Controllers
     public class AnnonceController : ControllerBase
     {
 
-        private readonly IAnnonceRepository _repo;
+       
+        private IAnnonceRepository annonceRepo;
 
-        public AnnonceController(IAnnonceRepository repo)
-        {
-            _repo = repo;
+        public AnnonceController(IAnnonceRepository annonceRepo) {
+            this.annonceRepo = annonceRepo;
         }
 
         [HttpGet]
-        public ActionResult<Annonce> GetAll()
+        public IEnumerable<Annonce> Get()
         {
-            return Ok(_repo.GetAll());
+            return annonceRepo.GetAll();
         }
         
         [HttpPost]
-        public ActionResult<Annonce> Add([FromBody] Annonce annonce)
-        {
-            var added = _repo.Add(annonce);
-            return CreatedAtAction(nameof(GetAll), new { id = added.Id }, added);
+        public void Add(Annonce annonce) {
+            annonceRepo.Add(annonce);
         }
+
 
         [HttpGet("{id}")]
         public ActionResult<Annonce> Update(string id, [FromBody] Annonce annonce)
         {
             annonce.Id = id;
-            var updated =  _repo.Update(annonce);
+            var updated =  annonceRepo.Update(annonce);
             if ((updated = null) != null) return NotFound();
             return Ok(updated);
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete(string id)
+        [HttpDelete]
+        [Route("delete")]
+        public void DeleteByQuery([FromQuery] string id)
         {
-            var item = _repo.GetAll().FirstOrDefault(t => t.Id == id);
-            if (item == null) return NotFound();
-            _repo.Delete(item);
-            return NoContent();
+            annonceRepo.Delete(id);
         }
         
     }

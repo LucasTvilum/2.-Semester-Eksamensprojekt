@@ -32,8 +32,8 @@ internal class AnnonceRepositoryInMemory : IAnnonceRepository
         return existingItem!;
     }
 
-    public void Delete(Annonce annonce)
+    public void Delete(string id)
     {
-        todos.RemoveAll(t => t.Id == annonce.Id);
+        todos.RemoveAll(t => t.Id == id);
     }
 }
