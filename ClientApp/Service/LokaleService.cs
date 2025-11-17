@@ -3,28 +3,28 @@ using Core.Models;
 
 namespace ClientApp.Service;
 
-public class AnnonceService : IAnnonce
+public class LokaleService : ILokaler
 {
     private HttpClient http;
     
     private string url = "http://localhost:5267";
 
-    public AnnonceService(HttpClient http)
+    public LokaleService(HttpClient http)
     {
         this.http = http;
     }
 
-    public async Task<Annonce[]> GetAll()
+    public async Task<Lokale[]> GetAll()
     {
         Console.WriteLine("GetAll from mock");
-        var todoitemlist = await http.GetFromJsonAsync<Annonce[]>($"{url}/api/todo");
+        var Lokalelist = await http.GetFromJsonAsync<Lokale[]>($"{url}/api/todo");
        
-        return todoitemlist;
+        return lokalelist;
     }
 
-    public async Task Add(Annonce item)
+    public async Task Add(Lokale lokale)
     {
-        await http.PostAsJsonAsync($"{url}/api/todo", item);
+        await http.PostAsJsonAsync($"{url}/api/todo", lokale);
     }
 
     public async Task Delete(string todoid)

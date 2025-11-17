@@ -2,11 +2,11 @@
 
 namespace ClientApp.Service;
 
-public interface IBruger
+public interface ILokaler
 {
 
 
-    public interface IBruger
+    public interface ILokaler
     {
         Task<Annonce[]> GetAll();
 
