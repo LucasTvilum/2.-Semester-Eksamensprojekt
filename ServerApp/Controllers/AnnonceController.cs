@@ -33,8 +33,8 @@ namespace ServerApp.Controllers
         public ActionResult<Annonce> Update(string id, [FromBody] Annonce annonce)
         {
             annonce.Id = id;
-            var updated =  annonceRepo.Update(annonce);
-            if ((updated = null) != null) return NotFound();
+            var updated = annonceRepo.Update(annonce);
+            if (updated == null) return NotFound();
             return Ok(updated);
         }
 
