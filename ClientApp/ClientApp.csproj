@@ -14,8 +14,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Components\" />
-      <Folder Include="Logic\" />
       <Folder Include="wwwroot\Images\Dice\" />
       <Folder Include="wwwroot\sample-data\" />
     </ItemGroup>
