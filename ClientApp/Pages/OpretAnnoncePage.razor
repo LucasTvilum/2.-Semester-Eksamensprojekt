@@ -1,4 +1,5 @@
-﻿@using Core.Models
+﻿@using System.Diagnostics
+@using Core.Models
 @using ClientApp.Service
 @using Microsoft.AspNetCore.Components.Forms
 @inject IFileService FileService
@@ -97,7 +98,13 @@
     [Inject]
     private IAnnonce annonceService { get; set; }
     
-    private Annonce annonce = new();
+    private Annonce annonce = new()
+    {
+        Description = "bla",
+        Price = 150, Type = "tøj",
+        Size = "M", Color = "red", Image = "no image", Status = "Denied", Sælger_Id = "sælgerid", Køber_Id = "køberid",
+        Lokale_Id = "123", lokale = new Lokale {Name = "test", Location = "derhenne", Åbningstid = "123", Bemanding = "ja", Type = "ja", Adgang = "ja" }
+    };
 
     private string statusMessage = "<no status message - yet>";
     private List<string>? keys;
@@ -151,9 +158,11 @@
             Size = "M", Color = "red", Image = "no image", Status = "Denied", Sælger_Id = "sælgerid", Køber_Id = "køberid",
             Lokale_Id = "123", lokale = new Lokale { Id = "123", Name = "test", Location = "derhenne", Åbningstid = "123", Bemanding = "ja", Type = "ja", Adgang = "ja" }
         };
-        
+
+        annonce.Image.ToString();
+        Console.WriteLine(annonce.Color + "<- color");
         Console.WriteLine("handle submit");
-        await annonceService.Add(annoncetoadd);
+        await annonceService.Add(annonce);
     }
     
 }
