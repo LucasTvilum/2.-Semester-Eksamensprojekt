@@ -24,7 +24,8 @@ namespace ServerApp.Controllers
         }
         
         [HttpPost]
-        public void Add(Annonce annonce) {
+        public void Add([FromBody]Annonce annonce) {
+            Console.WriteLine("Add annonceservice");
             annonceRepo.Add(annonce);
         }
 
