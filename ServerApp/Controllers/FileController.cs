@@ -7,7 +7,7 @@ namespace ServerApp.Controllers;
 public class FileController : ControllerBase
 {
 
-    private string PATH = "/Users/lucastvilum/Data/Files/uploads";
+    private string PATH = "C:/Brugere/walla/Billeder/uploads";
     // here files will be stored
 
     // provide fileupload - the file is copied to the PATH and given
@@ -73,6 +73,7 @@ public class FileController : ControllerBase
     [Route("getall")]
     public List<string> GetAll()
     {
+        Console.WriteLine("Getting all files");
         List<string> res = new();
         DirectoryInfo folder = new DirectoryInfo(PATH);
         foreach (var f in folder.EnumerateFiles())

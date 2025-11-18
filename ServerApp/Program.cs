@@ -28,13 +28,9 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
-
-app.UseCors("policy");
+app.UseCors("AllowBlazor");
 
 app.UseAuthorization();
-
-app.UseCors("AllowBlazor");
 
 app.MapControllers();
 

@@ -4,7 +4,7 @@
 <h3>Annoncer</h3>
 
 
-@foreach (var a in Annonce)
+@foreach (var a in annonceliste)
 {
     <div class="annonce-card">
         <img src="@a.Image" width="200" />
@@ -29,6 +29,8 @@
         new() { Description = "Taske", Price = 80, Image = "" }
     };
 
+    Annonce[] annonceliste;
+    
     private void Køb(string id)
     {
         selectedId = id;
@@ -44,7 +46,7 @@
     
     protected override async Task OnInitializedAsync()
     {
-        await annonceService.GetAll();
+      annonceliste =  await annonceService.GetAll();
     }
 }
 

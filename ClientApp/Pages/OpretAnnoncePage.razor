@@ -1,4 +1,5 @@
-﻿@using Core.Models
+﻿@using System.Diagnostics
+@using Core.Models
 @using ClientApp.Service
 @using Microsoft.AspNetCore.Components.Forms
 @inject IFileService FileService
@@ -23,7 +24,17 @@
     <div class="col-md-12 mb-3">
         <label for="Category">Category</label>
         <InputSelect id="Category" @bind-Value="annonce.Type"> 
-            @foreach (var cat in categories)
+            @foreach (var cat in tøjcategories)
+            {
+                <option value="@cat">@cat</option>
+            }
+        </InputSelect>
+    </div>
+    
+    <div class="col-md-12 mb-3">
+        <label for="Category">Size</label>
+        <InputSelect id="Category" @bind-Value="annonce.Size"> 
+            @foreach (var cat in sizecategories)
             {
                 <option value="@cat">@cat</option>
             }
@@ -81,19 +92,26 @@
 
 @code {
     
-    private List<string> categories = new List<string> { "tøj", "bukser", "hat", "" +
-                                                                                 "" };
+    private List<string> tøjcategories = new List<string> { "tøj", "bukser", "hat" };
+    
+    private List<string> sizecategories = new List<string> { "L", "M", "S" };
     [Inject]
     private IAnnonce annonceService { get; set; }
     
-    private Annonce annonce = new();
+    private Annonce annonce = new()
+    {
+        Description = "bla",
+        Price = 150, Type = "tøj",
+        Size = "M", Color = "red", Image = "no image", Status = "Denied", Sælger_Id = "sælgerid", Køber_Id = "køberid",
+        Lokale_Id = "123", lokale = new Lokale {Name = "test", Location = "derhenne", Åbningstid = "123", Bemanding = "ja", Type = "ja", Adgang = "ja" }
+    };
 
     private string statusMessage = "<no status message - yet>";
     private List<string>? keys;
 
     protected override async Task OnInitializedAsync()
     {
-        keys = await FileService.GetAllKeys();
+        //keys = await FileService.GetAllKeys();
     }
 
     private async Task UploadFile(InputFileChangeEventArgs e)
@@ -140,9 +158,11 @@
             Size = "M", Color = "red", Image = "no image", Status = "Denied", Sælger_Id = "sælgerid", Køber_Id = "køberid",
             Lokale_Id = "123", lokale = new Lokale { Id = "123", Name = "test", Location = "derhenne", Åbningstid = "123", Bemanding = "ja", Type = "ja", Adgang = "ja" }
         };
-        
+
+        annonce.Image.ToString();
+        Console.WriteLine(annonce.Color + "<- color");
         Console.WriteLine("handle submit");
-        await annonceService.Add(annoncetoadd);
+        await annonceService.Add(annonce);
     }
     
 }
