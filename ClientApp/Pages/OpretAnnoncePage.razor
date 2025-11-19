@@ -12,7 +12,13 @@
     <ValidationSummary />
     
     <div class="col-md-12 mb-3">
-        <label for="Name">Name</label>
+        <label for="Name">Overskrift</label>
+        <InputText id="Name" @bind-Value="annonce.Title" class="form-control" />
+    </div>
+
+    
+    <div class="col-md-12 mb-3">
+        <label for="Name">Beskrivelse</label>
         <InputText id="Name" @bind-Value="annonce.Description" class="form-control" />
     </div>
     
@@ -40,6 +46,17 @@
             }
         </InputSelect>
     </div>
+    
+    <div class="col-md-12 mb-3">
+        <label for="Category">Size</label>
+        <InputSelect id="Category" @bind-Value="annonce.Color"> 
+            @foreach (var cat in colorcategories)
+            {
+                <option value="@cat">@cat</option>
+            }
+        </InputSelect>
+    </div>
+
     
     <div class="col-md-12 mb-3">
         <label>Billeder</label>
@@ -79,15 +96,13 @@
     </div>
     
     <div class="col-12 mb-3">
-        <button type="submit" class="btn btn-primary" >Submit</button>
+        <button type="submit" class="btn btn-primary" >Opret Annonce</button>
     </div>
     
     <div class="col-12 mb-3">
         <button type="reset" class="btn btn-primary">Reset</button>
     </div>
     
-    
-
 </EditForm> 
 
 @code {
@@ -95,11 +110,14 @@
     private List<string> tøjcategories = new List<string> { "tøj", "bukser", "hat" };
     
     private List<string> sizecategories = new List<string> { "L", "M", "S" };
+    
+    private List<string> colorcategories = new List<string> { "black", "white", "red" };
     [Inject]
     private IAnnonce annonceService { get; set; }
     
     private Annonce annonce = new()
     {
+        Title = "overskrift",
         Description = "bla",
         Price = 150, Type = "tøj",
         Size = "M", Color = "red", Image = "no image", Status = "Denied", Sælger_Id = "sælgerid", Køber_Id = "køberid",
