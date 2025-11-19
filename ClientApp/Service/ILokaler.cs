@@ -9,4 +9,6 @@ namespace ClientApp.Service;
         Task Add(Lokale item);
 
         Task Delete(string lokaleid);
+        
+        Task UpdateTime(Lokale lokale, string time);
     }

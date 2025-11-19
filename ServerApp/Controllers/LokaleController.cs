@@ -35,5 +35,11 @@ namespace ServerApp.Controllers
             var added = _repo.Add(lokale);
             return Created("", added);
         }
+        
+        [HttpPut("{id}")]
+        public async Task UpdateTime(Lokale lokale)
+        {
+            _repo.Update(lokale);
+        }
     }
 }

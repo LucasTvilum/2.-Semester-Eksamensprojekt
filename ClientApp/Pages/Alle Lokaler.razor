@@ -1,6 +1,47 @@
 @page "/Alle_Lokaler"
+@using ClientApp.Service
+@using Core.Models
 <h3>Alle_Lokaler</h3>
+
+<ul class="list-group">
+    @foreach (var lokale in lokalelist)
+    {
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div class="fw-bold">@lokale.Name</div>
+            <div>@lokale.Location</div>
+            <div>@lokale.Åbningstid</div>
+            <div>@lokale.Bemanding</div>
+            <div>@lokale.Adgang</div>
+            
+            <button class="btn btn-sm btn-primary"
+                    @onclick="() => UpdateÅbningsTid(lokale)">
+                Opdater
+            </button>
+        </li>
+    }
+</ul>
 
 @code {
     
+    [Inject] private ILokaler lokaleService { get; set; }
+    
+    private List<Lokale> lokalelist = new List<Lokale> { new Lokale() };
+
+    private Lokale lokale = new();
+
+    private void UpdateÅbningsTid(Lokale lokale)
+    {
+        string newtime = "14:00 - 15:00";
+       lokaleService.UpdateTime(lokale, newtime);
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        lokalelist = await lokaleService.GetAll();
+        //keys = await FileService.GetAllKeys();
+        foreach (var VARIABLE in lokalelist)
+        {
+            Console.WriteLine(VARIABLE.Åbningstid);
+        }
+    }
 }

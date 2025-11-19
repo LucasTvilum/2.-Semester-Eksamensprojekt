@@ -31,4 +31,11 @@ public class LokaleService : ILokaler
     {
         await http.DeleteAsync($"{url}/api/lokale/{todoid}");
     }
+
+    public async Task UpdateTime(Lokale lokale, string time)
+    {
+        string id = lokale.Id;
+        lokale.Åbningstid = time;
+        await http.PutAsJsonAsync($"{url}/api/lokale/{id}", lokale);
+    }
 }
