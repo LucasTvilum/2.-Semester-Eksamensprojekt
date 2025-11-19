@@ -197,6 +197,7 @@
         Console.WriteLine(annonce.Color + "<- color");
         Console.WriteLine("handle submit");
         await annonceService.Add(annonce);
+        annonce = new Annonce();
     }
     
 }

@@ -1,6 +1,64 @@
 @page "/Login"
+@using Core.Models
+@using ClientApp.Service
+@inject IBruger UserService
+
 <h3>Login</h3>
 
+<div class="mb-3">
+    <label for="username" class="form-label">Username</label>
+    <InputText id="username" class="form-control" @bind-Value="username" />
+</div>
+
+<div class="mb-3">
+    <label for="password" class="form-label">Password</label>
+    <InputText id="password" type="password" class="form-control" @bind-Value="password" />
+</div>
+
+<div class="mb-3 d-flex gap-2">
+    <button class="btn btn-primary" @onclick="LoginUser">Login</button>
+    <button class="btn btn-success" @onclick="AddUser">Add User</button>
+</div>
+
+<p class="text-success">@message</p>
+
 @code {
-    
+    private string username;
+    private string password;
+    private string message;
+
+    Bruger bruger = new Bruger();
+
+    private async Task LoginUser()
+    {
+        //var user = await UserService.Authenticate(username, password);
+        if (bruger != null)
+        {
+            message = $"Welcome, {bruger.Name}!";
+        }
+        else
+        {
+            message = "Invalid username or password.";
+        }
+    }
+
+    private async Task AddUser()
+    {
+        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+        {
+            message = "Please enter username and password.";
+            return;
+        }
+
+        var newUser = new Bruger
+        {
+            Name = username,
+            Password = password
+        };
+
+        //await UserService.AddUser(newUser);
+        message = $"User {username} added successfully!";
+        username = string.Empty;
+        password = string.Empty;
+    }
 }
