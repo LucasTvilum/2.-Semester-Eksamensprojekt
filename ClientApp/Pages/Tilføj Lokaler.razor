@@ -24,15 +24,12 @@
         <InputText id="Price" @bind-Value="lokale.Bemanding" class="form-control" />
     </div>
     
-    <div class="col-md-12 mb-3">
-        <label for="Category">Category</label>
-        <InputSelect id="Category" @bind-Value="lokale.Type"> 
-            @foreach (var cat in åbningstidcategories)
-            {
-                <option value="@cat">@cat</option>
-            }
-        </InputSelect>
-    </div>
+    <InputSelect @bind-Value="lokale.Åbningstid">
+        @foreach (var cat in åbningstidcategories)
+        {
+            <option value="@cat">@cat</option>
+        }
+    </InputSelect>
     
     <div class="col-12 mb-3">
         <button type="submit" class="btn btn-primary" >Tilføj Lokale</button>
@@ -49,15 +46,19 @@
     [Inject] private ILokaler lokaleService { get; set; }
 
     Lokale lokale = new();
-    
-    private List<string> åbningstidcategories = new List<string> { "12:00 - 13:00", "13:00", "red" };
 
     private async Task HandleSubmit()
     {
+        Console.WriteLine("prøvede at submit" + lokale);
         if (lokale != null)
         {
             await lokaleService.Add(lokale);
         }
     }
+    
+    List<string> åbningstidcategories = Enumerable
+        .Range(0, 24)
+        .Select(h => $"{h:00}:00 - {((h+1)%24):00}:00")
+        .ToList();
 
 }
