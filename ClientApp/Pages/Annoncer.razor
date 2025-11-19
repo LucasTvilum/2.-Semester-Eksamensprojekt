@@ -1,52 +1,34 @@
+@page "/aktiveannoncer"
 @using Core.Models
 @using ClientApp.Service
+@using ClientApp.Components
+@using System.Linq
 
-<h3>Annoncer</h3>
+<h3>Aktive annoncer</h3>
 
-
-@foreach (var a in annonceliste)
+@if (aktiveAnnoncer == null)
 {
-    <div class="annonce-card">
-        <img src="@a.Image" width="200" />
-        <h3>@a.Description</h3>
-        <p>@a.Price kr.</p>
-
-        <button @onclick="() => Køb(a.Id)">KØB</button>
-    </div>
+    <p>Loader annoncer...</p>
+}
+else if (!aktiveAnnoncer.Any())
+{
+    <p>Ingen aktive annoncer.</p>
+}
+else
+{
+    @foreach (var a in aktiveAnnoncer)
+    {
+        <Annoncecomponent Item="a" IsEdit="false" />
+    }
 }
 
 @code {
-    bool modalWindow = false;
-    string selectedId;
-    
-    [Inject]
-    private IAnnonce annonceService { get; set; }
+    [Inject] private IAnnonce annonceService { get; set; }
 
-// fake data indtil backend er klar
-    List<Annonce> Annonce = new()
-    {
-        new() { Description = "Sort Jakke", Price = 150, Image = "" },
-        new() { Description = "Taske", Price = 80, Image = "" }
-    };
+    private Annonce[] aktiveAnnoncer;
 
-    Annonce[] annonceliste;
-    
-    private void Køb(string id)
-    {
-        selectedId = id;
-        modalWindow = true;
-        
-    }
-
-    private void Luk()
-    {
-      
-        modalWindow = false;
-    }
-    
     protected override async Task OnInitializedAsync()
     {
-      annonceliste =  await annonceService.GetAll();
+        aktiveAnnoncer = await annonceService.GetAll();
     }
 }
-

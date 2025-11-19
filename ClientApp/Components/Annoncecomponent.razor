@@ -1,0 +1,100 @@
+@using Core.Models
+@using ClientApp.Service
+@using Microsoft.AspNetCore.Components.Forms
+@inject IFileService FileService
+
+<h3>Annoncecomponent</h3>
+
+<div class="form-container">
+    
+    <label>Billede</label>
+    <InputFile OnChange="@UploadFile" />
+
+    @if (!string.IsNullOrWhiteSpace(Item.Image))
+    {
+        <div class="mt-2">
+            <img src="@Item.Image" width="200" />
+        </div>
+    }
+
+
+    @if (keys != null)
+    {
+        <div class="images-grid d-flex flex-wrap gap-3 mt-3">
+            @foreach (var key in keys)
+            {
+                <div class="image-item border p-2 text-center">
+                    <img src="@FileService.ConvertToUrl(key)" width="120" height="120" />
+                    <div class="mt-1 d-flex gap-2 justify-content-center">
+                        <button class="btn btn-sm btn-secondary" @onclick="() => SetImage(key)">Vælg</button>
+                        <button class="btn btn-sm btn-danger" @onclick="() => Delete(key)">Slet</button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p>Loader billeder...</p>
+    }
+
+    
+    <label class="mt-3">Beskrivelse</label>
+    <textarea class="form-control" @bind="Item.Description"></textarea>
+
+    
+    <label class="mt-3">Pris</label>
+    <input type="number" class="form-control" @bind="Item.Price" />
+
+
+    <button class="btn btn-primary mt-3" @onclick="GemItem">Gem</button>
+</div>
+
+@code {
+
+    [Parameter] public Annonce Item { get; set; } = new();
+    [Parameter] public EventCallback<Annonce> OnGem { get; set; }
+    [Parameter] public bool IsEdit { get; set; } = false;
+
+
+    private List<string>? keys;
+    private string statusMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        keys = await FileService.GetAllKeys();
+    }
+
+    // UPLOAD NY FIL
+    private async Task UploadFile(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        var stream = file.OpenReadStream(maxAllowedSize: 10_000_000);
+
+        var result = await FileService.SendFile(file.Name, stream);
+
+        statusMessage = result.success ? "Upload succes" : $"Fejl: {result.info}";
+
+        keys = await FileService.GetAllKeys();
+    }
+
+    // SÆT ANNONCE IMAGE
+    private void SetImage(string key)
+    {
+        Item.Image = FileService.ConvertToUrl(key);
+    }
+
+    // SLET FIL
+    private async Task Delete(string key)
+    {
+        var resp = await FileService.DeleteFile(key);
+        statusMessage = resp.success ? "Slettet" : $"Fejl: {resp.info}";
+        keys = await FileService.GetAllKeys();
+    }
+
+    // GEM
+    private async Task GemItem()
+    {
+        await OnGem.InvokeAsync(Item);
+    }
+}
