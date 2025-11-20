@@ -48,9 +48,9 @@ public class AnnonceService : IAnnonce
             Price = price,
             Color = color,
         };
-       //List<Annonce> filtreretliste = await http.GetFromJsonAsync<List<Annonce>>($"{url}/api/annonce/", filter);
-        List<Annonce> filtreretliste = new List<Annonce>();
-        return filtreretliste;
+       //List<Annonce> filtreretlist = await http.GetFromJsonAsync<List<Annonce>>($"{url}/api/annonce/", filter);
+        List<Annonce> filtreretlist = new List<Annonce>();
+        return filtreretlist;
     }
 }
 
