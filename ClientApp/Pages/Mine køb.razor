@@ -4,7 +4,7 @@
 @inject PurchaseState PurchaseState
 
 
-<h3>Mine køb</h3>
+<h3>Købsanmodninger:</h3>
 
 @if (PurchaseState.RequestIds.Count == 0 )
 {
@@ -23,6 +23,8 @@ else
         }
     </ul>
 }
+
+<h3>Købshistorikr:</h3>
 
 @code {
 

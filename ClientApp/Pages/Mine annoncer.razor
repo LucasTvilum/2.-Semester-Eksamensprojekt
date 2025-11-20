@@ -52,17 +52,24 @@
                     <button class="btn-close" @onclick="CloseModal"></button>
                 </div>
                 <div class="modal-body">
-                    <label>Fra:</label>
-                    <InputSelect @bind-Value="newStatus">
-                        @foreach (var cat in statuscategories)
+                    <label>Skift annonce status</label>
+                    <div class="status-buttons">
+                        <p>Status: <strong>@selectedannonce.Status</strong></p>
+    
+                        @if (statusOptions.ContainsKey(selectedannonce.Status))
                         {
-                            <option value="@cat">@cat</option>
+                            @foreach (var option in statusOptions[selectedannonce.Status])
+                            {
+                                <button class="btn btn-sm btn-primary m-1"
+                                        @onclick="() => ChangeAnnonce(option)">
+                                    @option
+                                </button>
+                            }
                         }
-                    </InputSelect>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" @onclick="CloseModal">Cancel</button>
-                    <button class="btn btn-primary" @onclick="ChangeAnnonce">Save</button>
+                    <button class="btn btn-secondary" @onclick="CloseModal">Save</button>
                 </div>
             </div>
         </div>
@@ -77,11 +84,18 @@
 
     private string newStatus;
 
-    private List<string> statuscategories = new List<string> { "aktiv", "godkendt", "afvist","skjul" };
+    private List<string> statuscategories = new List<string> { "aktiv", "godkend", "afvis","reserveret","skjul" };
     
     private Annonce selectedannonce;
     
     private List<Annonce> annoncelist;
+    
+    private Dictionary<string, List<string>> statusOptions = new()
+    {
+        { "aktiv", new List<string> { "skjul" } },
+        { "skjul", new List<string> { "aktiv" } },
+        { "reserveret", new List<string> { "godkend", "afvis" } },
+    };
     
     private void OpenModal(Annonce annonce)
     {
@@ -94,18 +108,16 @@
         showModal = false;
     }
 
-    private async Task ChangeAnnonce()
+    private async Task ChangeAnnonce(string newStatus)
     {
         if (selectedannonce != null)
         {
             if (newStatus != null){
                 
             selectedannonce.Status = newStatus;
-            await annonceService.UpdateStatus(selectedannonce);
+            await annonceService.UpdateAnnonce(selectedannonce);
             }
         }
-
-        CloseModal();
     }
 
     protected override async Task OnInitializedAsync()

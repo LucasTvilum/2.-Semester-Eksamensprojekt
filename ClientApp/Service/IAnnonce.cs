@@ -9,7 +9,7 @@ public interface IAnnonce
 
     Task Add(Annonce item);
     
-    Task UpdateStatus(Annonce item);
+    Task UpdateAnnonce(Annonce item);
 
     Task Delete(string todoid);
 }
