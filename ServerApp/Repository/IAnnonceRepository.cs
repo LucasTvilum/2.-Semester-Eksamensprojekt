@@ -2,6 +2,7 @@ namespace ServerApp.Repository;
 using Core.Models;
 
 public interface IAnnonceRepository
+
 {
     List<Annonce> GetAll();
     
@@ -10,5 +11,8 @@ public interface IAnnonceRepository
     Annonce Update(Annonce annonce);
     
     void Delete(string id);
+
+    List<Annonce> GetFiltered(Annonce filter);
+    
     
 }

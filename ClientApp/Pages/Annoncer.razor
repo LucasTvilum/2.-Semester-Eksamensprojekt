@@ -37,4 +37,27 @@ else
             .Where(a => a.Status == "Aktiv")
             .ToList();
     }
+    
+    private async Task Køb(string id)
+    {
+        selectedId = id;
+        modalWindow = true;
+        var requestId = await PurchaseApi.SendAsync(Http, id, 1);
+        PurchaseState.Add(requestId);
+
+    }
+    
+    private void Luk()
+    {
+      
+        modalWindow = false;
+    }
+    
+    [Inject] public HttpClient Http { get; set; }
+  
+    [Inject] public PurchaseState PurchaseState { get; set; }
+    
+    bool modalWindow = false;
+    string selectedId;
+    
 }
