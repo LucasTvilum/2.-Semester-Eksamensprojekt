@@ -61,7 +61,7 @@
 @if (lokalecategories != null){
     <div class="col-md-12 mb-3">
         <label for="Category">Lokale</label>
-        <InputSelect id="Category" @bind-Value="annonce.lokale"> 
+        <InputSelect id="Category" @bind-Value="annonce.lokale.Name"> 
             @foreach (var cat in lokalecategories)
             {
                 <option value="@cat">@cat</option>
@@ -126,7 +126,9 @@
     
     private List<string> colorcategories = new List<string> { "black", "white", "red" };
     
-    private List<Lokale> lokalecategories = new List<Lokale> { new Lokale() };
+    private List<Lokale> lokaleload = new List<Lokale> ();
+
+    private List<string> lokalecategories = new List<string>();
     
     [Inject]
     private IAnnonce annonceService { get; set; }
@@ -145,8 +147,17 @@
     
     protected override async Task OnInitializedAsync()
     {
-        lokalecategories = await lokaleService.GetAll();
-        //keys = await FileService.GetAllKeys();
+        lokaleload = await lokaleService.GetAll();
+        string temp;
+        foreach (var lokale in lokaleload)
+        {
+            temp = lokale.Name;
+            lokalecategories.Add(temp);
+        }
+        
+        //hvis der ikke er nogle uploadede billede så breaker koden nedenunder siden
+        keys = await FileService.GetAllKeys();
+        
     }
 
     private async Task UploadFile(InputFileChangeEventArgs e)
