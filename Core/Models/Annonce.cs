@@ -1,7 +1,7 @@
 
 namespace Core.Models
 {
-    public class Annonce
+    public class Annonce 
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
 
@@ -17,9 +17,7 @@ namespace Core.Models
         public string Køber_Id { get; set; } = "";
         public string Lokale_Id { get; set; } = Guid.NewGuid().ToString();
 
-        public Lokale lokale { get; set; } = new Lokale
-            { Name = "hej", Location = "A1", Åbningstid = "ja", Bemanding = "ole", Type = "Stor", Adgang = "ja" };
-
+        public Lokale lokale { get; set; } = new Lokale();
 
     }
 

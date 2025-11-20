@@ -27,7 +27,8 @@ public class LokaleMongoDB : ILokaleRepository
 
     public Lokale Update(Lokale lokale)
     {
-        _collection.ReplaceOne(lokale.Id, lokale);
+        var filter = Builders<Lokale>.Filter.Eq(x => x.Id, lokale.Id);
+        _collection.ReplaceOne(filter, lokale);
         return lokale;
     }
 

@@ -48,10 +48,12 @@ namespace ServerApp.Controllers
         }
 
         [HttpPost("filter")]
-        public List<Annonce> GetFiltered(Annonce filter)
+        public List<Annonce> GetFiltered([FromBody] AnnonceFilter filter)
         {
-            var result = annonceRepo.GetFiltered(filter);
+            if (filter == null)
+                return new List<Annonce>(); // fallback
 
+            var result = annonceRepo.GetFiltered(filter);
             return result;
         }
     }

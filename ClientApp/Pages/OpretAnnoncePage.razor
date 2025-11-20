@@ -59,13 +59,14 @@
             }
         </InputSelect>
     </div>
-@if (lokalecategories != null){
+@if (lokaleload != null){
     <div class="col-md-12 mb-3">
         <label for="Category">Lokale</label>
-        <InputSelect id="Category" @bind-Value="annonce.lokale.Name"> 
-            @foreach (var cat in lokalecategories)
+        <InputSelect @bind-Value="selectedLokaleId">
+            <option value="">-- vælg lokale --</option>
+            @foreach (var l in lokaleload)
             {
-                <option value="@cat">@cat</option>
+                <option value="@l.Id">@l.Name</option>
             }
         </InputSelect>
     </div>
@@ -133,18 +134,27 @@
     
     [Inject]
     private IAnnonce annonceService { get; set; }
-    
-    private Annonce annonce = new()
-    {
+
+    private Annonce annonce = new();
+    /*{
         Title = "overskrift",
         Description = "bla",
         Price = 150, Type = "tøj",
         Size = "M", Color = "red", Image = "no image", Status = "Aktiv", Sælger_Id = "sælgerid", Køber_Id = "køberid",
-        Lokale_Id = "123", lokale = new Lokale {Name = "test", Location = "derhenne", Åbningstid = "123", Bemanding = "ja", Type = "ja", Adgang = "ja" }
-    };
+        //Lokale_Id = "123", lokale = new Lokale {Name = "test", Location = "derhenne", Åbningstid = "123", Bemanding = "ja", Type = "ja", Adgang = "ja" }
+    }; */
 
     private string statusMessage = "<no status message - yet>";
     private List<string>? keys;
+    
+    private string selectedLokaleId;
+
+    private void OnLokaleChanged()
+    {
+        if(lokaleload != null){
+        annonce.lokale = lokaleload.FirstOrDefault(l => l.Id == selectedLokaleId);
+        }
+    }
     
     protected override async Task OnInitializedAsync()
     {
@@ -198,16 +208,27 @@
  
     private async Task HandleSubmit()
     {
+        //Changes lokale object to match selected lokale
+        OnLokaleChanged();
+        
+        //changes Image path to a string
         annonce.Image.ToString();
+        
+        //Sets Sælger_Id to current logged in user
         if (BrugerState.CurrentUser != null)
         {
             annonce.Sælger_Id = BrugerState.CurrentUser.Id;
         }
-
+        
+        //Sets status to aktiv
         annonce.Status = "aktiv";
         Console.WriteLine(annonce.Color + "<- color");
         Console.WriteLine("handle submit");
+        
+        //Sends the ready Annonce object annonce to AnnonceService
         await annonceService.Add(annonce);
+        
+        //Refreshes the current Annonce object annonce to prepare for new annonce 
         annonce = new Annonce();
     }
     

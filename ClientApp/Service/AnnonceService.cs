@@ -32,24 +32,31 @@ public class AnnonceService : IAnnonce
     {
         await http.DeleteAsync($"{url}/api/annonce/{id}");
     }
+    
 
     public async Task UpdateAnnonce(Annonce annonce)
     {
         await http.PutAsJsonAsync<Annonce>($"{url}/api/annonce/{annonce.Id}", annonce);
     }
 
-    public async Task<List<Annonce>> GetFiltered(string type, double price, string color, string lokalenavn)
+    public async Task<List<Annonce>> GetFiltered(string type, string size, double price, string color, string lokalenavn)
     {
-        
-        var filter = new Annonce
+        var filter = new AnnonceFilter()
         {
             Type = type,
+            Size = size,
             Price = price,
             Color = color,
+            lokale = lokalenavn
         };
-       //List<Annonce> filtreretlist = await http.GetFromJsonAsync<List<Annonce>>($"{url}/api/annonce/", filter);
-        List<Annonce> filtreretlist = new List<Annonce>();
-        return filtreretlist;
+        
+        var response = await http.PostAsJsonAsync($"{url}/api/annonce/filter", filter);
+
+        response.EnsureSuccessStatusCode();
+
+        var filtreretListe = await response.Content.ReadFromJsonAsync<List<Annonce>>();
+
+        return filtreretListe;
     }
 }
 

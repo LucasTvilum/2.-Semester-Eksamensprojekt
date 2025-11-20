@@ -12,4 +12,6 @@ public interface IAnnonce
     Task UpdateAnnonce(Annonce item);
 
     Task Delete(string todoid);
+    
+    Task <List<Annonce>> GetFiltered(string type, string size, double price, string color, string lokalenavn);
 }

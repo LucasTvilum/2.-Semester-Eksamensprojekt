@@ -12,7 +12,7 @@ public interface IAnnonceRepository
     
     void Delete(string id);
 
-    List<Annonce> GetFiltered(Annonce filter);
+    List<Annonce> GetFiltered(AnnonceFilter filter);
     
     
 }

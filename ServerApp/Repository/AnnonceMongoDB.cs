@@ -37,23 +37,32 @@ public class AnnonceMongoDB : IAnnonceRepository
         _collection.DeleteOne(id);
     }
 
-    public List<Annonce> GetFiltered(Annonce filter)
+    public List<Annonce> GetFiltered(AnnonceFilter filter)
     {
-        var query = _collection.AsQueryable();
+        var builder = Builders<Annonce>.Filter;
+        var filters = new List<FilterDefinition<Annonce>>();
 
-        if (!string.IsNullOrEmpty(filter.Type))
-            query = query.Where(a => a.Type == filter.Type);
+        if (!string.IsNullOrWhiteSpace(filter.Type))
+            filters.Add(builder.Eq(a => a.Type, filter.Type));
+
+        if (!string.IsNullOrWhiteSpace(filter.Size))
+            filters.Add(builder.Eq(a => a.Size, filter.Size));
 
         if (filter.Price > 0)
-            query = query.Where(a => a.Price == filter.Price);
+            filters.Add(builder.Lte(a => a.Price, filter.Price));
 
-        if (!string.IsNullOrEmpty(filter.Color))
-            query = query.Where(a => a.Color == filter.Color);
-        
-        if (!string.IsNullOrEmpty(filter.lokale.Name))
-            query = query.Where(a => a.lokale == filter.lokale);
-        
+        if (!string.IsNullOrWhiteSpace(filter.Color))
+            filters.Add(builder.Eq(a => a.Color, filter.Color));
 
-        return query.ToList();
+        if (!string.IsNullOrWhiteSpace(filter.lokale))
+            filters.Add(builder.Eq(a => a.lokale.Name, filter.lokale));
+
+        if (!filters.Any())
+            return _collection.Find(_ => true).ToList();
+
+        return _collection.Find(builder.And(filters)).ToList();
     }
-}
+
+    }
+
+    

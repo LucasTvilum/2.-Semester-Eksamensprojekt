@@ -38,12 +38,15 @@ internal class AnnonceRepositoryInMemory : IAnnonceRepository
         annoncer.RemoveAll(t => t.Id == id);
     }
 
-    public List<Annonce> GetFiltered(Annonce filter)
+    public List<Annonce> GetFiltered(AnnonceFilter filter)
     {
         var query = annoncer.AsQueryable();
 
         if (!string.IsNullOrEmpty(filter.Type))
             query = query.Where(a => a.Type == filter.Type);
+        
+        if (!string.IsNullOrEmpty(filter.Size))
+            query = query.Where(a => a.Size == filter.Size);
 
         if (filter.Price > 0)
             query = query.Where(a => a.Price == filter.Price);
@@ -51,8 +54,8 @@ internal class AnnonceRepositoryInMemory : IAnnonceRepository
         if (!string.IsNullOrEmpty(filter.Color))
             query = query.Where(a => a.Color == filter.Color);
 
-        if (!string.IsNullOrEmpty(filter.lokale.Name))
-            query = query.Where(a => a.lokale == filter.lokale);
+        if (!string.IsNullOrEmpty(filter.lokale))
+            query = query.Where(a => a.lokale.Name == filter.lokale);
 
 
         return query.ToList();
