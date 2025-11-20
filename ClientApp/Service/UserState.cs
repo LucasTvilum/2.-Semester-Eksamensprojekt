@@ -13,6 +13,7 @@ public class UserState
         this.brugerService = brugerService;
     }
     public Bruger? CurrentUser { get; private set; }
+    public bool IsAdmin { get; private set; }
 
     public event Action? OnChange;
 
@@ -25,6 +26,11 @@ public class UserState
             return false;
 
         CurrentUser = user;
+        
+        IsAdmin = string.Equals(username, "Admin", StringComparison.OrdinalIgnoreCase)
+                  && string.Equals(password, "Admin", StringComparison.Ordinal);
+
+        
         NotifyStateChanged();
         return true;
     }
@@ -32,6 +38,7 @@ public class UserState
     public void Logout()
     {
         CurrentUser = null;
+        IsAdmin = false;
         NotifyStateChanged();
     }
 

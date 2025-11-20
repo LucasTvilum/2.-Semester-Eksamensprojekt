@@ -23,6 +23,7 @@ public class Program
         builder.Services.AddSingleton<ILokaler, LokaleService>();
         builder.Services.AddSingleton<UserState>();
         builder.Services.AddScoped<PurchaseState>();
+        builder.Services.AddAuthorizationCore();
 
         await builder.Build().RunAsync();       
     }
