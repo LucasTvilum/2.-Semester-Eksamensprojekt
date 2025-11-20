@@ -1,0 +1,21 @@
+@using Core.Models
+
+<div class="annonce-box">
+    
+    <img class="annonce-image" src="@Annonce.Image" alt="@Annonce.Title" />
+
+    <div class="annonce-body">
+        <h4>@Annonce.Title</h4>
+
+        <p class="annonce-meta">
+            @Annonce.Type · @Annonce.Size · @Annonce.Price kr
+        </p>
+
+        <p class="annonce-desc">@Annonce.Description</p>
+    </div>
+
+</div>
+
+@code {
+    [Parameter] public Annonce Annonce { get; set; }
+}

@@ -135,7 +135,7 @@
         Title = "overskrift",
         Description = "bla",
         Price = 150, Type = "tøj",
-        Size = "M", Color = "red", Image = "no image", Status = "Denied", Sælger_Id = "sælgerid", Køber_Id = "køberid",
+        Size = "M", Color = "red", Image = "no image", Status = "Aktiv", Sælger_Id = "sælgerid", Køber_Id = "køberid",
         Lokale_Id = "123", lokale = new Lokale {Name = "test", Location = "derhenne", Åbningstid = "123", Bemanding = "ja", Type = "ja", Adgang = "ja" }
     };
 
@@ -185,14 +185,6 @@
  
     private async Task HandleSubmit()
     {
-        Annonce annoncetoadd = new()
-        {
-            Description = "bla",
-            Price = 150, Type = "tøj",
-            Size = "M", Color = "red", Image = "no image", Status = "Denied", Sælger_Id = "sælgerid", Køber_Id = "køberid",
-            Lokale_Id = "123", lokale = new Lokale { Id = "123", Name = "test", Location = "derhenne", Åbningstid = "123", Bemanding = "ja", Type = "ja", Adgang = "ja" }
-        };
-
         annonce.Image.ToString();
         Console.WriteLine(annonce.Color + "<- color");
         Console.WriteLine("handle submit");

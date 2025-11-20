@@ -1,60 +1,40 @@
-@page "/Annoncer"
+@page "/annoncer"
 @using Core.Models
 @using ClientApp.Service
-@inject HttpClient Http
-@inject PurchaseState PurchaseState
-@inject NavigationManager NavigationManager
+@using ClientApp.Components
+@using System.Linq
 
-<h3>Annoncer</h3>
-
-
-@foreach (var a in annonceliste)
+@if (aktiveAnnoncer == null)
 {
-    <div class="annonce-card">
-        <img src="@a.Image" width="200" />
-        <h3>@a.Description</h3>
-        <p>@a.Price kr.</p>
-
-        <button @onclick="() => Køb(a.Id)">KØB</button>
+    <p>Loader annoncer...</p>
+}
+else if (!aktiveAnnoncer.Any())
+{
+    <p>Ingen aktive annoncer.</p>
+}
+else
+{
+    <div class="annonce-grid">
+        @foreach (var a in aktiveAnnoncer)
+        {
+            <AnnonceBox Annonce="a" />
+        }
     </div>
 }
 
-
 @code {
-    bool modalWindow = false;
-    string selectedId;
-    
-    [Inject]
-    private IAnnonce annonceService { get; set; }
-    
+    [Inject] private IAnnonce annonceService { get; set; }
 
-// fake data indtil backend er klar
-    /*List<Annonce> Annonce = new()
-    {
-        new() { Description = "Sort Jakke", Price = 150, Image = "" },
-        new() { Description = "Taske", Price = 80, Image = "" }
-    };*/
+    private List<Annonce> aktiveAnnoncer;
 
-    Annonce[] annonceliste = Array.Empty<Annonce>();
-  
-    private async Task Køb(string id)
-    {
-        selectedId = id;
-        modalWindow = true;
-        var requestId = await PurchaseApi.SendAsync(Http, id, 1);
-        PurchaseState.Add(requestId);
-
-    }
-
-    private void Luk()
-    {
-      
-        modalWindow = false;
-    }
-    
     protected override async Task OnInitializedAsync()
     {
-      annonceliste =  await annonceService.GetAll();
+        var result = await annonceService.GetAll();
+
+        Console.WriteLine("ANTAL ANNONCER FRA SERVER: " + result.Count());
+        
+        aktiveAnnoncer = result
+            .Where(a => a.Status == "Aktiv")
+            .ToList();
     }
 }
-
