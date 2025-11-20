@@ -11,7 +11,7 @@ public class BrugerMongoDB : IBrugerRepository
     {
         var  client = new MongoClient("mongodb://localhost:27017");
         var database = client.GetDatabase("TøjmarkedMongoDB");
-        _collection = database.GetCollection<Bruger>("TøjmarkedMongoDB");
+        _collection = database.GetCollection<Bruger>("Bruger");
     }
 
     public List<Bruger> GetAll()

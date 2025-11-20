@@ -9,6 +9,8 @@ namespace ServerApp.Controllers
     public class BrugerController : ControllerBase
     {
         private readonly IBrugerRepository _repo;
+        public record LoginRequest(string Name, string Password);
+
 
         public BrugerController(IBrugerRepository repo)
         {
@@ -23,17 +25,17 @@ namespace ServerApp.Controllers
         }
         
         [HttpPost("login")]
-        public ActionResult Login([FromBody] Bruger login)
+        public Bruger Login([FromBody]  LoginRequest login)
         {
-            var bruger = _repo.GetAll().FirstOrDefault(b => b.Name == login.Name);
+            var bruger = _repo.GetAll().FirstOrDefault(b => b.Name == login.Name && b.Password == login.Password);
 
             if (bruger == null)
-                return NotFound("Bruger findes ikke du");
+          Console.WriteLine("bruger ikke fundet");
 
             if (bruger.Password != login.Password)
-                return BadRequest("Forkert kodeord homie");
+               Console.WriteLine("password fejl");
 
-            return Ok("Login succes");
+            return bruger;
         }
         
         [HttpGet]

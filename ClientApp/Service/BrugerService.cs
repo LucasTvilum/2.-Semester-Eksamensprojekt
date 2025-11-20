@@ -35,13 +35,13 @@ public class BrugerService : IBruger
     public async Task<Bruger> Authenticate(string username, string password)
     {
         Console.WriteLine("login attempt");
-        var loginData = new { Username = username, Password = password };
+        var loginData = new { Name = username, Password = password };
     
-        var response = await http.PostAsJsonAsync("api/bruger/", loginData);
+        var response = await http.PostAsJsonAsync($"{url}/api/bruger/login", loginData);
 
         if (!response.IsSuccessStatusCode)
         {
-            Console.WriteLine("login failed");
+            Console.WriteLine($"login failed: {(int)response.StatusCode}");
             return null; // login failed
         }
 
