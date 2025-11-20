@@ -3,6 +3,7 @@
 @using ClientApp.Service
 @using ClientApp.Components
 @using System.Linq
+@inject UserState UserState
 
 @if (aktiveAnnoncer == null)
 {
@@ -17,7 +18,7 @@ else
     <div class="annonce-grid">
         @foreach (var a in aktiveAnnoncer)
         {
-            <AnnonceBox Annonce="a" />
+            <AnnonceBox Annonce="a" OnKøb="Køb" />
         }
     </div>
 }
@@ -38,13 +39,20 @@ else
             .ToList();
     }
     
-    private async Task Køb(string id)
+    private async Task Køb(Annonce selectedannonce)
     {
-        selectedId = id;
-        modalWindow = true;
-        var requestId = await PurchaseApi.SendAsync(Http, id, 1);
-        PurchaseState.Add(requestId);
-
+        string newStatus = "reserveret";
+        Console.WriteLine("Prøvede at sende købsanmodning");
+        if (selectedannonce != null)
+        {
+                selectedannonce.Status = newStatus;
+                if (UserState.CurrentUser != null)
+                {
+                selectedannonce.Køber_Id = UserState.CurrentUser.Id;
+                }
+                await annonceService.UpdateAnnonce(selectedannonce);
+        }
+        StateHasChanged();
     }
     
     private void Luk()

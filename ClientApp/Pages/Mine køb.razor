@@ -8,22 +8,42 @@
 
 <h3>Købsanmodninger:</h3>
 
-@if (PurchaseState.RequestIds.Count == 0 )
+@if (anmodningliste == null)
 {
     <p>Ingen køb endnu homie </p>
 }
 else
 {
-    <ul>
-        @foreach (var id in PurchaseState.RequestIds)
-        {
-            <li>
-                @id
-                <button @onclick ="() => Annuller(id)">Annuller</button>
-            </li>
-            
-        }
-    </ul>
+    <div class="container mt-3">
+        <div class="row">
+            @foreach (var annonce in anmodningliste)
+            {
+                <div class="col-12 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+
+                            <h5 class="card-title">@annonce.Title</h5>
+
+                            <p class="card-text mb-1">@annonce.Description</p>
+                            <p class="card-text fw-bold">Pris: @annonce.Price kr</p>
+                            <p class="card-text">
+                                <span class="badge bg-info">@annonce.Status</span>
+                            </p>
+
+                            <div class="text-end">
+                                <button class="btn btn-danger btn-sm"
+                                        @onclick="() => ChangeAnnonce(annuller)">
+                                    Annuller
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
 }
 
 <h3>Købshistorik:</h3>
@@ -58,13 +78,25 @@ else
     private List<Annonce> anmodningliste;
     
     private List<Annonce> købhistorik;
+
+    private Annonce selectedannonce;
+
+    private string annuller = "aktiv";
     
-    private async Task Annuller(string requestId)
+    private async Task ChangeAnnonce(string newStatus)
     {
-        await PurchaseApi.CancelAsync(Http, requestId);
-        PurchaseState.Remove(requestId);
+        Console.WriteLine("Prøvede at annuller købsanmodning");
+        if (selectedannonce != null)
+        {
+            if (newStatus != null){
+                
+                selectedannonce.Status = newStatus;
+                await annonceService.UpdateAnnonce(selectedannonce);
+            }
+        }
         StateHasChanged();
     }
+    
     
     protected override async Task OnInitializedAsync()
     {
@@ -81,7 +113,9 @@ else
             anmodningliste = result
                 .Where(a => a.Køber_Id == UserState.CurrentUser.Id && a.Status == "reserveret")
                 .ToList();
+            
         }
     }
     
+}
 }

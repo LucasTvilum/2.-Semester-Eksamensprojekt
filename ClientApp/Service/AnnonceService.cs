@@ -35,7 +35,7 @@ public class AnnonceService : IAnnonce
 
     public async Task UpdateAnnonce(Annonce annonce)
     {
-        await http.PutAsJsonAsync<Annonce>($"{url}/api/annonce", annonce);
+        await http.PutAsJsonAsync<Annonce>($"{url}/api/annonce/{annonce.Id}", annonce);
     }
 
     public async Task<List<Annonce>> GetFiltered(string type, double price, string color, string lokalenavn)

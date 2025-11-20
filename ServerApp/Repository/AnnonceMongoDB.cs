@@ -27,7 +27,8 @@ public class AnnonceMongoDB : IAnnonceRepository
 
     public Annonce Update(Annonce annonce)
     {
-        _collection.ReplaceOne(annonce.Id, annonce);
+        var filter = Builders<Annonce>.Filter.Eq(a => a.Id, annonce.Id);
+        _collection.ReplaceOne(filter, annonce);
         return annonce;
     }
 

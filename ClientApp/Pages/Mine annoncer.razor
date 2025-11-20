@@ -83,8 +83,6 @@
     private bool showModal = false;
 
     private string newStatus;
-
-    private List<string> statuscategories = new List<string> { "aktiv", "godkend", "afvis","reserveret","skjul" };
     
     private Annonce selectedannonce;
     
@@ -113,7 +111,10 @@
         if (selectedannonce != null)
         {
             if (newStatus != null){
-                
+                if (newStatus == "afvis")
+                {
+                    newStatus = "aktiv";
+                }
             selectedannonce.Status = newStatus;
             await annonceService.UpdateAnnonce(selectedannonce);
             }

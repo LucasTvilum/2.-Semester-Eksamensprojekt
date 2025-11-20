@@ -30,7 +30,7 @@ namespace ServerApp.Controllers
         }
 
 
-        [HttpGet("{id}")]
+        [HttpPut("{id}")]
         public ActionResult<Annonce> Update(string id, [FromBody] Annonce annonce)
         {
             annonce.Id = id;
