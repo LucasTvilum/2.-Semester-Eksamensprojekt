@@ -7,22 +7,22 @@ namespace ServerApp.Repository;
 
 internal class AnnonceRepositoryInMemory : IAnnonceRepository
 {
-    private readonly List<Annonce> todos = new();
+    private readonly List<Annonce> annoncer = new();
 
     public List<Annonce> GetAll()
     {
-        return todos;
+        return annoncer;
     }
 
     public Annonce Add(Annonce annonce)
     {
-        todos.Add(annonce);
+        annoncer.Add(annonce);
         return annonce;
     }
 
     public Annonce Update(Annonce annonce)
     {
-        var existingItem = todos.FirstOrDefault(t => t.Id == annonce.Id);
+        var existingItem = annoncer.FirstOrDefault(t => t.Id == annonce.Id);
         if (existingItem != null)
         {
             existingItem.Description = annonce.Description;
@@ -34,6 +34,28 @@ internal class AnnonceRepositoryInMemory : IAnnonceRepository
 
     public void Delete(string id)
     {
-        todos.RemoveAll(t => t.Id == id);
+        annoncer.RemoveAll(t => t.Id == id);
+    }
+
+    public List<Annonce> GetFiltered(Annonce filter)
+    {
+        var query = annoncer.AsQueryable();
+
+        if (!string.IsNullOrEmpty(filter.Type))
+            query = query.Where(a => a.Type == filter.Type);
+
+        if (filter.Price > 0)
+            query = query.Where(a => a.Price == filter.Price);
+
+        if (!string.IsNullOrEmpty(filter.Color))
+            query = query.Where(a => a.Color == filter.Color);
+
+        if (!string.IsNullOrEmpty(filter.lokale.Name))
+            query = query.Where(a => a.lokale == filter.lokale);
+
+
+        return query.ToList();
+
+
     }
 }

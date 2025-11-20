@@ -8,7 +8,7 @@ public class FileController : ControllerBase
 {
 
     private string PATH = "C:/Brugere/walla/Billeder/uploads";
-    // here files will be stored
+
 
     // provide fileupload - the file is copied to the PATH and given
     // a unique filename with the same extension as the uploaded file. 

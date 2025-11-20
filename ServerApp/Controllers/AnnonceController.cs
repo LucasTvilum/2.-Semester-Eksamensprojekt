@@ -10,7 +10,7 @@ namespace ServerApp.Controllers
     public class AnnonceController : ControllerBase
     {
 
-       
+
         private IAnnonceRepository annonceRepo;
 
         public AnnonceController(IAnnonceRepository annonceRepo) {
@@ -39,12 +39,22 @@ namespace ServerApp.Controllers
             return Ok(updated);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         [Route("delete")]
-        public void DeleteByQuery([FromQuery] string id)
+        public OkResult Delete(string id)
         {
             annonceRepo.Delete(id);
+            return Ok();
         }
-        
+
+        [HttpPost("filter")]
+        public List<Annonce> GetFiltered(Annonce filter)
+        {
+            var result = annonceRepo.GetFiltered(filter);
+
+            return result;
+        }
     }
+    
 }
+
