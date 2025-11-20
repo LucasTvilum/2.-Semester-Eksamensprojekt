@@ -30,7 +30,7 @@ namespace ServerApp.Controllers
             var bruger = _repo.GetAll().FirstOrDefault(b => b.Name == login.Name && b.Password == login.Password);
 
             if (bruger == null)
-          Console.WriteLine("bruger ikke fundet");
+          Console.WriteLine("bruger ikkee fundet");
 
             if (bruger.Password != login.Password)
                Console.WriteLine("password fejl");
