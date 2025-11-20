@@ -6,28 +6,119 @@
 @inject UserState UserState
 
 <p>Viser Brugerens egne oprettede annoncer</p>
-@if (aktiveAnnoncer == null)
+<ul class="list-group">
+    
+    <li class="list-group-item d-flex justify-content-between align-items-center fw-bold bg-light">
+        <div class="fw-bold">Titel</div>
+        <div>Beskrivelse</div>
+        <div>Pris</div>
+        <div>Farve</div>
+        <div>Størrelse</div>
+        <div>Lokale</div>
+        <div>Status</div>
+
+        <div></div>
+    </li>
+    
+    @if(annoncelist != null){
+        foreach (var annonce in annoncelist)
+    {
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div class="fw-bold">@annonce.Title</div>
+            <div>@annonce.Description</div>
+            <div>@annonce.Price</div>
+            <div>@annonce.Color</div>
+            <div>@annonce.Size</div>
+            <div>@annonce.lokale.Name</div>
+            <div>@annonce.Status</div>
+            
+            <button class="btn btn-sm btn-primary" 
+                    @onclick="() => OpenModal(annonce)">
+                Opdater
+            </button>
+
+          
+        </li>
+    }
+    }
+</ul>
+@if (showModal)
 {
-    <p>Loader annoncer...</p>
-}
-else if (!aktiveAnnoncer.Any())
-{
-    <p>Ingen aktive annoncer.</p>
-}
-else
-{
-    <div class="annonce-grid">
-        @foreach (var a in aktiveAnnoncer)
-        {
-            <AnnonceBox Annonce="a" />
-        }
+    <div class="modal d-block" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Opdater Åbningstid</h5>
+                    <button class="btn-close" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body">
+                    <label>Skift annonce status</label>
+                    <div class="status-buttons">
+                        <p>Status: <strong>@selectedannonce.Status</strong></p>
+    
+                        @if (statusOptions.ContainsKey(selectedannonce.Status))
+                        {
+                            @foreach (var option in statusOptions[selectedannonce.Status])
+                            {
+                                <button class="btn btn-sm btn-primary m-1"
+                                        @onclick="() => ChangeAnnonce(option)">
+                                    @option
+                                </button>
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseModal">Save</button>
+                </div>
+            </div>
+        </div>
     </div>
 }
 
+
 @code {
     [Inject] private IAnnonce annonceService { get; set; }
+    
+    private bool showModal = false;
 
-    private List<Annonce> aktiveAnnoncer;
+    private string newStatus;
+
+    private List<string> statuscategories = new List<string> { "aktiv", "godkend", "afvis","reserveret","skjul" };
+    
+    private Annonce selectedannonce;
+    
+    private List<Annonce> annoncelist;
+    
+    private Dictionary<string, List<string>> statusOptions = new()
+    {
+        { "aktiv", new List<string> { "skjul" } },
+        { "skjul", new List<string> { "aktiv" } },
+        { "reserveret", new List<string> { "godkend", "afvis" } },
+    };
+    
+    private void OpenModal(Annonce annonce)
+    {
+        selectedannonce = annonce;
+        showModal = true;
+    }
+
+    private void CloseModal()
+    {
+        showModal = false;
+    }
+
+    private async Task ChangeAnnonce(string newStatus)
+    {
+        if (selectedannonce != null)
+        {
+            if (newStatus != null){
+                
+            selectedannonce.Status = newStatus;
+            await annonceService.UpdateAnnonce(selectedannonce);
+            }
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -35,7 +126,7 @@ else
 
         Console.WriteLine("ANTAL ANNONCER FRA SERVER: " + result.Count());
         if (UserState.CurrentUser != null){
-        aktiveAnnoncer = result
+        annoncelist = result
             .Where(a => a.Sælger_Id == UserState.CurrentUser.Id)
             .ToList();
         }

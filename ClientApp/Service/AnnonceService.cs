@@ -33,10 +33,9 @@ public class AnnonceService : IAnnonce
         await http.DeleteAsync($"{url}/api/annonce/{id}");
     }
 
-    public async Task Update(Annonce annonce)
+    public async Task UpdateAnnonce(Annonce annonce)
     {
         await http.PutAsJsonAsync<Annonce>($"{url}/api/annonce", annonce);
-
     }
 
     public async Task<List<Annonce>> GetFiltered(string type, double price, string color, string lokalenavn)

@@ -1,10 +1,12 @@
 @page "/Mine_køb"
 @using ClientApp.Service
+@using Core.Models
 @inject HttpClient Http
 @inject PurchaseState PurchaseState
+@inject UserState UserState
 
 
-<h3>Mine køb</h3>
+<h3>Købsanmodninger:</h3>
 
 @if (PurchaseState.RequestIds.Count == 0 )
 {
@@ -24,13 +26,62 @@ else
     </ul>
 }
 
+<h3>Købshistorik:</h3>
+
+@if (købhistorik != null){
+    foreach (var annonce in købhistorik)
+    {
+        <div class="annonce-box">
+
+
+            <img class="annonce-image" src="@annonce.Image" alt="@annonce.Title"/>
+
+            <div class="annonce-body">
+                <h4>@annonce.Title</h4>
+
+                <p class="annonce-meta">
+                    @annonce.Type · @annonce.Size · @annonce.Price kr
+                </p>
+
+                <p class="annonce-description">@annonce.Description</p>
+
+            </div>
+
+        </div>
+    }
+}
+
 @code {
 
+    [Inject] private IAnnonce annonceService { get; set; }
+    
+    private List<Annonce> anmodningliste;
+    
+    private List<Annonce> købhistorik;
+    
     private async Task Annuller(string requestId)
     {
         await PurchaseApi.CancelAsync(Http, requestId);
         PurchaseState.Remove(requestId);
         StateHasChanged();
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await annonceService.GetAll();
+
+        Console.WriteLine("ANTAL ANNONCER FRA SERVER: " + result.Count());
+        if (UserState.CurrentUser != null){
+            købhistorik = result
+                .Where(a => a.Køber_Id == UserState.CurrentUser.Id && a.Status == "godkend")
+                .ToList();
+        }
+        
+        if (UserState.CurrentUser != null){
+            anmodningliste = result
+                .Where(a => a.Køber_Id == UserState.CurrentUser.Id && a.Status == "reserveret")
+                .ToList();
+        }
     }
     
 }
