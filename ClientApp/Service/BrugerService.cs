@@ -29,13 +29,23 @@ public class BrugerService : IBruger
 
     public async Task Delete(string brugerid)
     {
-        await http.DeleteAsync($"{url}/api/todo/{brugerid}");
+        await http.DeleteAsync($"{url}/api/bruger/{brugerid}");
     }
     
     public async Task<Bruger> Authenticate(string username, string password)
     {
-        Console.WriteLine("Authenticate user");
-        var bruger = await http.GetFromJsonAsync<Bruger>($"{url}/api/bruger");
-        return bruger;
+        Console.WriteLine("login attempt");
+        var loginData = new { Username = username, Password = password };
+    
+        var response = await http.PostAsJsonAsync("api/bruger/", loginData);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("login failed");
+            return null; // login failed
+        }
+
+        var user = await response.Content.ReadFromJsonAsync<Bruger>();
+        return user;
     }
 }
