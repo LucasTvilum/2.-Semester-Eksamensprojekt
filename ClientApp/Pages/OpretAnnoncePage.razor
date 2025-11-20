@@ -132,15 +132,15 @@
     
     [Inject]
     private IAnnonce annonceService { get; set; }
-    
-    private Annonce annonce = new()
-    {
+
+    private Annonce annonce = new();
+    /*{
         Title = "overskrift",
         Description = "bla",
         Price = 150, Type = "tøj",
         Size = "M", Color = "red", Image = "no image", Status = "Aktiv", Sælger_Id = "sælgerid", Køber_Id = "køberid",
-        Lokale_Id = "123", lokale = new Lokale {Name = "test", Location = "derhenne", Åbningstid = "123", Bemanding = "ja", Type = "ja", Adgang = "ja" }
-    };
+        //Lokale_Id = "123", lokale = new Lokale {Name = "test", Location = "derhenne", Åbningstid = "123", Bemanding = "ja", Type = "ja", Adgang = "ja" }
+    }; */
 
     private string statusMessage = "<no status message - yet>";
     private List<string>? keys;

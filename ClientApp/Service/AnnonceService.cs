@@ -41,21 +41,22 @@ public class AnnonceService : IAnnonce
 
     public async Task<List<Annonce>> GetFiltered(string type, string size, double price, string color, string lokalenavn)
     {
-        var filter = new Annonce
+        var filter = new AnnonceFilter()
         {
             Type = type,
             Size = size,
             Price = price,
             Color = color,
+            //lokale = lokalenavn ""
         };
         
-        var response = await http.PostAsJsonAsync($"{url}/api/annonce/", filter);
+        var response = await http.PostAsJsonAsync($"{url}/api/annonce/filter", filter);
 
         response.EnsureSuccessStatusCode();
 
         var filtreretListe = await response.Content.ReadFromJsonAsync<List<Annonce>>();
 
-        return filtreretListe!;
+        return filtreretListe;
     }
 }
 

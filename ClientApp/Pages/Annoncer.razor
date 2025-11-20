@@ -3,21 +3,25 @@
 @using ClientApp.Service
 @using ClientApp.Components
 @using System.Linq
+@inject ILokaler lokaleService
+@inject IFileService FileService
 
-<div class="col-md-12 mb-3">
-    <label for="Category">Type</label>
-    <InputSelect id="Category" @bind-Value="annonce.Type">
-        @foreach (var cat in tøjcategories)
-        {
-            <option value="@cat">@cat</option>
-        }
-    </InputSelect>
-</div>
+
+
+    <div class="col-md-12 mb-3">
+        <label for="Category">Type</label>
+        <InputSelect id="Category" @bind-Value="filterType">
+            @foreach (var cat in tøjcategories)
+            {
+                <option value="@cat">@cat</option>
+            }
+        </InputSelect>
+    </div>
 
     
     <div class="col-md-12 mb-3">
         <label for="Category">Size</label>
-        <InputSelect id="Category" @bind-Value="annonce.Size">
+        <InputSelect id="Category" @bind-Value="filterSize">
             @foreach (var cat in sizecategories)
             {
                 <option value="@cat">@cat</option>
@@ -32,7 +36,7 @@
     
     <div class="col-md-12 mb-3">
         <label for="Category">Color</label>
-        <InputSelect id="Category" @bind-Value="annonce.Color">
+        <InputSelect id="Category" @bind-Value="filterColor">
             @foreach (var cat in colorcategories)
             {
                 <option value="@cat">@cat</option>
@@ -42,7 +46,7 @@
 
     <div class="col-md-12 mb-3">
         <label for="Category">Lokale navn</label>
-        <InputSelect id="Category" @bind-Value="annonce.lokale">
+        <InputSelect @bind-Value="filterLokale">
             @foreach (var cat in lokalecategories)
             {
                 <option value="@cat">@cat</option>
@@ -84,8 +88,11 @@
 
         private List<string> colorcategories = new List<string> { "black", "white", "red" };
 
-        private List<Lokale> lokalecategories = new List<Lokale> { new Lokale() };
+        private List<Lokale> lokaleload = new List<Lokale> ();
 
+        private List<string> lokalecategories = new List<string>();
+        
+        
         [Inject] private IAnnonce annonceService { get; set; }
 
         private List<Annonce> aktiveAnnoncer;
@@ -99,19 +106,39 @@
             aktiveAnnoncer = result
                 .Where(a => a.Status == "aktiv")
                 .ToList();
+            
+            lokaleload = await lokaleService.GetAll();
+            string temp;
+            foreach (var lokale in lokaleload)
+            {
+                temp = lokale.Name;
+                lokalecategories.Add(temp);
+            }
+            // Sæt default værdier fra dropdown lister
+            if (sizecategories.Any())
+                filterSize = sizecategories[0]; // første element i listen
+            if (tøjcategories.Any())
+                filterType = tøjcategories[0];
+            if (colorcategories.Any())
+                filterColor = colorcategories[0];
+            if (lokalecategories.Any())
+                filterLokale = lokalecategories[0];
+        
+            //hvis der ikke er nogle uploadede billede så breaker koden nedenunder siden
+            keys = await FileService.GetAllKeys();
+            
         }
 
-//Type = type,
-// Size = size,
-// Price = price,
-// Color = color,
+
         private Annonce annonce = new()
         {
 
             Size = "M", Color = "red", Image = "no image", Status = "Aktiv", Sælger_Id = "sælgerid", Køber_Id = "køberid",
             Price = 150, Type = "tøj",
-            Lokale_Id = "123", lokale = new Lokale { Name = "test", Location = "derhenne", Åbningstid = "123", Bemanding = "ja", Type = "ja", Adgang = "ja" }
+            //Lokale_Id = "123", lokale = new Lokale { Name = "test", Location = "derhenne", Åbningstid = "123", Bemanding = "ja", Type = "ja", Adgang = "ja" }
         };
+
+        private List<string>? keys;
 
         private async Task Køb(string id)
         {
@@ -134,6 +161,8 @@
 
         bool modalWindow = false;
         string selectedId;
+        
+       
 
         private string filterType;
         private string filterSize;
@@ -144,6 +173,14 @@
 
         private async Task FiltrerAnnoncer()
         {
+            /*filterType = "bukser";
+            filterSize = "M";
+            //filterLokale = Lokale;
+            filterColor = "black";
+            filterPrice = 0;
+            */
+            
+            
             try
             {
                 aktiveAnnoncer = await annonceService.GetFiltered(filterType, filterSize, filterPrice, filterColor, filterLokale);
@@ -162,6 +199,7 @@
                 filterMessage = $"Fejl ved hentning af annoncer: {ex.Message}";
             }
         }
+       
 
     }
 

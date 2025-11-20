@@ -1,7 +1,7 @@
 
 namespace Core.Models
 {
-    public class Annonce
+    public class Annonce 
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
 
