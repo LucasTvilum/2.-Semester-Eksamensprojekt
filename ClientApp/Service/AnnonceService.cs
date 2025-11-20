@@ -47,7 +47,7 @@ public class AnnonceService : IAnnonce
             Size = size,
             Price = price,
             Color = color,
-            //lokale = lokalenavn ""
+            lokale = lokalenavn
         };
         
         var response = await http.PostAsJsonAsync($"{url}/api/annonce/filter", filter);

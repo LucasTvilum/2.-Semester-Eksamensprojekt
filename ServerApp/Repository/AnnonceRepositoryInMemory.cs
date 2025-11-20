@@ -54,8 +54,8 @@ internal class AnnonceRepositoryInMemory : IAnnonceRepository
         if (!string.IsNullOrEmpty(filter.Color))
             query = query.Where(a => a.Color == filter.Color);
 
-        if (!string.IsNullOrEmpty(filter.lokale.Name))
-            query = query.Where(a => a.lokale.Name == filter.lokale.Name);
+        if (!string.IsNullOrEmpty(filter.lokale))
+            query = query.Where(a => a.lokale.Name == filter.lokale);
 
 
         return query.ToList();

@@ -207,6 +207,8 @@
             {
                 filterMessage = $"Fejl ved hentning af annoncer: {ex.Message}";
             }
+
+            StateHasChanged();
         }
        
 

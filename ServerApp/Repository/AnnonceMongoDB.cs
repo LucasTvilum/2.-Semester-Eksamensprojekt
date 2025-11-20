@@ -54,8 +54,8 @@ public class AnnonceMongoDB : IAnnonceRepository
         if (!string.IsNullOrWhiteSpace(filter.Color))
             filters.Add(builder.Eq(a => a.Color, filter.Color));
 
-        if (!string.IsNullOrWhiteSpace(filter.lokale.Name))
-            filters.Add(builder.Eq(a => a.lokale.Name, filter.lokale.Name));
+        if (!string.IsNullOrWhiteSpace(filter.lokale))
+            filters.Add(builder.Eq(a => a.lokale.Name, filter.lokale));
 
         if (!filters.Any())
             return _collection.Find(_ => true).ToList();
