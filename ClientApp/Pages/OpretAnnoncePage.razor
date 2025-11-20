@@ -187,7 +187,7 @@
     private async Task HandleSubmit()
     {
         annonce.Image.ToString();
-        if (BrugerState.CurrentUser.Id != null)
+        if (BrugerState.CurrentUser != null)
         {
             annonce.Sælger_Id = BrugerState.CurrentUser.Id;
         }
