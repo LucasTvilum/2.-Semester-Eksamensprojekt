@@ -16,7 +16,7 @@ public class FileController : ControllerBase
     // here files will be stored
 
     // provide fileupload - the file is copied to the PATH and given
-    // a unique filename with the same extension as the uploaded file. 
+    // a unique filename with the same extsension as the uploaded file. 
     [HttpPost]
     [Route("upload")]
     public async Task<IActionResult> Upload(IFormFile? file)
