@@ -1,6 +1,43 @@
 @page "/Mine_annoncer"
-<h3>Mine_annoncer</h3>
+@using Core.Models
+@using ClientApp.Service
+@using ClientApp.Components
+@using System.Linq
+@inject UserState UserState
+
+<p>Viser Brugerens egne oprettede annoncer</p>
+@if (aktiveAnnoncer == null)
+{
+    <p>Loader annoncer...</p>
+}
+else if (!aktiveAnnoncer.Any())
+{
+    <p>Ingen aktive annoncer.</p>
+}
+else
+{
+    <div class="annonce-grid">
+        @foreach (var a in aktiveAnnoncer)
+        {
+            <AnnonceBox Annonce="a" />
+        }
+    </div>
+}
 
 @code {
-    
+    [Inject] private IAnnonce annonceService { get; set; }
+
+    private List<Annonce> aktiveAnnoncer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await annonceService.GetAll();
+
+        Console.WriteLine("ANTAL ANNONCER FRA SERVER: " + result.Count());
+        if (UserState.CurrentUser != null){
+        aktiveAnnoncer = result
+            .Where(a => a.Sælger_Id == UserState.CurrentUser.Id)
+            .ToList();
+        }
+    }
 }

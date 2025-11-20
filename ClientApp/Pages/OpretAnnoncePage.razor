@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Components.Forms
 @inject IFileService FileService
 @inject ILokaler lokaleService
+@inject UserState BrugerState
 @page "/OpretAnnoncePage"
 <h3>OpretAnnoncePage</h3>
 
@@ -186,6 +187,12 @@
     private async Task HandleSubmit()
     {
         annonce.Image.ToString();
+        if (BrugerState.CurrentUser.Id != null)
+        {
+            annonce.Sælger_Id = BrugerState.CurrentUser.Id;
+        }
+
+        annonce.Status = "aktiv";
         Console.WriteLine(annonce.Color + "<- color");
         Console.WriteLine("handle submit");
         await annonceService.Add(annonce);
