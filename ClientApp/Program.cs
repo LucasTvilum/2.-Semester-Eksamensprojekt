@@ -21,6 +21,7 @@ public class Program
         builder.Services.AddSingleton<IBruger, BrugerService>();
         builder.Services.AddSingleton<IFileService, FileService>();
         builder.Services.AddSingleton<ILokaler, LokaleService>();
+        builder.Services.AddSingleton<UserState>();
         builder.Services.AddScoped<PurchaseState>();
 
         await builder.Build().RunAsync();       

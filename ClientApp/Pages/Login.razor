@@ -2,6 +2,7 @@
 @using Core.Models
 @using ClientApp.Service
 @inject IBruger UserService
+@inject UserState UserState
 
 <h3>Login</h3>
 
@@ -31,10 +32,11 @@
 
     private async Task LoginUser()
     {
-        //var user = await UserService.Authenticate(username, password);
-        if (bruger != null)
+        bool logincheck = await UserState.Login(username, password);
+        if (logincheck != null)
         {
             message = $"Welcome, {bruger.Name}!";
+            Console.WriteLine(UserState.CurrentUser);
         }
         else
         {
@@ -56,7 +58,7 @@
             Password = password
         };
 
-        //await UserService.AddUser(newUser);
+        await UserService.Add(newUser);
         message = $"User {username} added successfully!";
         username = string.Empty;
         password = string.Empty;

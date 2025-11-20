@@ -7,7 +7,12 @@ namespace ServerApp.Controllers;
 public class FileController : ControllerBase
 {
 
-    private string PATH = "C:/Brugere/walla/Billeder/uploads";
+    private readonly string PATH = Path.Combine(
+        Directory.GetCurrentDirectory(),   // ServerApp/bin/Debug/netX.X
+        "..",                 // go up to solution root
+        "uploads"
+    );
+    
     // here files will be stored
 
     // provide fileupload - the file is copied to the PATH and given
@@ -16,17 +21,23 @@ public class FileController : ControllerBase
     [Route("upload")]
     public async Task<IActionResult> Upload(IFormFile? file)
     {
+        
+        Console.WriteLine("controller upload" + PATH);
+        
+        var fullPath = Path.GetFullPath(PATH);
+        
+        Console.WriteLine($"fullPath: {fullPath}");
         // if no or empty file - return bad request
         if (file == null || file.Length == 0)
             return BadRequest("Ingen fil modtaget");
 
         // ensure the folder is there
-        if (!Directory.Exists(PATH))
-            Directory.CreateDirectory(PATH);
+        if (!Directory.Exists(fullPath))
+            Directory.CreateDirectory(fullPath);
 
         // compute a unique new filename
         var fileName = UniqueFilename() + Path.GetExtension(file.FileName);
-        var path = Path.Combine(PATH, fileName);
+        var path = Path.Combine(fullPath, fileName);
         
         await using var stream = new FileStream(path, FileMode.Create);
         await file.CopyToAsync(stream);
@@ -47,7 +58,10 @@ public class FileController : ControllerBase
     [Route("{fileName}")]
     public IActionResult GetFileByKey(string fileName)
     {
-        var filePath = Path.Combine(PATH, fileName);
+        
+        var fullPath = Path.GetFullPath(PATH);
+        
+        var filePath = Path.Combine(fullPath, fileName);
 
         if (!System.IO.File.Exists(filePath))
             return NotFound();
@@ -74,8 +88,11 @@ public class FileController : ControllerBase
     public List<string> GetAll()
     {
         Console.WriteLine("Getting all files");
+        
+        var fullPath = Path.GetFullPath(PATH);
+        
         List<string> res = new();
-        DirectoryInfo folder = new DirectoryInfo(PATH);
+        DirectoryInfo folder = new DirectoryInfo(fullPath);
         foreach (var f in folder.EnumerateFiles())
         {
             if (! f.Name.StartsWith('.')) // hidden files
@@ -90,7 +107,9 @@ public class FileController : ControllerBase
     [Route("{fileName}")]
     public IActionResult DeleteFileByKey(string fileName)
     {
-        var filePath = Path.Combine(PATH, fileName);
+        var fullPath = Path.GetFullPath(PATH);
+        
+        var filePath = Path.Combine(fullPath, fileName);
 
         if (!System.IO.File.Exists(filePath))
             return NotFound();

@@ -3,15 +3,13 @@
 namespace ClientApp.Service;
 
 public interface IBruger
-{
+    
+{ 
+        Task<Bruger[]> GetAll();
 
-
-    public interface IBruger
-    {
-        Task<Annonce[]> GetAll();
-
-        Task Add(Annonce item);
+        Task Add(Bruger bruger);
 
         Task Delete(string todoid);
-    }
+        
+        Task<Bruger> Authenticate(string username, string password);
 }
