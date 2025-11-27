@@ -1,10 +1,8 @@
-﻿@inject ClientApp.Service.UserState UserState
-@inject NavigationManager Nav
-
-<Router AppAssembly="@typeof(App).Assembly" OnNavigateAsync="HandleNav">
+﻿
+<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
-        <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
     <NotFound>
         <PageTitle>Not found</PageTitle>
@@ -13,38 +11,3 @@
         </LayoutView>
     </NotFound>
 </Router>
-
-@code {
-    private static readonly HashSet<string> AdminOnlyPaths = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "/Alle_Lokaler",
-        "/Tilføj_Lokaler"
-    };
-
-    private Task HandleNav(Microsoft.AspNetCore.Components.Routing.NavigationContext args)
-    {
-        var path = "/" + (args.Path ?? string.Empty).Trim('/');
-
-        // Tillad login/root
-        if (path == "/" || path.Equals("/Login", StringComparison.OrdinalIgnoreCase))
-            return Task.CompletedTask;
-
-        // Kræv login for alt andet
-        var user = UserState?.CurrentUser;
-        if (user is null)
-        {
-            Nav.NavigateTo("/Login", replace: true);
-            return Task.CompletedTask;
-        }
-
-        // Admin-only sider
-        if (AdminOnlyPaths.Contains(path) && user.admin != true)
-        {
-            // Send ikke-admin væk fra admin-sider
-            Nav.NavigateTo("/Home", replace: true);
-            return Task.CompletedTask;
-        }
-
-        return Task.CompletedTask;
-    }
-}

@@ -1,5 +1,4 @@
 ﻿@inject Blazored.LocalStorage.ILocalStorageService localStore
-@inject ClientApp.Service.UserState UserState
 
 
 
@@ -16,47 +15,45 @@
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="nav flex-column">
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+            <NavLink class="nav-link" href="Home" Match="NavLinkMatch.All">
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Hjem
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="OpretAnnoncePage    ">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Opret Annonce
+            <NavLink class="nav-link" href="???">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> x
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="annoncer    ">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Alle Annoncer
+            <NavLink class="nav-link" href="???">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> x
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="Mine_annoncer    ">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Mine annoncer
+            <NavLink class="nav-link" href="???">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> xR
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="Mine_køb    ">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Mine køb
+            <NavLink class="nav-link" href="???">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> x
             </NavLink>
         </div>
-    @if (UserState.IsAdmin)
-        {
+        
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="Tilføj_Lokaler    ">
-                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Tilføj Lokaler
+                <NavLink class="nav-link" href="???">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> x
                 </NavLink>
             </div>
 
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="alle-lokaler">
-                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Alle Lokaler
+                <NavLink class="nav-link" href="???">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> x
                 </NavLink>
             </div>
-        }
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="Login    ">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Login
+            <NavLink class="nav-link" href="???">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> x
             </NavLink>
         </div>
     </nav>
