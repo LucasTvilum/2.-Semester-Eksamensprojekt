@@ -4,36 +4,36 @@
 @using Microsoft.AspNetCore.Components.Forms
 @inject IBooking bookingService
 @page "/AddBookingTEMP"
-<h3>OpretAnnoncePage</h3>
+<h3>Midlertidig booking oprettelse</h3>
 
 
-<EditForm Model="@booking" Model="@worktask" OnValidSubmit="@HandleSubmit" class="row p-3">
+<EditForm Model="@booking"  OnValidSubmit="@HandleSubmit" class="row p-3">
     <DataAnnotationsValidator />
     <ValidationSummary />
     
     <div class="col-md-12 mb-3">
-        <label for="Name">Overskrift</label>
+        <label for="Name">Interval Udenfor</label>
         <InputNumber id="Name" @bind-Value="booking.OutdoorInterval" class="form-control" />
     </div>
     
     <div class="col-md-12 mb-3">
-        <label for="Name">Overskrift</label>
+        <label for="Name">Interval Indenfor</label>
         <InputNumber id="Name" @bind-Value="booking.InsideInterval" class="form-control" />
     </div>
 
     
     <div class="col-md-12 mb-3">
-        <label for="Name">Beskrivelse</label>
+        <label for="Name">Noter</label>
         <InputText id="Name" @bind-Value="booking.NotesCustomer" class="form-control" />
     </div>
     
     <div class="col-md-6 mb-3">
-        <label for="Price">Price</label>
+        <label for="Price">Pris</label>
         <InputNumber id="Price" @bind-Value="booking.Price" class="form-control" />
     </div>
     
     <div class="col-md-12 mb-3">
-        <label for="Category">Category</label>
+        <label for="Category">Dag for pudsning</label>
         <InputSelect id="Category" @bind-Value="booking.Day"> 
             @foreach (var cat in daycategories)
             {
@@ -43,7 +43,7 @@
     </div>
     
     <div class="col-md-12 mb-3">
-        <label for="Category">Size</label>
+        <label for="Category">Booking type</label>
         <InputSelect id="Category" @bind-Value="booking.TypeBooking"> 
             @foreach (var cat in bookingcategories)
             {
@@ -53,18 +53,10 @@
     </div>
     
     <div class="form-check mb-3">
-        <InputCheckbox id="Indenfor" @bind-Value="booking.InsideJob" class="form-check-input" />
+        <InputCheckbox id="Indenfor" @bind-Value="booking.InsideJob" class="form-check-input"/>
         <label class="form-check-label" for="Indenfor">
             Pudsning indenfor
         </label>
-    </div>
-    
-        
-    <div class="col-md-6 mb-3">
-        <label for="Day">Date & Time</label>
-        <input type="datetime-local" id="Day" class="form-control"
-               @bind="worktask.Date"
-               @bind:format="yyyy-MM-ddTHH:mm" />
     </div>
     
     <div class="col-12 mb-3">
@@ -105,6 +97,7 @@
     {
         worktask.BookingId = booking.BookingId;
         worktask.InsideJob = booking.InsideJob;
+        worktask.Date = new DateTime(2025, 12, 1, 14, 30, 0);
         worktask.Worker = new Worker
         {
             Username = "lucas",

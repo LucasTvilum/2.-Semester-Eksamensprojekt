@@ -7,7 +7,10 @@ public class Window
     //Kan rykke ud i egen modelklasse hvis informationen skal bruges andre steder
     public class WindowType
     {
-        public string Value { get; private set; }
+        public string Value { get; set; }
+        
+        //Public og private windowtype for json deserialization, kan være skal ændres
+        public WindowType() {}
         private WindowType(string v) { Value = v; }
 
         public static readonly WindowType Type1 = new("Standardvindue");
@@ -25,7 +28,11 @@ public class Window
     //Kan rykke ud i egen modelklasse hvis informationen skal bruges andre steder
     public class WindowLocation
     {
-        public string Value { get; private set; }
+        public string Value { get; set; }
+        
+        
+        //hurtig fix for at få json deserialization til at virke, skal nok flyttes til backend
+        public WindowLocation() {}
         private WindowLocation(string v) { Value = v; }
 
         public static readonly WindowLocation StueEtage = new("StueEtage");

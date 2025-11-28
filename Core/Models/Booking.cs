@@ -16,6 +16,6 @@ public class Booking
 
     public List<WorkTask> WorkTasks { get; set; } = new List<WorkTask>();
 
-    public string OutdoorInterval { get; set; }
-    public string InsideInterval { get; set; }
+    public int OutdoorInterval { get; set; }
+    public int InsideInterval { get; set; }
 }
