@@ -6,7 +6,7 @@ public class Booking
     public string CustomerId { get; set; } // FK til Kunde
     public string Status { get; set; }
     public decimal Price { get; set; }
-    public DateTime Day { get; set; }
+    public string Day { get; set; }
 
     public List<Window> Windows { get; set; } = new List<Window>();
     public string TypeBooking { get; set; }
