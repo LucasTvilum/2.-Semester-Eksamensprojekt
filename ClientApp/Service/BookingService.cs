@@ -22,10 +22,21 @@ public class BookingService : IBooking
         return BookingList;
     }
 
-    public async void Add(Booking booking)
+    public async Task Add(Booking booking)
     {
         Console.WriteLine("Add bookingservice attempted");
-        await http.PostAsJsonAsync($"{url}/api/booking", booking);
+        var response = await http.PostAsJsonAsync($"{url}/api/booking", booking);
+        if (!response.IsSuccessStatusCode)
+        {
+            // Read error body (this contains ModelState errors)
+            var errorText = await response.Content.ReadAsStringAsync();
+            Console.WriteLine("Server returned error:");
+            Console.WriteLine(errorText);
+
+            throw new Exception($"Booking create failed: {errorText}");
+        }
+
+        Console.WriteLine("Booking created successfully");
     }
 
     public async Task Delete(string id)

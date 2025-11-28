@@ -7,7 +7,7 @@ public interface IBooking
 {
     Task<Booking[]> GetAll();
 
-    void Add(Booking booking);
+    Task Add(Booking booking);
     
     Task UpdateBooking(Booking booking);
 

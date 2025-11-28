@@ -24,9 +24,14 @@ namespace ServerApp.Controllers
         }
         
         [HttpPost]
-        public void Add([FromBody]Booking booking) {
-            Console.WriteLine("Add bookingservice");
+        public IActionResult Add([FromBody]Booking booking) {
+            
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            Console.WriteLine("Add bookingcontroller");
             bookingRepo.Add(booking);
+            
+            return Ok(booking);
         }
 
 
