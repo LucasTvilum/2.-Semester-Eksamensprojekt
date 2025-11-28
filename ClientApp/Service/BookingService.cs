@@ -1,0 +1,42 @@
+using System.Net.Http.Json;
+using Core.Models;
+
+namespace ClientApp.Service;
+
+public class BookingService : IBooking
+{
+    private HttpClient http;
+
+    private string url = "http://localhost:5107";
+
+    public BookingService(HttpClient http)
+    {
+        this.http = http;
+    }
+
+    public async Task<Booking[]> GetAll()
+    {
+        Console.WriteLine("GetAll from mock");
+        var BookingList = await http.GetFromJsonAsync<Booking[]>($"{url}/api/booking/");
+
+        return BookingList;
+    }
+
+    public async void Add(Booking booking)
+    {
+        Console.WriteLine("Add bookingservice attempted");
+        await http.PostAsJsonAsync($"{url}/api/booking", booking);
+    }
+
+    public async Task Delete(string id)
+    {
+        await http.DeleteAsync($"{url}/api/booking/{id}");
+    }
+    
+
+    public async Task UpdateBooking(Booking booking)
+    {
+        await http.PutAsJsonAsync<Booking>($"{url}/api/booking/{booking.BookingId}", booking);
+    }
+    
+}

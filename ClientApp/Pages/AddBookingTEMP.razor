@@ -1,0 +1,93 @@
+@using System.Diagnostics
+@using Core.Models
+@using ClientApp.Service
+@using Microsoft.AspNetCore.Components.Forms
+@inject IBooking bookingService
+@page "/AddBookingTEMP"
+<h3>OpretAnnoncePage</h3>
+
+
+<EditForm Model="@booking" OnValidSubmit="@HandleSubmit" class="row p-3">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    
+    <div class="col-md-12 mb-3">
+        <label for="Name">Overskrift</label>
+        <InputText id="Name" @bind-Value="booking.Title" class="form-control" />
+    </div>
+
+    
+    <div class="col-md-12 mb-3">
+        <label for="Name">Beskrivelse</label>
+        <InputText id="Name" @bind-Value="booking.Description" class="form-control" />
+    </div>
+    
+    <div class="col-md-6 mb-3">
+        <label for="Price">Price</label>
+        <InputNumber id="Price" @bind-Value="booking.Price" class="form-control" />
+    </div>
+    
+    <div class="col-md-12 mb-3">
+        <label for="Category">Category</label>
+        <InputSelect id="Category" @bind-Value="booking.Type"> 
+            @foreach (var cat in tøjcategories)
+            {
+                <option value="@cat">@cat</option>
+            }
+        </InputSelect>
+    </div>
+    
+    <div class="col-md-12 mb-3">
+        <label for="Category">Size</label>
+        <InputSelect id="Category" @bind-Value="booking.Size"> 
+            @foreach (var cat in sizecategories)
+            {
+                <option value="@cat">@cat</option>
+            }
+        </InputSelect>
+    </div>
+    
+    <div class="col-md-12 mb-3">
+        <label for="Category">Color</label>
+        <InputSelect id="Category" @bind-Value="booking.Color"> 
+            @foreach (var cat in colorcategories)
+            {
+                <option value="@cat">@cat</option>
+            }
+        </InputSelect>
+    </div>
+    
+    <div class="col-12 mb-3">
+        <button type="submit" class="btn btn-primary" >Opret Annonce</button>
+    </div>
+    
+    <div class="col-12 mb-3">
+        <button type="reset" class="btn btn-primary">Reset</button>
+    </div>
+    
+</EditForm> 
+
+@code {
+    
+    private Booking booking = new();
+    
+    protected override async Task OnInitializedAsync()
+    {
+    }
+
+    
+    private async Task HandleSubmit()
+    {
+        
+        //Sets status to aktiv
+        booking.Status = "afventer";
+        Console.WriteLine("handle submit");
+        
+        //Sends the ready Annonce object annonce to AnnonceService
+        bookingService.Add(booking);
+        
+        //Refreshes the current Annonce object annonce to prepare for new annonce 
+        booking = new Booking();
+    }
+    
+}
