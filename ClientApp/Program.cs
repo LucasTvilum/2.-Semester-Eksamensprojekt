@@ -19,6 +19,7 @@ public class Program
         builder.Services.AddBlazoredLocalStorage();
         builder.Services.AddSingleton<IBooking, BookingService>();
         builder.Services.AddSingleton<IWindow, WindowService>();
+        builder.Services.AddSingleton<IUser, UserService>();
   
 
         await builder.Build().RunAsync();       

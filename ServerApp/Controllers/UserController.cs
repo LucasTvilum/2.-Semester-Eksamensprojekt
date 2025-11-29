@@ -6,44 +6,44 @@ using Core.Models;
 namespace ServerApp.Controllers
 {
     [ApiController]
-    [Route("api/customer")]
-    public class CustomerController : ControllerBase
+    [Route("api/user")]
+    public class UserController : ControllerBase
     {
 
 
-        private ICustomerRepository customerRepo;
+        private IUserRepository userRepo;
 
-        public CustomerController(ICustomerRepository customerRepo) {
-            this.customerRepo = customerRepo;
+        public UserController(IUserRepository userRepo) {
+            this.userRepo = userRepo;
         }
 
         [HttpGet]
-        public IEnumerable<Customer> Get()
+        public IEnumerable<User> Get()
         {
-            return customerRepo.GetAll();
+            return userRepo.GetAll();
         }
         
         [HttpPost]
-        public void Add([FromBody]Customer customer) {
-            Console.WriteLine("Add customer in controller");
-            customerRepo.Add(customer);
+        public void Add([FromBody]User user) {
+            Console.WriteLine("Add user in controller");
+            userRepo.Add(user);
         }
 
 
         [HttpPut("{id}")]
-        public ActionResult<Customer> Update(string id, [FromBody] Customer customer)
+        public ActionResult<User> Update(string id, [FromBody] User user)
         {
-            customer.Id = id;
-            var updatedcustomer = customerRepo.Update(customer);
-            if (updatedcustomer == null) return NotFound();
-            return Ok(updatedcustomer);
+            user.Id = id;
+            var updateduser = userRepo.Update(user);
+            if (updateduser == null) return NotFound();
+            return Ok(updateduser);
         }
 
         [HttpDelete("{id}")]
         [Route("delete")]
         public OkResult Delete(string id)
         {
-            customerRepo.Delete(id);
+            userRepo.Delete(id);
             return Ok();
         }
     }

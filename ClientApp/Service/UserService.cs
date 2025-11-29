@@ -3,29 +3,29 @@ using Core.Models;
 
 namespace ClientApp.Service;
 
-public class BookingService : IBooking
+public class UserService : IUser
 {
     private HttpClient http;
 
     private string url = "http://localhost:5107";
 
-    public BookingService(HttpClient http)
+    public UserService(HttpClient http)
     {
         this.http = http;
     }
 
-    public async Task<Booking[]> GetAll()
+    public async Task<User[]> GetAll()
     {
         Console.WriteLine("GetAll from mock");
-        var BookingList = await http.GetFromJsonAsync<Booking[]>($"{url}/api/booking/");
+        var BookingList = await http.GetFromJsonAsync<User[]>($"{url}/api/user/");
 
         return BookingList;
     }
 
-    public async Task Add(Booking booking)
+    public async Task Add(User user)
     {
-        Console.WriteLine("Add bookingservice attempted");
-        var response = await http.PostAsJsonAsync($"{url}/api/booking", booking);
+        Console.WriteLine("Add userservice attemppted");
+        var response = await http.PostAsJsonAsync($"{url}/api/user", user);
         if (!response.IsSuccessStatusCode)
         {
             // Read error body (this contains ModelState errors)
@@ -33,21 +33,21 @@ public class BookingService : IBooking
             Console.WriteLine("Server returned error:");
             Console.WriteLine(errorText);
 
-            throw new Exception($"Booking create failed: {errorText}");
+            throw new Exception($"User create failed: {errorText}");
         }
 
-        Console.WriteLine("Booking created successfully");
+        Console.WriteLine("User created successfully");
     }
 
     public async Task Delete(string id)
     {
-        await http.DeleteAsync($"{url}/api/booking/{id}");
+        await http.DeleteAsync($"{url}/api/user/{id}");
     }
     
 
-    public async Task UpdateBooking(Booking booking)
+    public async Task UpdateBooking(User user)
     {
-        await http.PutAsJsonAsync<Booking>($"{url}/api/booking/{booking.Id}", booking);
+        await http.PutAsJsonAsync<User>($"{url}/api/user/{user.Id}", user);
     }
     
 }

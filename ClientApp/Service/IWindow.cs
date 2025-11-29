@@ -13,5 +13,5 @@ public interface IWindow
     
     Task UpdateBooking(Window window);
 
-    Task Delete(string todoid);
+    Task Delete(string windowid);
 }
