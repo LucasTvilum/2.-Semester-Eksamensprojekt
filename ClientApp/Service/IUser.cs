@@ -9,7 +9,7 @@ public interface IUser
 
     Task Add(User user);
     
-    Task UpdateBooking(User user);
-
     Task Delete(string userid);
+    
+    Task<User> ValidateUser(User user);
 }

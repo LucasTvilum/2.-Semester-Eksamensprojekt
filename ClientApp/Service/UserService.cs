@@ -44,10 +44,27 @@ public class UserService : IUser
         await http.DeleteAsync($"{url}/api/user/{id}");
     }
     
-
-    public async Task UpdateBooking(User user)
+    public async Task<User> ValidateUser(User user)
     {
-        await http.PutAsJsonAsync<User>($"{url}/api/user/{user.Id}", user);
+        Console.WriteLine("Validate user service");
+        
+        var response = await http.PutAsJsonAsync<User>($"{url}/api/user/login/", user);
+        
+        if (response.IsSuccessStatusCode)
+        {
+            return await response.Content.ReadFromJsonAsync<User>();
+        }
+        else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+        {
+            Console.WriteLine("Invalid username or password.");
+            return null;
+        }
+        else
+        {
+            Console.WriteLine($"Unexpected status code: {response.StatusCode}");
+            return null;
+        }
+        
     }
     
 }

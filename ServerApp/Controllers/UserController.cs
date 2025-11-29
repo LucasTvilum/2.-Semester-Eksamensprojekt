@@ -28,7 +28,22 @@ namespace ServerApp.Controllers
             Console.WriteLine("Add user in controller");
             userRepo.Add(user);
         }
+        
+        [HttpPut("login")]
+        public ActionResult<User> Login([FromBody] User user)
+        {
+            
+            Console.WriteLine("Controller login check");
+            
+            var matchinguser = userRepo.GetAll()
+                .FirstOrDefault(u => u.Username == user.Username && u.Password == user.Password);
 
+            if (matchinguser == null)
+                return Unauthorized("Invalid username or password.");
+
+            return Ok(user);
+        }
+        
 
         [HttpPut("{id}")]
         public ActionResult<User> Update(string id, [FromBody] User user)

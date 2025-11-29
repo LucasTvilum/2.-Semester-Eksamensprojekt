@@ -1,6 +1,8 @@
 @using Core.Models
 @using ClientApp.Service
+@using Blazored.LocalStorage
 @inject IUser userService
+@inject ILocalStorageService localStorage
 @page "/AddUserTEMP"
 
 <h3>Midlertidig tilføj bruger/medarbejder</h3>
@@ -17,7 +19,7 @@
     
 <div class="col-md-12 mb-3">
     <label for="Name">Password</label>
-    <InputText id="Name" @bind-Value="user.Password" type="password" class="form-control" />
+    <InputText id="Password" @bind-Value="user.Password" type="password" class="form-control" />
 </div>
 
 <div class="col-md-12 mb-3">
@@ -40,6 +42,7 @@
 
 </EditForm> 
 
+
 @code {
     
     private User user = new User();
@@ -48,6 +51,19 @@
     {
         userService.Add(user);
         user = new User();
+    }
+    
+    
+    protected override async Task OnInitializedAsync()
+    {
+        //local storage implementation
+        var loadedUser = await localStorage.GetItemAsync<User>("currentUser");
+        
+        if (loadedUser != null)
+        {
+            //Uncomment linje under
+            //user = loadedUser;
+        }
     }
     
 }
