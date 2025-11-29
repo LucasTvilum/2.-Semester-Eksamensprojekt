@@ -2,7 +2,7 @@ namespace Core.Models;
 
 public class Window
 {
-    public string WindowId { get; set; } = Guid.NewGuid().ToString();
+    public string Id { get; set; } = Guid.NewGuid().ToString();
     public WindowType Type { get; set; }
     public WindowLocation Location { get; set; }
     

@@ -47,7 +47,7 @@ public class BookingService : IBooking
 
     public async Task UpdateBooking(Booking booking)
     {
-        await http.PutAsJsonAsync<Booking>($"{url}/api/booking/{booking.BookingId}", booking);
+        await http.PutAsJsonAsync<Booking>($"{url}/api/booking/{booking.Id}", booking);
     }
     
 }

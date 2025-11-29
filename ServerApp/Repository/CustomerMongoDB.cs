@@ -2,8 +2,8 @@ using MongoDB.Driver;
 using Core.Models;
 using ServerApp.Repository;
 
-
-public class CustomerMongoDB : ICustomerInterface
+namespace ServerApp.Repository;
+public class CustomerMongoDB : ICustomerRepository
 {
     private readonly IMongoCollection<Customer> _collection;
 
@@ -26,7 +26,7 @@ public class CustomerMongoDB : ICustomerInterface
 
     public Customer Update(Customer customer)
     {
-        var filter = Builders<Customer>.Filter.Eq(a => a.UserId, customer.UserId);
+        var filter = Builders<Customer>.Filter.Eq(a => a.Id, customer.Id);
         _collection.ReplaceOne(filter, customer);
         return customer;
     }

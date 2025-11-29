@@ -3,6 +3,7 @@
 @using ClientApp.Service
 @using Microsoft.AspNetCore.Components.Forms
 @inject IBooking bookingService
+@inject IWindow windowService
 @page "/AddBookingTEMP"
 <h3>Midlertidig booking oprettelse</h3>
 
@@ -69,33 +70,53 @@
     
 </EditForm> 
 
+<EditForm Model="@window"  OnValidSubmit="@HandleWindowSubmit" class="row p-3">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    
+    <div class="col-md-12 mb-3">
+        <label for="Category">Vindue Type</label>
+        <InputSelect id="Type" @bind-Value="window.Type">
+            @foreach (var type in windowtypecategories)
+            {
+                <option value="@type">@type.GetLabel()</option>
+            }
+        </InputSelect>
+    </div>
+    
+    <div class="col-md-12 mb-3">
+        <label for="Category">Vindue lokation</label>
+        <InputSelect id="Location" @bind-Value="window.Location">
+            @foreach (var location in windowlocationcategories)
+            {
+                <option value="@location">@location.GetLabel()</option>
+            }
+        </InputSelect>
+    </div>
+    
+    <div class="col-12 mb-3">
+        <button type="submit" class="btn btn-primary" >Tilføj vindue</button>
+    </div>
+    
+    <div class="col-12 mb-3">
+        <button type="reset" class="btn btn-primary">Reset</button>
+    </div>
+    
+</EditForm> 
+
 @code {
     
     private Booking booking = new();
     
     private WorkTask worktask = new();
     
-    private Window window = new Window
-    {
-        Type = WindowType.Dannebrog,     
-        Location = WindowLocation.FoersteEtage,
-        Price = 12000               
-    };
-
-    
     private List<string> daycategories = new List<string> { "Mandag","Tirsdag","Onsdag","Torsdag","Fredag","Lørdag","Søndag" };
     
     private List<string> bookingcategories = new List<string> { "Abonnement", "Enkelt Booking"};
-
-    
-    protected override async Task OnInitializedAsync()
-    {
-    }
-
     
     private async Task HandleSubmit()
     {
-        worktask.BookingId = booking.BookingId;
+        worktask.BookingId = booking.Id;
         worktask.InsideJob = booking.InsideJob;
         worktask.Date = new DateTime(2025, 12, 1, 14, 30, 0);
         worktask.Worker = new Worker
@@ -108,8 +129,6 @@
             Mail = "lucas@mail.com"
         };
         
-        booking.Windows.Add(window);
-        worktask.Windows.Add(window);
         booking.CustomerId = "1";
         
         //Sets status to aktiv
@@ -122,12 +141,38 @@
         //Add Velux vindue håndtering
         //if (veluxwindow) {booking.InsideJob = true}
         
-        
-        
+        //adding worktask when making booking, should maybe be different
+        //worktaskService.Add(worktask);
         
         //Refreshes the current Booking object booking to prepare for new booking 
         booking = new Booking();
         worktask = new WorkTask();
+    }
+    
+    private List<WindowType> windowtypecategories = Enum.GetValues<WindowType>().ToList();
+    private List<WindowLocation> windowlocationcategories = Enum.GetValues<WindowLocation>().ToList();
+    WindowType windowtypes;
+    WindowLocation windowlocations;
+    
+    private Window window = new Window
+    {
+        Type = WindowType.Dannebrog,     
+        Location = WindowLocation.FoersteEtage,
+        Price = 12000               
+    };
+    
+    protected override async Task OnInitializedAsync()
+    {
+        
+    }
+
+    
+    private async Task HandleWindowSubmit()
+    {
+        window.Price = window.CalculatePrice();
+        booking.Windows.Add(window);
+        worktask.Windows.Add(window);
+        window = new Window();    
     }
     
 }

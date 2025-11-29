@@ -1,6 +1,107 @@
-@page "/showBookingTEMP"
-<h3>showBookingTEMP</h3>
+@page "/ShowBookingTEMP"
+@using ClientApp.Service
+@using Core.Models
+<h3>Alle bookings</h3>
+
+<ul class="list-group">
+    
+    <li class="list-group-item d-flex justify-content-between align-items-center fw-bold bg-light">
+        <div>Day</div>
+        <div>InsideInterval</div>
+        <div>InsideJob</div>
+        <div>NotesCustomer</div>
+        <div>NotesWindowCleaner</div>
+        <div>OutdoorInterval</div>
+        <div>Price</div>
+        <div>Status</div>
+        
+        <div></div>
+    </li>
+    
+    @if(bookinglist != null){foreach (var booking in bookinglist)
+    {
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>@booking.Day</div>
+            <div>@booking.InsideInterval</div>
+            <div>@booking.InsideJob</div>
+            <div>@booking.NotesCustomer</div>
+            <div>@booking.NotesWindowCleaner</div>
+            <div>@booking.OutdoorInterval</div>
+            <div>@booking.Price</div>
+            <div>@booking.Status</div>
+            <button class="btn btn-sm btn-primary" 
+                    @onclick="() => OpenModal(booking)">
+                Booking Vinduer
+            </button>
+            
+        </li>
+    }
+    }
+</ul>
+
+@if (showModal)
+{
+    <div class="modal d-block" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Vinduer</h5>
+                    <button class="btn-close" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body">
+                    @if (selectedBooking.Windows != null)
+                    {
+                        foreach (var window in selectedBooking.Windows)
+                        {
+                            <li>@window.Type.GetLabel() - @window.Location.GetLabel()</li>
+                        }
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseModal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 
 @code {
     
+    [Inject] private IBooking bookingService { get; set; }
+    
+    [Inject] private IWindow windowService { get; set; }
+    
+    private List<Booking> bookinglist = new List<Booking>();
+    private Booking[] bookingArray;
+    
+    private List<Window> windowlist = new List<Window>();
+    private Window[] windowArray;
+    
+    private bool showModal = false;
+    private Booking selectedBooking;
+
+    private void OpenModal(Booking booking)
+    {
+        selectedBooking = booking;
+        showModal = true;
+    }
+
+    private void CloseModal()
+    {
+        showModal = false;
+    }
+
+    
+    protected override async Task OnInitializedAsync()
+    {
+        windowArray = await windowService.GetAll();
+        windowlist = windowArray.ToList();
+        bookingArray = await bookingService.GetAll();
+        bookinglist = bookingArray.ToList();
+        foreach (var VARIABLE in bookinglist)
+        {
+            Console.WriteLine(VARIABLE.Id);
+        }
+    }
 }

@@ -11,9 +11,9 @@ namespace ServerApp.Controllers
     {
 
 
-        private ICustomerInterface customerRepo;
+        private ICustomerRepository customerRepo;
 
-        public CustomerController(ICustomerInterface customerRepo) {
+        public CustomerController(ICustomerRepository customerRepo) {
             this.customerRepo = customerRepo;
         }
 
@@ -33,7 +33,7 @@ namespace ServerApp.Controllers
         [HttpPut("{id}")]
         public ActionResult<Customer> Update(string id, [FromBody] Customer customer)
         {
-            customer.UserId = id;
+            customer.Id = id;
             var updatedcustomer = customerRepo.Update(customer);
             if (updatedcustomer == null) return NotFound();
             return Ok(updatedcustomer);

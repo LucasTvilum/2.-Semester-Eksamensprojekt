@@ -11,9 +11,9 @@ namespace ServerApp.Controllers
     {
 
 
-        private IBookingInterface bookingRepo;
+        private IBookingRepository bookingRepo;
 
-        public BookingController(IBookingInterface bookingRepo) {
+        public BookingController(IBookingRepository bookingRepo) {
             this.bookingRepo = bookingRepo;
         }
 
@@ -38,7 +38,7 @@ namespace ServerApp.Controllers
         [HttpPut("{id}")]
         public ActionResult<Booking> Update(string id, [FromBody] Booking booking)
         {
-            booking.BookingId = id;
+            booking.Id = id;
             var updated = bookingRepo.Update(booking);
             if (updated == null) return NotFound();
             return Ok(updated);
