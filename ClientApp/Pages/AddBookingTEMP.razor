@@ -1,0 +1,133 @@
+@using System.Diagnostics
+@using Core.Models
+@using ClientApp.Service
+@using Microsoft.AspNetCore.Components.Forms
+@inject IBooking bookingService
+@page "/AddBookingTEMP"
+<h3>Midlertidig booking oprettelse</h3>
+
+
+<EditForm Model="@booking"  OnValidSubmit="@HandleSubmit" class="row p-3">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    
+    <div class="col-md-12 mb-3">
+        <label for="Name">Interval Udenfor</label>
+        <InputNumber id="Name" @bind-Value="booking.OutdoorInterval" class="form-control" />
+    </div>
+    
+    <div class="col-md-12 mb-3">
+        <label for="Name">Interval Indenfor</label>
+        <InputNumber id="Name" @bind-Value="booking.InsideInterval" class="form-control" />
+    </div>
+
+    
+    <div class="col-md-12 mb-3">
+        <label for="Name">Noter</label>
+        <InputText id="Name" @bind-Value="booking.NotesCustomer" class="form-control" />
+    </div>
+    
+    <div class="col-md-6 mb-3">
+        <label for="Price">Pris</label>
+        <InputNumber id="Price" @bind-Value="booking.Price" class="form-control" />
+    </div>
+    
+    <div class="col-md-12 mb-3">
+        <label for="Category">Dag for pudsning</label>
+        <InputSelect id="Category" @bind-Value="booking.Day"> 
+            @foreach (var cat in daycategories)
+            {
+                <option value="@cat">@cat</option>
+            }
+        </InputSelect>
+    </div>
+    
+    <div class="col-md-12 mb-3">
+        <label for="Category">Booking type</label>
+        <InputSelect id="Category" @bind-Value="booking.TypeBooking"> 
+            @foreach (var cat in bookingcategories)
+            {
+                <option value="@cat">@cat</option>
+            }
+        </InputSelect>
+    </div>
+    
+    <div class="form-check mb-3">
+        <InputCheckbox id="Indenfor" @bind-Value="booking.InsideJob" class="form-check-input"/>
+        <label class="form-check-label" for="Indenfor">
+            Pudsning indenfor
+        </label>
+    </div>
+    
+    <div class="col-12 mb-3">
+        <button type="submit" class="btn btn-primary" >Opret Booking</button>
+    </div>
+    
+    <div class="col-12 mb-3">
+        <button type="reset" class="btn btn-primary">Reset</button>
+    </div>
+    
+</EditForm> 
+
+@code {
+    
+    private Booking booking = new();
+    
+    private WorkTask worktask = new();
+    
+    private Window window = new Window
+    {
+        Type = WindowType.Dannebrog,     
+        Location = WindowLocation.FoersteEtage,
+        Price = 12000               
+    };
+
+    
+    private List<string> daycategories = new List<string> { "Mandag","Tirsdag","Onsdag","Torsdag","Fredag","Lørdag","Søndag" };
+    
+    private List<string> bookingcategories = new List<string> { "Abonnement", "Enkelt Booking"};
+
+    
+    protected override async Task OnInitializedAsync()
+    {
+    }
+
+    
+    private async Task HandleSubmit()
+    {
+        worktask.BookingId = booking.BookingId;
+        worktask.InsideJob = booking.InsideJob;
+        worktask.Date = new DateTime(2025, 12, 1, 14, 30, 0);
+        worktask.Worker = new Worker
+        {
+            Username = "lucas",
+            Password = "Lucas",
+            Admin = true,
+            Name = "lucas",
+            PhoneNumber = "123123",
+            Mail = "lucas@mail.com"
+        };
+        
+        booking.Windows.Add(window);
+        worktask.Windows.Add(window);
+        booking.CustomerId = "1";
+        
+        //Sets status to aktiv
+        booking.Status = "afventer";
+        Console.WriteLine("handle submit");
+        
+        //Sends the ready Booking object booking to BookingService
+        bookingService.Add(booking);
+        
+        //Add Velux vindue håndtering
+        //if (veluxwindow) {booking.InsideJob = true}
+        
+        
+        
+        
+        //Refreshes the current Booking object booking to prepare for new booking 
+        booking = new Booking();
+        worktask = new WorkTask();
+    }
+    
+}

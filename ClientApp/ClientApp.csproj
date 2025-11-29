@@ -16,7 +16,6 @@
     <ItemGroup>
       <Folder Include="Components\" />
       <Folder Include="Pages\InputComponents\" />
-      <Folder Include="Service\" />
       <Folder Include="wwwroot\sample-data\" />
     </ItemGroup>
 
