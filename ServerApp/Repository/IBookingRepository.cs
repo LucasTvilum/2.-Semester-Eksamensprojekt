@@ -1,7 +1,7 @@
 namespace ServerApp.Repository;
 using Core.Models;
 
-public interface IBookingInterface
+public interface IBookingRepository
 
 {
     List<Booking> GetAll();

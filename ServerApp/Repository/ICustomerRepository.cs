@@ -1,7 +1,7 @@
 namespace ServerApp.Repository;
 using Core.Models;
 
-public interface ICustomerInterface
+public interface ICustomerRepository
 
 {
     List<Customer> GetAll();

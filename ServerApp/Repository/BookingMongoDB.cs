@@ -1,9 +1,10 @@
 using MongoDB.Driver;
 using Core.Models;
+using MongoDB.Bson.Serialization;
 using ServerApp.Repository;
 
-
-public class BookingMongoDB : IBookingInterface
+namespace ServerApp.Repository;
+public class BookingMongoDB : IBookingRepository
 {
     private readonly IMongoCollection<Booking> _collection;
 
@@ -26,7 +27,7 @@ public class BookingMongoDB : IBookingInterface
 
     public Booking Update(Booking booking)
     {
-        var filter = Builders<Booking>.Filter.Eq(a => a.BookingId, booking.BookingId);
+        var filter = Builders<Booking>.Filter.Eq(a => a.Id, booking.Id);
         _collection.ReplaceOne(filter, booking);
         return booking;
     }
