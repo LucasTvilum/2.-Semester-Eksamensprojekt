@@ -11,7 +11,7 @@ public class CustomerMongoDB : ICustomerRepository
     {
         var client = new MongoClient("mongodb://localhost:27017");
         var database = client.GetDatabase("Vinduespudsning");
-        _collection = database.GetCollection<Customer>("customers");
+        _collection = database.GetCollection<Customer>("Customers");
     }
 
     public List<Customer> GetAll()

@@ -3,13 +3,13 @@ using Core.Models;
 namespace ClientApp.Service;
 
 
-public interface IUser
+public interface ICustomer
 {
-    Task<User[]> GetAll();
+    Task<Customer[]> GetAll();
 
-    Task Add(User user);
+    Task Add(Customer customer);
     
-    Task UpdateBooking(User user);
+    Task UpdateBooking(Customer customer);
 
     Task Delete(string userid);
 }
