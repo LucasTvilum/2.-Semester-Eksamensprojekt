@@ -1,6 +1,94 @@
 ﻿@page "/Login"
-<h3>Login</h3>
+@using Blazored.LocalStorage
+@using Core.Models
+@using ClientApp.Service
+@inject IUser userRepo
+@inject ILocalStorageService localStorage
+<PageTitle>Log ind</PageTitle>
+
+<div class="login-page-background">
+    <div class="login-container">
+        
+        <h3>Log ind</h3>
+        
+        <EditForm Model="@user" OnValidSubmit="OnClickLogin">
+            <DataAnnotationsValidator/>
+
+            <div class="form-floating-group">
+                <InputText id="un" class="form-control" @bind-Value="user.Username" placeholder="Username"/>
+                <label for="un">Username</label>
+            </div>
+
+            <div class="form-floating-group">
+                <InputText id="un" class="form-control" @bind-Value="user.Password" placeholder="Username"/>
+                <label for="un">Password</label>
+            </div>
+
+            <div style="text-align: center">
+                <button type="submit" class="btn btn-primary">Log ind</button>
+            </div>
+        </EditForm>
+        
+        <button class="btn btn-danger" @onclick="OnClickLogout">
+            Logout
+        </button>
+    </div>
+</div>
+
+@if (LoadedUser != null)
+{
+    <h3>Logget ind med følgende:</h3>
+    <h3>@LoadedUser.Username</h3>
+    <h3>@LoadedUser.Password</h3>
+}
+
 
 @code {
+    private User user = new();
+
+    private User LoadedUser = new();
     
+    private async Task OnClickLogin()
+    {
+        Console.WriteLine("login clicked");
+        
+        //undgå crash fra tom login
+        if (string.IsNullOrWhiteSpace(user.Username) || string.IsNullOrWhiteSpace(user.Password))
+        {
+            Console.WriteLine("Username and Password are required");
+            return;
+        }
+        
+        User? userObject = await userRepo.ValidateUser(user);
+        
+        
+        if (userObject != null)
+        {
+            Console.WriteLine("User logged in!");
+            await localStorage.SetItemAsync("currentUser", userObject);
+            user = userObject;
+            LoadedUser = userObject;
+        }
+    }
+
+    private async Task OnClickLogout()
+    {
+        user = new();
+        LoadedUser = new User();
+        await localStorage.RemoveItemAsync("currentUser");
+        Console.WriteLine("User logged out");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var loadedUser = await localStorage.GetItemAsync<User>("currentUser");
+
+
+        if (loadedUser != null)
+        {
+            user = loadedUser;
+            LoadedUser = loadedUser;
+        }
+    }
+
 }

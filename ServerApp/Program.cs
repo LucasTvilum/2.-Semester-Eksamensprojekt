@@ -12,6 +12,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddSingleton<IBookingRepository, BookingMongoDB>();
 builder.Services.AddSingleton<ICustomerRepository, CustomerMongoDB>();
 builder.Services.AddSingleton<IWindowRepository, WindowMongoDB>();
+builder.Services.AddSingleton<IUserRepository, UserMongoDB>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBlazor",

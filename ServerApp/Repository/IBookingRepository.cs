@@ -6,9 +6,9 @@ public interface IBookingRepository
 {
     List<Booking> GetAll();
     
-    void Add(Booking annonce);
+    void Add(Booking booking);
     
-    Booking Update(Booking annonce);
+    Booking Update(Booking booking);
     
     void Delete(string id);
 }

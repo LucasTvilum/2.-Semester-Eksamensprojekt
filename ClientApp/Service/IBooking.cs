@@ -11,5 +11,5 @@ public interface IBooking
     
     Task UpdateBooking(Booking booking);
 
-    Task Delete(string todoid);
+    Task Delete(string bookingid);
 }
