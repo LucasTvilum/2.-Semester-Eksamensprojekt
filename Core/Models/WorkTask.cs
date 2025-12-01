@@ -7,6 +7,6 @@ public class WorkTask
     public List<Window> Windows { get; set; } = new List<Window>(); //Fra Booking
     public DateTime Date { get; set; }
     public bool InsideJob { get; set; }
-    public Worker Worker { get; set; }
-    public string NotesForTask { get; set; }
+    public Worker Worker { get; set; } = new Worker();
+    public string NotesForTask { get; set; } = "";
 }
