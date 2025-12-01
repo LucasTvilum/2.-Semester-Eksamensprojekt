@@ -40,6 +40,7 @@
     <h3>Logget ind med følgende:</h3>
     <h3>@LoadedUser.Username</h3>
     <h3>@LoadedUser.Password</h3>
+    <h2>Type: @User.GetLabel(LoadedUser.Usertype)</h2>
 }
 
 
@@ -59,8 +60,9 @@
             return;
         }
         
-        User? userObject = await userRepo.ValidateUser(user);
+        User userObject = await userRepo.ValidateUser(user);
         
+        Console.WriteLine("userobject:" + userObject.Usertype);
         
         if (userObject != null)
         {
@@ -68,6 +70,7 @@
             await localStorage.SetItemAsync("currentUser", userObject);
             user = userObject;
             LoadedUser = userObject;
+            Console.WriteLine("type: " + LoadedUser.Usertype);
         }
     }
 

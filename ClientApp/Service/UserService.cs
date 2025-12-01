@@ -52,7 +52,9 @@ public class UserService : IUser
         
         if (response.IsSuccessStatusCode)
         {
-            return await response.Content.ReadFromJsonAsync<User>();
+            var usertoreturn = await response.Content.ReadFromJsonAsync<User>();
+            Console.WriteLine("user service type: " + usertoreturn.Usertype);
+            return usertoreturn;
         }
         else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
         {

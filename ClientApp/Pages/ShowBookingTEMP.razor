@@ -1,7 +1,13 @@
 @page "/ShowBookingTEMP"
 @using ClientApp.Service
 @using Core.Models
+@inject UserState userState
 <h3>Alle bookings</h3>
+
+@if (!userState.IsWorker)
+{
+    <p>You are not allowed here. (not a worker)</p>
+}
 
 <ul class="list-group">
     

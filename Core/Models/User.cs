@@ -23,4 +23,11 @@ public class User
         _ => "User"
     };
     
+    public static UserType ParseUserType(int value)
+    {
+        return Enum.IsDefined(typeof(UserType), value)
+            ? (UserType)value
+            : UserType.User; // fallback
+    }
+    
 }
