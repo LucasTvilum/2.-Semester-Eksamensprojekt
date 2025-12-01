@@ -40,13 +40,7 @@ namespace ServerApp.Controllers
             if (matchinguser == null)
                 return Unauthorized("Invalid username or password.");
             
-            
-            //fix til at få databasen til at returnere enums korrekt
-            // Core.Models. nødvendig fordi User er brugt til andet
-            Console.WriteLine(matchinguser.Usertype);
-            matchinguser.Usertype = Core.Models.User.ParseUserType((int)matchinguser.Usertype);
-            Console.WriteLine(matchinguser.Usertype);
-            return Ok(user);
+            return Ok(matchinguser);
         }
         
 

@@ -10,9 +10,9 @@ public class User
     
     public enum UserType
     {
-        User,
-        Customer,
-        Worker
+        User = 0,
+        Customer = 1,
+        Worker = 2
     }
    
     public static string GetLabel(UserType type) => type switch

@@ -1,4 +1,6 @@
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Core.Models;
 
 namespace ClientApp.Service;
@@ -48,12 +50,14 @@ public class UserService : IUser
     {
         Console.WriteLine("Validate user service");
         
+        
         var response = await http.PutAsJsonAsync<User>($"{url}/api/user/login/", user);
         
         if (response.IsSuccessStatusCode)
         {
+            
             var usertoreturn = await response.Content.ReadFromJsonAsync<User>();
-            Console.WriteLine("user service type: " + usertoreturn.Usertype);
+            
             return usertoreturn;
         }
         else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
