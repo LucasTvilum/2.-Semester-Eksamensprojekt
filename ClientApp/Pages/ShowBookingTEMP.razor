@@ -154,8 +154,9 @@
         showModalBooking = true;
     }
 
-    private void CloseModalBooking()
+    private async Task CloseModalBooking()
     {
+        await bookingService.UpdateBooking(selectedBooking);
         showModalBooking = false;
     }
     

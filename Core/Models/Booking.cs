@@ -3,8 +3,8 @@ namespace Core.Models;
 public class Booking
 {
     public string Id { get; set; } = Guid.NewGuid().ToString(); //PK
-    public string CustomerId { get; set; } // FK til Kunde
-    public string Status { get; set; }
+    public string CustomerId { get; set; } = "";// FK til Kunde
+    public string Status { get; set; } = "";
     public decimal Price { get; set; }
     public string Day { get; set; } = DateTime.Now.ToString("dddd");
 
