@@ -1,0 +1,20 @@
+@page "/Kalender"
+@using ClientApp.Components
+
+<KalenderComponent EventDays="MyEventDays" />
+
+<input type="number" @bind="NewDay" min="1" max="31" />
+<button @onclick="AddDot">Tilføj grøn prik</button>
+
+@code {
+    private List<int> MyEventDays = new();
+    private int NewDay;
+
+    private void AddDot()
+    {
+        if (NewDay >= 1 && NewDay <= 31 && !MyEventDays.Contains(NewDay))
+        {
+            MyEventDays.Add(NewDay);
+        }
+    }
+}
