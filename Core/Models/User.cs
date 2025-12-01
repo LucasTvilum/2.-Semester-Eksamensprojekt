@@ -10,9 +10,9 @@ public class User
     
     public enum UserType
     {
-        User,
-        Customer,
-        Worker
+        User = 0,
+        Customer = 1,
+        Worker = 2
     }
    
     public static string GetLabel(UserType type) => type switch
@@ -22,5 +22,12 @@ public class User
         UserType.Worker => "Worker",
         _ => "User"
     };
+    
+    public static UserType ParseUserType(int value)
+    {
+        return Enum.IsDefined(typeof(UserType), value)
+            ? (UserType)value
+            : UserType.User; // fallback
+    }
     
 }
