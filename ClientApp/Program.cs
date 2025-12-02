@@ -19,12 +19,10 @@ public class Program
         builder.Services.AddBlazoredLocalStorage();
         builder.Services.AddSingleton<UserState>();
         builder.Services.AddSingleton<IBooking, BookingService>();
-        //builder.Services.AddSingleton<IWindow, WindowService>();
+        builder.Services.AddSingleton<IWorkTask, WorkTaskService>();
+        builder.Services.AddSingleton<IWindow, WindowService>();
         builder.Services.AddSingleton<IUser, UserService>();
         builder.Services.AddSingleton<ICustomer, CustomerService>();
-        builder.Services.AddSingleton<WindowService>();
-        ;
-  
 
         await builder.Build().RunAsync();       
     }

@@ -5,8 +5,8 @@ public class User
     public string Id { get; set; } = Guid.NewGuid().ToString();
     
     public UserType Usertype { get; set; } = UserType.User;
-    public string Username { get; set; }
-    public string Password { get; set; }
+    public string Username { get; set; } = "";
+    public string Password { get; set; } = "";
     
     public enum UserType
     {

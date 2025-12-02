@@ -11,7 +11,7 @@ public interface IWindow
 
     Task Add(Window window);
     
-    Task UpdateBooking(Window window);
+    Task UpdateWindow(Window window);
 
     Task Delete(string windowid);
 }

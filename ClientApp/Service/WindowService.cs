@@ -53,7 +53,7 @@ public class WindowService : IWindow
     }
     
 
-    public async Task UpdateBooking(Window window)
+    public async Task UpdateWindow(Window window)
     {
         await http.PutAsJsonAsync<Window>($"{url}/api/window/{window.Id}", window);
     }

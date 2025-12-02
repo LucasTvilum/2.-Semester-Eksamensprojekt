@@ -1,0 +1,256 @@
+@using System.Diagnostics
+@using Core.Models
+@using ClientApp.Service
+@using Microsoft.AspNetCore.Components.Forms
+@inject IBooking bookingService
+@inject ICustomer customerService
+@inject IWorkTask worktaskService
+@inject IWindow windowService
+@page "/AdminAddBooking"
+<h3>Admin kunde og booking oprettelse</h3>
+
+<EditForm Model="@customer" OnValidSubmit="@HandleCustomerSubmit" class="row p-3">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    
+    <div class="col-md-12 mb-3">
+        <label for="Name">Username</label>
+        <InputText id="Username" @bind-Value="customer.Username" class="form-control" />
+    </div>
+
+    
+    <div class="col-md-12 mb-3">
+        <label for="Name">Password</label>
+        <InputText id="Password" @bind-Value="customer.Password" type="password" class="form-control" />
+    </div>
+    
+    <div class="col-md-12 mb-3">
+        <label for="Name">Navn</label>
+        <InputText id="Name" @bind-Value="customer.Name" class="form-control" />
+    </div>
+  
+    <div class="col-md-12 mb-3">
+        <label for="Mail">Mail</label>
+        <InputText id="Mail" @bind-Value="customer.Mail" class="form-control" />
+    </div>
+    
+    <div class="col-md-12 mb-3">
+        <label for="PhoneNumber">Telefon nr</label>
+        <InputText id="PhoneNumber" @bind-Value="customer.PhoneNumber" class="form-control" />
+    </div>
+    
+    <div class="col-md-12 mb-3">
+        <label for="Address">Addresse</label>
+        <InputText id="Address" @bind-Value="customer.Address" class="form-control" />
+    </div>
+
+    <div class="col-md-12 mb-3">
+        <label for="Region">Region</label>
+        <InputText id="Region" @bind-Value="customer.Region" class="form-control" />
+    </div>
+    
+    <div class="col-md-12 mb-3">
+        <label for="City">City</label>
+        <InputText id="City" @bind-Value="customer.City" class="form-control" />
+    </div>
+    
+    <div class="col-12 mb-3">
+        <button type="submit" class="btn btn-primary" >Opret Kunde</button>
+    </div>
+    
+    <div class="col-12 mb-3">
+        <button type="reset" class="btn btn-primary">Reset</button>
+    </div>
+
+</EditForm> 
+
+@if (customer != null)
+{
+    <h3>Nuværende kunde:</h3>
+    <h3>@customer.Name</h3>
+}
+
+
+<EditForm Model="@booking"  OnValidSubmit="@HandleSubmit" class="row p-3">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    
+    <div class="col-md-12 mb-3">
+        <label for="IntervalOutside">Interval Udenfor</label>
+        <InputNumber id="IntervalOutside" @bind-Value="booking.OutdoorInterval" class="form-control" />
+    </div>
+    
+    <div class="col-md-12 mb-3">
+        <label for="IntervalInside">Interval Indenfor</label>
+        <InputNumber id="IntervalInside" @bind-Value="booking.InsideInterval" class="form-control" />
+    </div>
+
+    
+    <div class="col-md-12 mb-3">
+        <label for="NotesCustomer">Noter</label>
+        <InputText id="NotesCustomer" @bind-Value="booking.NotesCustomer" class="form-control" />
+    </div>
+    
+    <div class="col-md-6 mb-3">
+        <label for="Price">Pris</label>
+        <InputNumber id="Price" @bind-Value="booking.Price" class="form-control" />
+    </div>
+    
+    <div class="col-md-12 mb-3">
+        <label for="Category">Booking type</label>
+        <InputSelect id="Category" @bind-Value="booking.TypeBooking"> 
+            @foreach (var type in bookingtypecategories)
+            {
+                <option value="@type">@Booking.GetLabel(type)</option>
+            }
+        </InputSelect>
+    </div>
+    
+    @if (booking.TypeBooking == Booking.BookingType.Abonnement)
+    {
+        <div class="col-md-12 mb-3">
+            <label for="daylist">Dato for abonnement pudsning</label>
+            <InputSelect id="daylist" @bind-Value="booking.Day"> 
+                @foreach (var cat in daycategories)
+                {
+                    <option value="@cat">@cat</option>
+                }
+            </InputSelect>
+        </div>
+    }  else if (booking.TypeBooking == Booking.BookingType.EnkeltBooking)
+    {
+        <label for="dato">Dato for enkeltpudsning</label>
+        <InputDate @bind-Value="worktask.Date" class="form-control" />
+    }
+    <div class="form-check mb-3">
+        <InputCheckbox id="Indenfor" @bind-Value="booking.InsideJob" class="form-check-input"/>
+        <label class="form-check-label" for="Indenfor">
+            Pudsning indenfor
+        </label>
+    </div>
+    
+    <div class="col-12 mb-3">
+        <button type="submit" class="btn btn-primary" >Opret Booking</button>
+    </div>
+    
+    <div class="col-12 mb-3">
+        <button type="reset" class="btn btn-primary">Reset</button>
+    </div>
+    
+</EditForm> 
+
+
+<EditForm Model="@window"  OnValidSubmit="@HandleWindowSubmit" class="row p-3">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    
+    <div class="col-md-12 mb-3">
+        <label for="Category">Vindue Type</label>
+        <InputSelect id="Type" @bind-Value="window.Type">
+            @foreach (var type in windowtypecategories)
+            {
+                <option value="@type">@type.GetLabel()</option>
+            }
+        </InputSelect>
+    </div>
+    
+    <div class="col-md-12 mb-3">
+        <label for="Category">Vindue lokation</label>
+        <InputSelect id="Location" @bind-Value="window.Location">
+            @foreach (var location in windowlocationcategories)
+            {
+                <option value="@location">@location.GetLabel()</option>
+            }
+        </InputSelect>
+    </div>
+    
+    <div class="col-12 mb-3">
+        <button type="submit" class="btn btn-primary" >Tilføj vindue</button>
+    </div>
+    
+    <div class="col-12 mb-3">
+        <button type="reset" class="btn btn-primary">Reset</button>
+    </div>
+    
+</EditForm> 
+
+@code {
+    
+    private Booking booking = new();
+    
+    private WorkTask worktask = new();
+    
+    private List<string> daycategories = new List<string> { "Mandag","Tirsdag","Onsdag","Torsdag","Fredag","Lørdag","Søndag" };
+    
+    private List<string> bookingcategories = new List<string> { "Abonnement", "Enkelt Booking"};
+    
+    private async Task HandleSubmit()
+    {
+        booking.CustomerId = customer.Id;
+        worktask.BookingId = booking.Id;
+        worktask.InsideJob = booking.InsideJob;
+        worktask.Date = new DateTime(2025, 12, 1, 14, 30, 0);
+        worktask.Worker = new Worker
+        {
+            Username = "lucas",
+            Password = "Lucas",
+            Admin = true,
+            Name = "lucas",
+            PhoneNumber = "123123",
+            Mail = "lucas@mail.com"
+        };
+        
+        //Sets status to aktiv
+        booking.Status = "afventer";
+        Console.WriteLine("handle submit");
+        
+        //Sends the ready Booking object booking to BookingService
+        bookingService.Add(booking);
+        
+        //Add Velux vindue håndtering
+        //if (veluxwindow) {booking.InsideJob = true}
+        
+        //adding worktask when making booking, should maybe be different
+        worktaskService.Add(worktask);
+        
+        //Refreshes the current Booking object booking to prepare for new booking 
+        booking = new Booking();
+        worktask = new WorkTask();
+    }
+    private List<Booking.BookingType> bookingtypecategories = Enum.GetValues<Booking.BookingType>().ToList();
+    private List<WindowType> windowtypecategories = Enum.GetValues<WindowType>().ToList();
+    private List<WindowLocation> windowlocationcategories = Enum.GetValues<WindowLocation>().ToList();
+    WindowType windowtypes;
+    WindowLocation windowlocations;
+    
+    private Window window = new Window
+    {
+        Type = WindowType.Dannebrog,     
+        Location = WindowLocation.FoersteEtage,
+        Price = 12000               
+    };
+    
+    protected override async Task OnInitializedAsync()
+    {
+        
+    }
+
+    
+    private async Task HandleWindowSubmit()
+    {
+        window.Price = window.CalculatePrice();
+        booking.Windows.Add(window);
+        worktask.Windows.Add(window);
+        window = new Window();    
+    }
+    
+    private Customer customer = new Customer();
+
+    private void HandleCustomerSubmit()
+    {
+        //if logged in Username = UserState.Name, Password = UserState.Password
+        customer.Usertype = User.UserType.Customer;
+        customerService.Add(customer);
+    }
+    
+}
