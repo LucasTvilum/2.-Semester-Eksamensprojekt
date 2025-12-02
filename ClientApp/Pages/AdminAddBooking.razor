@@ -143,6 +143,39 @@
 <h3>Price Calculator</h3>
 
 <WindowPriceCalculator Booking="@booking" />
+<EditForm Model="@window"  OnValidSubmit="@HandleWindowSubmit" class="row p-3">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    
+    <div class="col-md-12 mb-3">
+        <label for="Category">Vindue Type</label>
+        <InputSelect id="Type" @bind-Value="window.Type">
+            @foreach (var type in windowtypecategories)
+            {
+                <option value="@type">@type.Name</option>
+            }
+        </InputSelect>
+    </div>
+    
+    <div class="col-md-12 mb-3">
+        <label for="Category">Vindue lokation</label>
+        <InputSelect id="Location" @bind-Value="window.Location">
+            @foreach (var location in windowlocationcategories)
+            {
+                <option value="@location">@location.Name</option>
+            }
+        </InputSelect>
+    </div>
+    
+    <div class="col-12 mb-3">
+        <button type="submit" class="btn btn-primary" >Tilføj vindue</button>
+    </div>
+    
+    <div class="col-12 mb-3">
+        <button type="reset" class="btn btn-primary">Reset</button>
+    </div>
+    
+</EditForm> 
 
 @code {
     
@@ -188,21 +221,22 @@
         worktask = new WorkTask();
     }
     private List<Booking.BookingType> bookingtypecategories = Enum.GetValues<Booking.BookingType>().ToList();
-    private List<WindowType> windowtypecategories = Enum.GetValues<WindowType>().ToList();
-    private List<WindowLocation> windowlocationcategories = Enum.GetValues<WindowLocation>().ToList();
+    private List<WindowType> windowtypecategories = new List<WindowType>();
+    private List<WindowLocation> windowlocationcategories = new List<WindowLocation>();
     WindowType windowtypes;
     WindowLocation windowlocations;
     
     private Window window = new Window
     {
-        Type = WindowType.Dannebrog,     
-        Location = WindowLocation.FoersteEtage,
-        Price = 12000               
+        Type = new WindowType(),
+        Location = new WindowLocation(),
+        Price = 12000
     };
     
     protected override async Task OnInitializedAsync()
     {
-        
+        windowtypecategories = await windowService.GetAllWindowTypes();
+        windowlocationcategories = await windowService.GetAllWindowLocations(); 
     }
     
     private async Task HandleWindowSubmit()
