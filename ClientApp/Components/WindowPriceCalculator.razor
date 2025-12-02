@@ -1,0 +1,131 @@
+@using Core.Models
+
+<div class="row p-3">
+
+    <!-- LOCATION OVERVIEW SECTIONS -->
+    <div class="locations-container">
+        @foreach (var loc in Enum.GetValues<WindowLocation>())
+        {
+            <div class="location-box">
+
+                <!-- CLICKABLE HEADER -->
+                <div class="location-header" @onclick="() => SelectLocation(loc)">
+                    <span>@Window.GetLabelLocation(loc)</span>
+                    <span class="arrow">@(openLocations.Contains(loc) ? "▲" : "▼")</span>
+                </div>
+
+                <!-- ONLY VISIBLE IF SELECTED -->
+                @if (openLocations.Contains(loc))
+                {
+                    <div class="location-content">
+                        @foreach (var wc in windowCounts.Where(x => x.Location == loc && x.Count > 0))
+                        {
+                            <div class="window-summary">
+                                <img src="@Window.GetImage(wc.Type)" />
+                                <div class="count">@wc.Count</div>
+                            </div>
+                        }
+
+                        <!-- IF NO WINDOWS IN LOCATION -->
+                        @if (!windowCounts.Any(x => x.Location == loc && x.Count > 0))
+                        {
+                            <div class="empty-info">Ingen vinduer tilføjet</div>
+                        }
+                    </div>
+                }
+
+            </div>
+        }
+    </div>
+
+    <!-- SELECTED LOCATION WINDOW BUTTONS -->
+    <h3>@Window.GetLabelLocation(selectedLocation)</h3>
+
+    <div class="window-buttons">
+        @foreach (var wc in windowCounts.Where(x => x.Location == selectedLocation))
+        {
+            <div class="window-type-block">
+                <img src="@Window.GetImage(wc.Type)" />
+                <div>@Window.GetLabelType(wc.Type)</div>
+
+                <div class="counter">
+                    <button type="button" @onclick="() => Decrease(wc)" disabled="@(wc.Count == 0)">-</button>
+                    <span>@wc.Count</span>
+                    <button type="button" @onclick="() => Increase(wc)">+</button>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- TOTAL PRICE -->
+    <div class="total-box">
+        Total: @TotalPrice kr
+    </div>
+</div>
+
+@code {
+    [Parameter] public Booking Booking { get; set; } = new();
+    private WindowLocation selectedLocation = WindowLocation.StueEtage;
+    
+    private HashSet<WindowLocation> openLocations = new();
+
+    private List<WindowCount> windowCounts = new();
+
+    private decimal TotalPrice => Booking.Windows.Sum(w => w.Price);
+
+    protected override void OnInitialized()
+    {
+        windowCounts =
+            (from type in Enum.GetValues(typeof(WindowType)).Cast<WindowType>()
+             from loc in Enum.GetValues(typeof(WindowLocation)).Cast<WindowLocation>()
+             select new WindowCount
+             {
+                 Type = type,
+                 Location = loc,
+                 Count = 0
+             }).ToList();
+    }
+
+    private void SelectLocation(WindowLocation loc)
+    {
+        if (openLocations.Contains(loc))
+            openLocations.Remove(loc);
+        else
+            openLocations.Add(loc);
+
+        selectedLocation = loc;
+    }
+    private void Increase(WindowCount wc)
+    {
+        wc.Count++;
+
+        var w = new Window
+        {
+            Type = wc.Type,
+            Location = wc.Location,
+            Price = new Window { Type = wc.Type, Location = wc.Location }.CalculatePrice()
+        };
+
+        Booking.Windows.Add(w);
+    }
+
+    private void Decrease(WindowCount wc)
+    {
+        if (wc.Count <= 0) return;
+
+        wc.Count--;
+
+        var toRemove = Booking.Windows
+            .LastOrDefault(w => w.Type == wc.Type && w.Location == wc.Location);
+
+        if (toRemove != null)
+            Booking.Windows.Remove(toRemove);
+    }
+
+    public class WindowCount
+    {
+        public WindowType Type { get; set; }
+        public WindowLocation Location { get; set; }
+        public int Count { get; set; }
+    }
+}

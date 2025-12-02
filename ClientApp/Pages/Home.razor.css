@@ -1,0 +1,92 @@
+.home-container {
+    position: relative;
+    width: 100%;
+}
+
+/* TOP BAR */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    background: #e6e6e6;
+    position: relative;
+}
+
+/* Burger icon */
+.burger-menu {
+    width: 28px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 18px;
+}
+
+.burger-menu div {
+    width: 100%;
+    height: 3px;
+    background: black;
+    border-radius: 2px;
+}
+
+/* Logo */
+.logo {
+    font-size: 32px;
+    font-weight: 400;
+    font-family: 'Georgia', serif;
+}
+
+/* Profile icon */
+.profile-icon img {
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+}
+
+/* PROFILE DROPDOWN */
+.profile-menu {
+    position: absolute;
+    right: 20px;
+    top: 60px;
+    background: #f7f7f7;
+    border: 1px solid #ccc;
+    padding: 10px 14px;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 10;
+}
+
+.profile-menu button {
+    background: white;
+    border: 1px solid #bbb;
+    padding: 6px 10px;
+    cursor: pointer;
+}
+
+/* HERO IMAGE */
+.hero {
+    position: relative;
+}
+
+.hero-img {
+    width: 100%;
+    height: auto;
+}
+
+/* BEREGN PRIS BUTTON */
+.cta-button {
+    position: absolute;
+    left: 50%;
+    bottom: 40px;
+    transform: translateX(-50%);
+    background: #85f3b5;
+    padding: 14px 26px;
+    border-radius: 999px;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}

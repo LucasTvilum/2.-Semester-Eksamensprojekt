@@ -1,4 +1,5 @@
 @using System.Diagnostics
+@using ClientApp.Components
 @using Core.Models
 @using ClientApp.Service
 @using Microsoft.AspNetCore.Components.Forms
@@ -139,7 +140,9 @@
     
 </EditForm> 
 
+<h3>Price Calculator</h3>
 
+<WindowPriceCalculator Booking="@booking" />
 <EditForm Model="@window"  OnValidSubmit="@HandleWindowSubmit" class="row p-3">
     <DataAnnotationsValidator />
     <ValidationSummary />
@@ -235,7 +238,6 @@
         windowtypecategories = await windowService.GetAllWindowTypes();
         windowlocationcategories = await windowService.GetAllWindowLocations(); 
     }
-
     
     private async Task HandleWindowSubmit()
     {

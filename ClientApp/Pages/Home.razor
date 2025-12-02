@@ -1,6 +1,73 @@
 ﻿@page "/Home"
-<h3>Home Page</h3>
-<h4>Hello World!</h4>
+@inject NavigationManager NavigationManager
+
+<div class="home-container">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+
+        <!-- Burger menu (3 streger) -->
+        <div class="burger-menu" @onclick="ToggleMenu">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+
+        <!-- Logo (Tvilum) -->
+        <div class="logo">Tvilum</div>
+
+        <!-- Profile icon -->
+        <div class="profile-icon" @onclick="ToggleProfile">
+            <img src="image/Logo/ProfileLogo.png" />
+        </div>
+
+        <!-- Profile dropdown -->
+        @if (showProfileMenu)
+        {
+            <div class="profile-menu">
+                <button @onclick="GoToRegister">Opret bruger</button>
+                <button @onclick="GoToLogin">Log ind</button>
+            </div>
+        }
+    </div>
+
+    <!-- Background image -->
+    <div class="hero">
+        <img src="image/Logo/HomeBillede.png" class="hero-img" />
+
+        <!-- CTA Button -->
+        <button class="cta-button" @onclick="GoToCalculator">
+            BEREGN PRIS
+        </button>
+    </div>
+
+</div>
+
 @code {
-    
+    private bool showProfileMenu = false;
+
+    void ToggleProfile()
+    {
+        showProfileMenu = !showProfileMenu;
+    }
+
+    void ToggleMenu()
+    {
+        // TODO: open sidebar (kan laves senere)
+    }
+
+    void GoToCalculator()
+    {
+        NavigationManager.NavigateTo("/PriceCalculator");
+    }
+
+    void GoToRegister()
+    {
+        NavigationManager.NavigateTo("/register");
+    }
+
+    void GoToLogin()
+    {
+        NavigationManager.NavigateTo("/Login");
+    }
 }
