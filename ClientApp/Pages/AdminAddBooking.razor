@@ -1,4 +1,5 @@
 @using System.Diagnostics
+@using ClientApp.Components
 @using Core.Models
 @using ClientApp.Service
 @using Microsoft.AspNetCore.Components.Forms
@@ -139,40 +140,9 @@
     
 </EditForm> 
 
+<h3>Price Calculator</h3>
 
-<EditForm Model="@window"  OnValidSubmit="@HandleWindowSubmit" class="row p-3">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-    
-    <div class="col-md-12 mb-3">
-        <label for="Category">Vindue Type</label>
-        <InputSelect id="Type" @bind-Value="window.Type">
-            @foreach (var type in windowtypecategories)
-            {
-                <option value="@type">@type.GetLabel()</option>
-            }
-        </InputSelect>
-    </div>
-    
-    <div class="col-md-12 mb-3">
-        <label for="Category">Vindue lokation</label>
-        <InputSelect id="Location" @bind-Value="window.Location">
-            @foreach (var location in windowlocationcategories)
-            {
-                <option value="@location">@location.GetLabel()</option>
-            }
-        </InputSelect>
-    </div>
-    
-    <div class="col-12 mb-3">
-        <button type="submit" class="btn btn-primary" >Tilføj vindue</button>
-    </div>
-    
-    <div class="col-12 mb-3">
-        <button type="reset" class="btn btn-primary">Reset</button>
-    </div>
-    
-</EditForm> 
+<WindowPriceCalculator Booking="@booking" />
 
 @code {
     
@@ -234,7 +204,6 @@
     {
         
     }
-
     
     private async Task HandleWindowSubmit()
     {
