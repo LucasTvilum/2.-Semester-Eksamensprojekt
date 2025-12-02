@@ -18,9 +18,11 @@ public class Program
         builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
         builder.Services.AddBlazoredLocalStorage();
         builder.Services.AddSingleton<IBooking, BookingService>();
-        builder.Services.AddSingleton<IWindow, WindowService>();
+        //builder.Services.AddSingleton<IWindow, WindowService>();
         builder.Services.AddSingleton<IUser, UserService>();
         builder.Services.AddSingleton<ICustomer, CustomerService>();
+        builder.Services.AddSingleton<WindowService>();
+        ;
   
 
         await builder.Build().RunAsync();       

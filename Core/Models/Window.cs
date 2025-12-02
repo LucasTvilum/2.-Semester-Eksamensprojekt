@@ -60,4 +60,18 @@ public class Window
         Price = basePrice * multiplier;
         return Price;
     }
+    public static string GetImage(WindowType type)
+    {
+        return type switch
+        {
+            WindowType.Standard => "image/windows/standard.png",
+            WindowType.Palae => "image/windows/palae.png",
+            WindowType.Dannebrog => "image/windows/dannebrog.png",
+            WindowType.Matteret => "image/windows/matteret.png",
+            WindowType.Bondehus => "image/windows/bondehus.png",
+            WindowType.Sidehaengt => "image/windows/sidehaengt.png",
+            WindowType.Stort => "image/windows/stort.png",
+            _ => "image/windows/default.png"
+        };
+    }
 }
