@@ -78,7 +78,7 @@
 
 /* BEREGN PRIS BUTTON */
 .cta-button {
-    position: sticky;
+    position: absolute;
     left: 50%;
     bottom: 40px;
     transform: translateX(-50%);
