@@ -220,8 +220,8 @@
             if (windowCounts == null || windowCounts.Count == 0)
             {
                 windowCounts =
-                    (from type in Enum.GetValues(typeof(WindowType)).Cast<WindowType>()
-                        from loc in Enum.GetValues(typeof(WindowLocation)).Cast<WindowLocation>()
+                    (from type in windowtypecategories
+                        from loc in windowlocationcategories
                         select new WindowCount
                         {
                             Type = type,

@@ -52,7 +52,7 @@
 </EditForm> 
 <h3>Total: @totalPrice kr</h3>
     
-@foreach (WindowLocation loc in Enum.GetValues(typeof(WindowLocation)))
+@foreach (WindowLocation loc in windowlocationcategories)
 {
     <h4>@loc.Name</h4>
     @foreach (var wc in windowCounts.Where(x => x.Location == loc && x.Count > 0))
@@ -79,8 +79,8 @@
         if (windowCounts == null || windowCounts.Count == 0)
         {
             windowCounts =
-                    (from type in Enum.GetValues(typeof(WindowType)).Cast<WindowType>()
-                        from loc in Enum.GetValues(typeof(WindowLocation)).Cast<WindowLocation>()
+                    (from type in windowtypecategories
+                        from loc in windowlocationcategories
                         select new WindowCount
                         {
                             Type = type,
