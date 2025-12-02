@@ -12,7 +12,6 @@ namespace ServerApp.Controllers
 
 
         private IUserRepository userRepo;
-
         public UserController(IUserRepository userRepo) {
             this.userRepo = userRepo;
         }
@@ -40,8 +39,8 @@ namespace ServerApp.Controllers
 
             if (matchinguser == null)
                 return Unauthorized("Invalid username or password.");
-
-            return Ok(user);
+            
+            return Ok(matchinguser);
         }
         
 

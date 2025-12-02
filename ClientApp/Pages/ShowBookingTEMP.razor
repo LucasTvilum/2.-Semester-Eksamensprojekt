@@ -1,52 +1,72 @@
 @page "/ShowBookingTEMP"
 @using ClientApp.Service
 @using Core.Models
+@inject UserState userState
 <h3>Alle bookings</h3>
 
-<ul class="list-group">
-    
-    <li class="list-group-item d-flex justify-content-between align-items-center fw-bold bg-light">
-        <div>Day</div>
-        <div>InsideInterval</div>
-        <div>InsideJob</div>
-        <div>NotesCustomer</div>
-        <div>NotesWindowCleaner</div>
-        <div>OutdoorInterval</div>
-        <div>Price</div>
-        <div>Status</div>
-        
-        <div></div>
-    </li>
-    
-    @if(bookinglist != null){foreach (var booking in bookinglist)
-    {
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>@booking.Day</div>
-            <div>@booking.InsideInterval</div>
-            <div>@booking.InsideJob</div>
-            <div>@booking.NotesCustomer</div>
-            <div>@booking.NotesWindowCleaner</div>
-            <div>@booking.OutdoorInterval</div>
-            <div>@booking.Price</div>
-            <div>@booking.Status</div>
-            <button class="btn btn-sm btn-primary" 
-                    @onclick="() => OpenModal(booking)">
-                Booking Vinduer
-            </button>
-            
-        </li>
-    }
-    }
-</ul>
+@if (!userState.IsWorker)
+{
+    <p>You are not allowed here. (not a worker)</p>
+}
 
-@if (showModal)
+<table class="table table-striped table-bordered align-middle">
+    <thead class="table-light">
+    <tr>
+        <th>Day</th>
+        <th>InsideInterval</th>
+        <th>InsideJob</th>
+        <th>NotesCustomer</th>
+        <th>NotesWindowCleaner</th>
+        <th>OutdoorInterval</th>
+        <th>Price</th>
+        <th>Status</th>
+        <th>Vinduer</th>
+        <th>Bookingstatus</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    @if (bookinglist != null)
+    {
+        @foreach (var booking in bookinglist)
+        {
+            <tr>
+                <td>@booking.Day</td>
+                <td>@booking.InsideInterval</td>
+                <td>@booking.InsideJob</td>
+                <td>@booking.NotesCustomer</td>
+                <td>@booking.NotesWindowCleaner</td>
+                <td>@booking.OutdoorInterval</td>
+                <td>@booking.Price</td>
+                <td>@booking.Status</td>
+
+                <td>
+                    <button class="btn btn-sm btn-primary"
+                            @onclick="() => OpenModalWindows(booking)">
+                        Vis Vinduer
+                    </button>
+                </td>
+
+                <td>
+                    <button class="btn btn-sm btn-warning"
+                            @onclick="() => OpenModalBooking(booking)">
+                        Ændrer Status
+                    </button>
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+@if (showModalWindows)
 {
     <div class="modal d-block" style="background-color: rgba(0,0,0,0.5);">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5>Vinduer</h5>
-                    <button class="btn-close" @onclick="CloseModal"></button>
+                    <button class="btn-close" @onclick="CloseModalWindows"></button>
                 </div>
                 <div class="modal-body">
                     @if (selectedBooking.Windows != null)
@@ -58,7 +78,40 @@
                     }
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" @onclick="CloseModal">Close</button>
+                    <button class="btn btn-secondary" @onclick="CloseModalWindows">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (showModalBooking)
+{
+    <div class="modal d-block" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Vinduer</h5>
+                    <button class="btn-close" @onclick="CloseModalBooking"></button>
+                </div>
+                <div class="modal-body">
+                    @if (selectedBooking.Status != null)
+                    {
+                        <h2>Vinduer</h2>
+                        <h1>@selectedBooking.Status</h1>
+                        <div class="col-md-12 mb-3">
+                            <label for="Category">Booking Status</label>
+                            <InputSelect id="Category" @bind-Value="selectedBooking.Status"> 
+                                @foreach (var cat in statuscategories)
+                                {
+                                    <option value="@cat">@cat</option>
+                                }
+                            </InputSelect>
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseModalBooking">Close</button>
                 </div>
             </div>
         </div>
@@ -78,18 +131,39 @@
     private List<Window> windowlist = new List<Window>();
     private Window[] windowArray;
     
-    private bool showModal = false;
+    private bool showModalWindows = false;
+    private bool showModalBooking = false;
     private Booking selectedBooking;
+    
+    private List<string> statuscategories = new List<string> { "Godkendt", "Afventer","Afvist","Færdig","Aktiv"};
 
-    private void OpenModal(Booking booking)
+    private void OpenModalWindows(Booking booking)
     {
         selectedBooking = booking;
-        showModal = true;
+        showModalWindows = true;
     }
 
-    private void CloseModal()
+    private void CloseModalWindows()
     {
-        showModal = false;
+        showModalWindows = false;
+    }
+    
+    private void OpenModalBooking(Booking booking)
+    {
+        selectedBooking = booking;
+        showModalBooking = true;
+    }
+
+    private void CloseModalBooking()
+    {
+        showModalBooking = false;
+    }
+    
+
+
+    private async Task UpdateBookingStatus()
+    {
+        await bookingService.UpdateBooking(selectedBooking);
     }
 
     
