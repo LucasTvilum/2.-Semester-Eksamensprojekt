@@ -23,7 +23,6 @@ public class Program
         builder.Services.AddSingleton<IWindow, WindowService>();
         builder.Services.AddSingleton<IUser, UserService>();
         builder.Services.AddSingleton<ICustomer, CustomerService>();
-  
 
         await builder.Build().RunAsync();       
     }

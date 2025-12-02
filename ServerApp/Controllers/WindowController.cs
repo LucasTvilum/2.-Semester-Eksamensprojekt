@@ -32,8 +32,8 @@ namespace ServerApp.Controllers
             Console.WriteLine("Add window in controller");
             windowRepo.Add(window);
         }
-
-
+        
+        
         [HttpPut("{id}")]
         public ActionResult<Window> Update(string id, [FromBody] Window window)
         {

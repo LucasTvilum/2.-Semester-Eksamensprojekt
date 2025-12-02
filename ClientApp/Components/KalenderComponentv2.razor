@@ -1,0 +1,88 @@
+@using System.Globalization
+
+
+<h3>Kalender</h3>
+
+<div class="calendar-wrapperr">
+
+    <div class="calendar-headerr">
+        <h2>@CurrentDate.ToString("MMMM yyyy", CultureInfo.GetCultureInfo("da-DK"))</h2>
+
+        <div class="nav-buttonss">
+            <span class="nav-arroww" @onclick="PreviousMonth">‹</span>
+            <span class="nav-arroww" @onclick="NextMonth">›</span>
+        </div>
+    </div>
+
+    <div class="calendar-gridd">
+        @foreach (var dayName in DayNames)
+        {
+            <div class="day-namee">@dayName</div>
+        }
+
+        @foreach (var day in Days)
+        {
+            <div class="day-celll @(day.Month != CurrentDate.Month ? "inactivee" : "")"
+                 @onclick="() => dayCell(day)">
+                <span class="day-numberr">@day.Day</span>
+
+
+                @if (EventDays.Contains(day.Day) && day.Month == CurrentDate.Month)
+                {
+                    <div class="event-dott"></div>
+                }
+
+            </div>
+        }
+    </div>
+</div>
+
+
+@code {
+    private DateTime CurrentDate = DateTime.Today;
+    private List<DateTime> Days = new();
+    private string[] DayNames = new[] { "Ma", "Tir", "Ons", "Tor", "Fr", "Lør", "Søn" };
+
+    // Grønne prikker fra billedet (du kan ændre dem)
+    [Parameter]
+    public List<int> EventDays { get; set; } = new();
+    
+    
+    protected override void OnInitialized()
+    {
+        LoadCalendar();
+    }
+
+    private void LoadCalendar()
+    {
+        Days.Clear();
+
+        var firstDay = new DateTime(CurrentDate.Year, CurrentDate.Month, 1);
+        int offset = ((int)firstDay.DayOfWeek + 6) % 7;
+
+        var startDate = firstDay.AddDays(-offset);
+
+        for (int i = 0; i < 42; i++)
+        {
+            Days.Add(startDate.AddDays(i));
+        }
+    }
+
+    private void PreviousMonth()
+    {
+        CurrentDate = CurrentDate.AddMonths(-1);
+        LoadCalendar();
+    }
+
+    private void NextMonth()
+    {
+        CurrentDate = CurrentDate.AddMonths(1);
+        LoadCalendar();
+    }
+
+    private void dayCell(DateTime Day)
+    {
+        Console.WriteLine("virker datoen i dag" + " " + Day);
+        
+    }
+}
