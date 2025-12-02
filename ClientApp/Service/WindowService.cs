@@ -57,5 +57,10 @@ public class WindowService : IWindow
     {
         await http.PutAsJsonAsync<Window>($"{url}/api/window/{window.Id}", window);
     }
-    
+
+    public async Task<decimal> CalculatePrice(List<Window> windows)
+    {
+        var response = await http.PostAsJsonAsync($"{url}/api/window/calculate", new { Windows = windows });
+        return await response.Content.ReadFromJsonAsync<decimal>();
+    }
 }
