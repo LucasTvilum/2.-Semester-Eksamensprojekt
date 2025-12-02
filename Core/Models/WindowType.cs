@@ -3,13 +3,11 @@ namespace Core.Models;
 
 //Kan eventuelt flyttes ind i Window modelklasse, men så kan den kun bruges via window objekt
 
-public enum WindowType
+public class WindowType
 {
-    Standard,
-    Sidehaengt,
-    Dannebrog,
-    Bondehus,
-    Stort,
-    Palae,
-    Matteret
+public string Id { get; set; } = Guid.NewGuid().ToString();
+public string Name { get; set; } = "";         // e.g. "Dannebrog"
+public string ImagePath { get; set; } = "";
+public decimal BasePrice { get; set; } = 0;     // admin can edit
+public bool IsActive { get; set; } = true; // soft delete support
 }

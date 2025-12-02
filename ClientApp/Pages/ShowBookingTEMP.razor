@@ -73,7 +73,7 @@
                     {
                         foreach (var window in selectedBooking.Windows)
                         {
-                            <li>@window.Type.GetLabel() - @window.Location.GetLabel()</li>
+                            <li>@window.Type.Name - @window.Location.Name</li>
                         }
                     }
                 </div>
@@ -125,6 +125,9 @@
     
     [Inject] private IWindow windowService { get; set; }
     
+    private List<WindowType> windowtypecategories = new List<WindowType>();
+    private List<WindowLocation> windowlocationcategories = new List<WindowLocation>();
+    
     private List<Booking> bookinglist = new List<Booking>();
     private Booking[] bookingArray;
     
@@ -170,6 +173,9 @@
     
     protected override async Task OnInitializedAsync()
     {
+        windowtypecategories = await windowService.GetAllWindowTypes();
+        windowlocationcategories = await windowService.GetAllWindowLocations();
+        
         windowArray = await windowService.GetAll();
         windowlist = windowArray.ToList();
         bookingArray = await bookingService.GetAll();
