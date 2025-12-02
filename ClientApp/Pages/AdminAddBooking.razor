@@ -76,19 +76,19 @@
     <ValidationSummary />
     
     <div class="col-md-12 mb-3">
-        <label for="Name">Interval Udenfor</label>
-        <InputNumber id="Name" @bind-Value="booking.OutdoorInterval" class="form-control" />
+        <label for="IntervalOutside">Interval Udenfor</label>
+        <InputNumber id="IntervalOutside" @bind-Value="booking.OutdoorInterval" class="form-control" />
     </div>
     
     <div class="col-md-12 mb-3">
-        <label for="Name">Interval Indenfor</label>
-        <InputNumber id="Name" @bind-Value="booking.InsideInterval" class="form-control" />
+        <label for="IntervalInside">Interval Indenfor</label>
+        <InputNumber id="IntervalInside" @bind-Value="booking.InsideInterval" class="form-control" />
     </div>
 
     
     <div class="col-md-12 mb-3">
-        <label for="Name">Noter</label>
-        <InputText id="Name" @bind-Value="booking.NotesCustomer" class="form-control" />
+        <label for="NotesCustomer">Noter</label>
+        <InputText id="NotesCustomer" @bind-Value="booking.NotesCustomer" class="form-control" />
     </div>
     
     <div class="col-md-6 mb-3">
@@ -97,25 +97,31 @@
     </div>
     
     <div class="col-md-12 mb-3">
-        <label for="Category">Dag for pudsning</label>
-        <InputSelect id="Category" @bind-Value="booking.Day"> 
-            @foreach (var cat in daycategories)
-            {
-                <option value="@cat">@cat</option>
-            }
-        </InputSelect>
-    </div>
-    
-    <div class="col-md-12 mb-3">
         <label for="Category">Booking type</label>
         <InputSelect id="Category" @bind-Value="booking.TypeBooking"> 
-            @foreach (var cat in bookingcategories)
+            @foreach (var type in bookingtypecategories)
             {
-                <option value="@cat">@cat</option>
+                <option value="@type">@Booking.GetLabel(type)</option>
             }
         </InputSelect>
     </div>
     
+    @if (booking.TypeBooking == Booking.BookingType.Abonnement)
+    {
+        <div class="col-md-12 mb-3">
+            <label for="daylist">Dato for abonnement pudsning</label>
+            <InputSelect id="daylist" @bind-Value="booking.Day"> 
+                @foreach (var cat in daycategories)
+                {
+                    <option value="@cat">@cat</option>
+                }
+            </InputSelect>
+        </div>
+    }  else if (booking.TypeBooking == Booking.BookingType.EnkeltBooking)
+    {
+        <label for="dato">Dato for enkeltpudsning</label>
+        <InputDate @bind-Value="worktask.Date" class="form-control" />
+    }
     <div class="form-check mb-3">
         <InputCheckbox id="Indenfor" @bind-Value="booking.InsideJob" class="form-check-input"/>
         <label class="form-check-label" for="Indenfor">
@@ -211,7 +217,7 @@
         booking = new Booking();
         worktask = new WorkTask();
     }
-    
+    private List<Booking.BookingType> bookingtypecategories = Enum.GetValues<Booking.BookingType>().ToList();
     private List<WindowType> windowtypecategories = Enum.GetValues<WindowType>().ToList();
     private List<WindowLocation> windowlocationcategories = Enum.GetValues<WindowLocation>().ToList();
     WindowType windowtypes;
