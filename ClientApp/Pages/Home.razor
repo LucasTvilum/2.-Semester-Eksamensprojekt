@@ -1,5 +1,5 @@
 ﻿@page "/Home"
-@inject NavigationManager NavigationManager
+@inject NavigationManager navigationManager
 
 <div class="home-container">
 
@@ -58,16 +58,16 @@
 
     void GoToCalculator()
     {
-        NavigationManager.NavigateTo("/PriceCalculator");
+        navigationManager.NavigateTo("/PriceCalculator");
     }
 
     void GoToRegister()
     {
-        NavigationManager.NavigateTo("/register");
+        navigationManager.NavigateTo("/register");
     }
 
     void GoToLogin()
     {
-        NavigationManager.NavigateTo("/Login");
+        navigationManager.NavigateTo("/Login");
     }
 }
