@@ -38,9 +38,11 @@ if (booking == null)
 }
 else
 {
-<h3>Kunde fundet: @currentUser.Username</h3>
+    <h3>Kunde fundet: @currentUser.Username</h3>
+    
+    <h3>Pris LOADER IKKE ALTID: @booking.Price</h3>
 
-<EditForm Model="@booking"  OnValidSubmit="@HandleSubmit" class="row p-3">
+    <EditForm Model="@booking"  OnValidSubmit="@HandleSubmit" class="row p-3">
     <DataAnnotationsValidator />
     <ValidationSummary />
     
@@ -69,11 +71,6 @@ else
     <div class="col-md-12 mb-3">
         <label for="NotesCustomer">Noter</label>
         <InputText id="NotesCustomer" @bind-Value="booking.NotesCustomer" class="form-control" />
-    </div>
-    
-    <div class="col-md-6 mb-3">
-        <label for="Price">Pris</label>
-        <InputNumber id="Price" @bind-Value="booking.Price" class="form-control" />
     </div>
 
         <div class="col-md-12 mb-3">
@@ -143,6 +140,7 @@ else
 
     private void HandleSubmit()
     {
+        // user -> customer -> booking.CustomerId mangler
         bookingService.Add(booking);
         showModalBooking = true;
     }
@@ -159,20 +157,20 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-
-        var bookinglist = await bookingService.GetAll();
-
-        booking = bookinglist[0];
-        
         isLoading = true;
         
-        var loadedBooking = await localStorage.GetItemAsync<Booking>("priceResult");
+        var loadedBooking = await localStorage.GetItemAsync<Booking>("booking");
         
         
 
         if (loadedBooking != null)
         {
             booking = loadedBooking;
+
+            foreach (var VARIABLE in booking.Windows)
+            {
+                booking.Price += VARIABLE.Price;
+            }
         }
         
         
