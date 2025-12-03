@@ -1,8 +1,11 @@
 ﻿@page "/PriceCalculator"
 @using Core.Models
 @using ClientApp.Components
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 <WindowPriceCalculator Booking="@booking" />
+
+
 
 @code {
     private Booking booking = new();
