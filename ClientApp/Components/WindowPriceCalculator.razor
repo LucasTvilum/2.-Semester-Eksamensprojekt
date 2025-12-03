@@ -1,0 +1,160 @@
+@using Core.Models
+@using ClientApp.Service
+@inject IWindow windowservice
+@inject NavigationManager nav
+
+<div class="row p-3">
+    @if (locations == null || windowTypes == null || !locations.Any() || !windowTypes.Any())
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+    
+        <div class="locations-container">
+            @foreach (var loc in locations)
+            {
+                <div class="location-box">
+
+                  
+                    <div class="location-header" @onclick="() => SelectLocation(loc)">
+                        <span>@loc.Name</span>
+                        <span class="arrow">@(openLocations.Contains(loc) ? "▲" : "▼")</span>
+                    </div>
+                    <!--vises kun hvis location er valgt-->
+                    @if (openLocations.Contains(loc))
+                    {
+                        <div class="location-content">
+                            @foreach (var wc in windowCounts.Where(x => x.Location == loc && x.Count > 0))
+                            {
+                                <div class="window-summary">
+                                    <img src="@wc.Type.ImagePath"/>
+                                    <div class="count">@wc.Count</div>
+                                </div>
+                            }
+                            
+                            @if (!windowCounts.Any(x => x.Location == loc && x.Count > 0))
+                            {
+                                <div class="empty-info">Ingen vinduer tilføjet</div>
+                            }
+                        </div>
+                    }
+
+                </div>
+            }
+        </div>
+        
+        <h3>@selectedLocation.Name </h3>
+
+        <div class="window-buttons">
+            @foreach (var wc in windowCounts.Where(x => x.Location == selectedLocation))
+            {
+                <div class="window-type-block">
+                    <img src="@wc.Type.ImagePath"/>
+                    <div>@wc.Type.Name </div>
+
+                    <div class="counter">
+                        <button type="button" @onclick="() => Decrease(wc)" disabled="@(wc.Count == 0)">-</button>
+                        <span>@wc.Count</span>
+                        <button type="button" @onclick="() => Increase(wc)">+</button>
+                    </div>
+                </div>
+            }
+        </div>
+        
+        <div class="total-box">
+            Total: @TotalPrice kr
+        </div>
+        
+     
+    <button class="btn btn-primary" @onclick="GoToOneTimeBooking">
+            Enkelt Booking
+        </button>
+        
+        
+    }
+</div>
+    @code {
+    [Parameter] public Booking Booking { get; set; } = new();
+    private WindowLocation selectedLocation;
+    
+    private HashSet<WindowLocation> openLocations = new();
+
+    private List<WindowCount> windowCounts = new();
+
+    private decimal TotalPrice => Booking.Windows.Sum(w => w.Price);
+
+    private List<WindowType> windowTypes = new();
+    private List<WindowLocation> locations = new();
+
+    private void GoToOneTimeBooking()
+    {
+        nav.NavigateTo("/OneTimeBooking");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // hent alle typer og lokationer fra databasen
+        windowTypes = await windowservice.GetAllWindowTypes();
+        locations = await windowservice.GetAllWindowLocations();
+
+        // initier selectedLocation til første location
+        selectedLocation = locations.FirstOrDefault();
+
+        // opbyg windowCounts ud fra DB-data
+        windowCounts = (
+            from type in windowTypes
+            from loc in locations
+            select new WindowCount
+            {
+                Type = type,
+                Location = loc,
+                Count = 0
+            }).ToList();
+    }
+
+    private void SelectLocation(WindowLocation loc)
+    {
+        if (openLocations.Contains(loc))
+            openLocations.Remove(loc);
+        else
+            openLocations.Add(loc);
+
+        selectedLocation = loc;
+    }
+    
+    private void Increase(WindowCount wc)
+    {
+        wc.Count++;
+
+        var w = new Window
+        {
+            Type = wc.Type,
+            Location = wc.Location,
+            Price = new Window { Type = wc.Type, Location = wc.Location }.CalculatePrice()
+        };
+
+        Booking.Windows.Add(w);
+    }
+
+    private void Decrease(WindowCount wc)
+    {
+        if (wc.Count <= 0) return;
+
+        wc.Count--;
+
+        var toRemove = Booking.Windows
+            .LastOrDefault(w => w.Type == wc.Type && w.Location == wc.Location);
+
+        if (toRemove != null)
+            Booking.Windows.Remove(toRemove);
+    }
+
+    public class WindowCount
+    {
+        public WindowType Type { get; set; }
+        public WindowLocation Location { get; set; }
+        public int Count { get; set; }
+    }
+    }
+    

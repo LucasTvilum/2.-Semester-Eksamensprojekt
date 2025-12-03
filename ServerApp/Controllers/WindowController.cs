@@ -10,9 +10,15 @@ namespace ServerApp.Controllers
     public class WindowController : ControllerBase
     {
         private IWindowRepository windowRepo;
+        
+        private IWindowTypeRepository windowTypeRepo;
+        
+        private IWindowLocationRepository windowLocationRepo;
 
-        public WindowController(IWindowRepository windowRepo) {
+        public WindowController(IWindowRepository windowRepo, IWindowTypeRepository windowTypeRepo, IWindowLocationRepository windowLocationRepo) {
             this.windowRepo = windowRepo;
+            this.windowTypeRepo = windowTypeRepo;
+            this.windowLocationRepo = windowLocationRepo;
         }
 
         [HttpGet]
@@ -27,10 +33,34 @@ namespace ServerApp.Controllers
             return windowRepo.GetWindowList();
         }
         
+        [HttpGet("type")]
+        public List<WindowType> GetWindowTypeList()
+        {
+            return windowTypeRepo.GetAll();
+        }
+        
+        [HttpGet("location")]
+        public List<WindowLocation> GetWindowLocationList()
+        {
+            return windowLocationRepo.GetAll();
+        }
+        
         [HttpPost]
         public void Add([FromBody]Window window) {
             Console.WriteLine("Add window in controller");
             windowRepo.Add(window);
+        }
+        
+        [HttpPost ("location")]
+        public void AddLocation([FromBody]WindowLocation windowLocation) {
+            Console.WriteLine("Add windowlocation in controller");
+            windowLocationRepo.Add(windowLocation);
+        }
+        
+        [HttpPost("type")]
+        public void AddType([FromBody]WindowType windowType) {
+            Console.WriteLine("Add windowtype in controller");
+            windowTypeRepo.Add(windowType);
         }
         
         

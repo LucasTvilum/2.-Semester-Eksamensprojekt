@@ -1,6 +1,192 @@
-﻿@page "/SubscriptionBooking"
-<h3>SubscriptionBooking</h3>
+﻿@using Core.Models
+@using ClientApp.Components
+@using ClientApp.Service
+@using Blazored.LocalStorage
+@inject NavigationManager navigationManager
+@inject ILocalStorageService localStorage
+@inject IBooking bookingService
+@page "/SubscriptionBooking"
+<h3>Opret abonnnement</h3>
+
+@if (isLoading)
+{
+    <p>Loading...</p>
+}
+else
+{
+if (booking == null)
+{
+    <h3>No Price found</h3>
+    <button class="btn btn-primary" @onclick="NavigateToPriceCalculator">
+        gå til pris udregning
+    </button>
+}
+@if (currentUser.Usertype != User.UserType.Customer)
+{
+    if (currentUser.Usertype == User.UserType.Worker)
+    {
+        <h3>user type = worker, use adminaddbooking instead</h3>
+    }
+    if (currentUser.Usertype == User.UserType.User)
+    {
+        <h3>user type = user, not registered as customer</h3>
+    }
+    
+    <button class="btn btn-primary" @onclick="NavigateToLogin">
+        Gå til Login
+    </button>
+}
+else
+{
+<h3>Kunde fundet: @currentUser.Username</h3>
+
+<EditForm Model="@booking"  OnValidSubmit="@HandleSubmit" class="row p-3">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    
+    <div class="col-md-12 mb-3">
+        <label for="IntervalOutside">Uge interval for pudsning udenfor:</label>
+        <InputSelect id="IntervalOutside" @bind-Value="booking.OutdoorInterval"> 
+            @foreach (var cat in intervalcategories)
+            {
+                <option value="@cat">@cat</option>
+            }
+        </InputSelect>
+    </div>
+    @if (booking.InsideJob == true){
+        <div class="col-md-12 mb-3">
+            <label for="IntervalInside">Uge interval for pudsning indenfor:</label>
+            <InputSelect id="IntervalInside" @bind-Value="booking.InsideInterval"> 
+                @foreach (var cat in intervalcategories)
+                {
+                    <option value="@cat">@cat</option>
+                }
+            </InputSelect>
+        </div>
+    }
+
+    
+    <div class="col-md-12 mb-3">
+        <label for="NotesCustomer">Noter</label>
+        <InputText id="NotesCustomer" @bind-Value="booking.NotesCustomer" class="form-control" />
+    </div>
+    
+    <div class="col-md-6 mb-3">
+        <label for="Price">Pris</label>
+        <InputNumber id="Price" @bind-Value="booking.Price" class="form-control" />
+    </div>
+
+        <div class="col-md-12 mb-3">
+            <label for="daylist">Dato for abonnement pudsning</label>
+            <InputSelect id="daylist" @bind-Value="booking.Day"> 
+                @foreach (var cat in daycategories)
+                {
+                    <option value="@cat">@cat</option>
+                }
+            </InputSelect>
+        </div>
+    
+    <div class="col-12 mb-3">
+        <button type="submit" class="btn btn-primary" >Opret Booking</button>
+    </div>
+    
+    
+</EditForm> 
+
+@if (showModalBooking)
+{
+    <div class="modal d-block" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Booking Oprettet!</h5>
+                    <button class="btn-close" @onclick="CloseModalBooking"></button>
+                </div>
+                <div class="modal-body">
+                    <h2>Booking bliver godkendt indenfor 2 hverdage!</h2>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseModalBooking">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+}
+}
 
 @code {
+    private Booking booking = new Booking();
+
+    private User currentUser = new User();
+
+    private bool isLoading = false;
     
+    private List<string> daycategories = new List<string> { "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag" };
+    
+    private List<int> intervalcategories = new List<int> { 2, 4, 8, 12, 24 };
+    
+    private bool showModalBooking = false;
+    
+    private void NavigateToLogin()
+    {
+        navigationManager.NavigateTo("/Login");
+    }
+
+    private void NavigateToPriceCalculator()
+    {
+        navigationManager.NavigateTo(("/PriceCalculator"));
+    }
+
+    private void HandleSubmit()
+    {
+        bookingService.Add(booking);
+        showModalBooking = true;
+    }
+
+    private void OpenModalBooking()
+    {
+        showModalBooking = true;
+    }
+
+    private async Task CloseModalBooking()
+    {
+        showModalBooking = false;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var bookinglist = await bookingService.GetAll();
+
+        booking = bookinglist[0];
+        
+        isLoading = true;
+        
+        var loadedBooking = await localStorage.GetItemAsync<Booking>("priceResult");
+        
+        
+
+        if (loadedBooking != null)
+        {
+            booking = loadedBooking;
+        }
+        
+        
+        var loadedUser = await localStorage.GetItemAsync<User>("currentUser");
+
+        if (loadedUser != null && loadedUser.Usertype != User.UserType.User)
+        {
+            Console.WriteLine("local storage succesfuld");
+            Console.WriteLine("loaded bruger type: " + User.GetLabel(loadedUser.Usertype));
+            currentUser = loadedUser;
+        }
+
+        Console.WriteLine("bruger type: " + User.GetLabel(currentUser.Usertype));
+        isLoading = false;
+    }
+
 }

@@ -16,7 +16,7 @@
         <InputSelect id="Type" @bind-Value="window.Type">
             @foreach (var type in windowtypecategories)
             {
-                <option value="@type">@type.GetLabel()</option>
+                <option value="@type">@type.Name</option>
             }
         </InputSelect>
     </div>
@@ -26,7 +26,7 @@
         <InputSelect id="Location" @bind-Value="window.Location">
             @foreach (var location in windowlocationcategories)
             {
-                <option value="@location">@location.GetLabel()</option>
+                <option value="@location">@location.Name</option>
             }
         </InputSelect>
     </div>
@@ -43,21 +43,22 @@
 
 @code {
 
-    private List<WindowType> windowtypecategories = Enum.GetValues<WindowType>().ToList();
-    private List<WindowLocation> windowlocationcategories = Enum.GetValues<WindowLocation>().ToList();
-    WindowType windowtypes;
-    WindowLocation windowlocations;
+    private List<WindowType> windowtypecategories = new List<WindowType>();
+    private List<WindowLocation> windowlocationcategories = new List<WindowLocation>();
+    WindowType windowtype;
+    WindowLocation windowlocation;
     
     private Window window = new Window
     {
-        Type = WindowType.Dannebrog,     
-        Location = WindowLocation.FoersteEtage,
-        Price = 12000               
+        Type = new WindowType(),
+        Location = new WindowLocation(),
+        Price = 12000
     };
     
     protected override async Task OnInitializedAsync()
     {
-        
+        windowtypecategories = await windowService.GetAllWindowTypes();
+        windowlocationcategories = await windowService.GetAllWindowLocations();
     }
 
     

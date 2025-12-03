@@ -5,7 +5,9 @@
 @using Microsoft.AspNetCore.Components.Forms
 @inject IBooking bookingService
 @inject IWindow windowService
+@inject Blazored.LocalStorage.ILocalStorageService localStorage;
 @page "/OneTimeBooking"
+
 
 <KalenderComponentv2/>
 <h3>Midlertidig booking oprettelse</h3>
@@ -48,10 +50,10 @@
     
     <div class="col-md-12 mb-3">
         <label for="Category">Booking type</label>
-        <InputSelect id="Category" @bind-Value="booking.TypeBooking"> 
+        <InputSelect id="type" @bind-Value="booking.TypeBooking"> 
             @foreach (var cat in bookingcategories)
             {
-                <option value="@cat">@cat</option>
+                <option value="@cat">@Booking.GetLabel(cat)</option>
             }
         </InputSelect>
     </div>
@@ -82,7 +84,7 @@
         <InputSelect id="Type" @bind-Value="window.Type">
             @foreach (var type in windowtypecategories)
             {
-                <option value="@type">@type.GetLabel()</option>
+                <option value="@type">@type.Name</option>
             }
         </InputSelect>
     </div>
@@ -92,7 +94,7 @@
         <InputSelect id="Location" @bind-Value="window.Location">
             @foreach (var location in windowlocationcategories)
             {
-                <option value="@location">@location.GetLabel()</option>
+                <option value="@location">@location.Name</option>
             }
         </InputSelect>
     </div>
@@ -115,7 +117,7 @@
     
     private List<string> daycategories = new List<string> { "Mandag","Tirsdag","Onsdag","Torsdag","Fredag","Lørdag","Søndag" };
     
-    private List<string> bookingcategories = new List<string> { "Abonnement", "Enkelt Booking"};
+    private List<Booking.BookingType> bookingcategories = new List<Booking.BookingType> { Booking.BookingType.Abonnement , Booking.BookingType.EnkeltBooking};
     
     private async Task HandleSubmit()
     {
@@ -151,22 +153,23 @@
         booking = new Booking();
         worktask = new WorkTask();
     }
-    
-    private List<WindowType> windowtypecategories = Enum.GetValues<WindowType>().ToList();
-    private List<WindowLocation> windowlocationcategories = Enum.GetValues<WindowLocation>().ToList();
+
+    private List<WindowType> windowtypecategories = new List<WindowType>();
+    private List<WindowLocation> windowlocationcategories = new List<WindowLocation>();
     WindowType windowtypes;
     WindowLocation windowlocations;
     
     private Window window = new Window
     {
-        Type = WindowType.Dannebrog,     
-        Location = WindowLocation.FoersteEtage,
-        Price = 12000               
+        Type = new WindowType(),
+        Location = new WindowLocation(),
+        Price = 12000
     };
     
     protected override async Task OnInitializedAsync()
     {
-        
+        windowtypecategories = await windowService.GetAllWindowTypes();
+        windowlocationcategories = await windowService.GetAllWindowLocations(); 
     }
 
     
@@ -177,5 +180,7 @@
         worktask.Windows.Add(window);
         window = new Window();    
     }
+    
+    
     
 }

@@ -46,6 +46,42 @@ public class WindowService : IWindow
 
         Console.WriteLine("Window created successfully");
     }
+    
+    public async Task AddLocation(WindowLocation windowlocation)
+    {
+        Console.WriteLine("Add bookingservice attempted");
+        var response = await http.PostAsJsonAsync($"{url}/api/window/location", windowlocation);
+        if (!response.IsSuccessStatusCode)
+        {
+            // Read error body (this contains ModelState errors)
+            var errorText = await response.Content.ReadAsStringAsync();
+            Console.WriteLine("Server returned error:");
+            Console.WriteLine(errorText);
+
+            throw new Exception($"Window create failed: {errorText}");
+        }
+
+        Console.WriteLine("Window created successfully");
+    }
+
+    
+    public async Task AddType(WindowType windowtype)
+    {
+        Console.WriteLine("Add bookingservice attempted");
+        var response = await http.PostAsJsonAsync($"{url}/api/window/type", windowtype);
+        if (!response.IsSuccessStatusCode)
+        {
+            // Read error body (this contains ModelState errors)
+            var errorText = await response.Content.ReadAsStringAsync();
+            Console.WriteLine("Server returned error:");
+            Console.WriteLine(errorText);
+
+            throw new Exception($"Window create failed: {errorText}");
+        }
+
+        Console.WriteLine("Window created successfully");
+    }
+
 
     public async Task Delete(string id)
     {
@@ -62,5 +98,20 @@ public class WindowService : IWindow
     {
         var response = await http.PostAsJsonAsync($"{url}/api/window/calculate", new { Windows = windows });
         return await response.Content.ReadFromJsonAsync<decimal>();
+    }
+    
+    public async Task<List<WindowType>> GetAllWindowTypes()
+    {
+        Console.WriteLine("GetAll windowtypes");
+        var windowtypes = await http.GetFromJsonAsync<List<WindowType>>($"{url}/api/window/type");
+
+        return windowtypes;
+    }
+    public async Task<List<WindowLocation>> GetAllWindowLocations()
+    {
+        Console.WriteLine("GetAll windowlocations");
+        var windowlocations = await http.GetFromJsonAsync<List<WindowLocation>>($"{url}/api/window/location");
+
+        return windowlocations;
     }
 }

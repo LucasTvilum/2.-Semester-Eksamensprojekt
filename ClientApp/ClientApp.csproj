@@ -14,7 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Pages\InputComponents\" />
+      <Folder Include="wwwroot\Image\Logo\" />
       <Folder Include="wwwroot\sample-data\" />
     </ItemGroup>
 
