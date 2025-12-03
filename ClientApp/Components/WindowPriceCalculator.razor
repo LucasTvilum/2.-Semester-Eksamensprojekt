@@ -1,71 +1,75 @@
 @using Core.Models
+@using ClientApp.Service
+@inject IWindow windowservice
 
 <div class="row p-3">
+    @if (locations == null || windowTypes == null || !locations.Any() || !windowTypes.Any())
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+    
+        <div class="locations-container">
+            @foreach (var loc in locations)
+            {
+                <div class="location-box">
 
-    <!-- LOCATION OVERVIEW SECTIONS -->
-    <div class="locations-container">
-        @foreach (var loc in Enum.GetValues<WindowLocation>())
-        {
-            <div class="location-box">
-
-                <!-- CLICKABLE HEADER -->
-                <div class="location-header" @onclick="() => SelectLocation(loc)">
-                    <span>@Window.GetLabelLocation(loc)</span>
-                    <span class="arrow">@(openLocations.Contains(loc) ? "▲" : "▼")</span>
-                </div>
-
-                <!-- ONLY VISIBLE IF SELECTED -->
-                @if (openLocations.Contains(loc))
-                {
-                    <div class="location-content">
-                        @foreach (var wc in windowCounts.Where(x => x.Location == loc && x.Count > 0))
-                        {
-                            <div class="window-summary">
-                                <img src="@Window.GetImage(wc.Type)" />
-                                <div class="count">@wc.Count</div>
-                            </div>
-                        }
-
-                        <!-- IF NO WINDOWS IN LOCATION -->
-                        @if (!windowCounts.Any(x => x.Location == loc && x.Count > 0))
-                        {
-                            <div class="empty-info">Ingen vinduer tilføjet</div>
-                        }
+                  
+                    <div class="location-header" @onclick="() => SelectLocation(loc)">
+                        <span>@loc.Name</span>
+                        <span class="arrow">@(openLocations.Contains(loc) ? "▲" : "▼")</span>
                     </div>
-                }
+                    <!--vises kun hvis location er valgt-->
+                    @if (openLocations.Contains(loc))
+                    {
+                        <div class="location-content">
+                            @foreach (var wc in windowCounts.Where(x => x.Location == loc && x.Count > 0))
+                            {
+                                <div class="window-summary">
+                                    <img src="@wc.Type.ImagePath"/>
+                                    <div class="count">@wc.Count</div>
+                                </div>
+                            }
+                            
+                            @if (!windowCounts.Any(x => x.Location == loc && x.Count > 0))
+                            {
+                                <div class="empty-info">Ingen vinduer tilføjet</div>
+                            }
+                        </div>
+                    }
 
-            </div>
-        }
-    </div>
-
-    <!-- SELECTED LOCATION WINDOW BUTTONS -->
-    <h3>@Window.GetLabelLocation(selectedLocation)</h3>
-
-    <div class="window-buttons">
-        @foreach (var wc in windowCounts.Where(x => x.Location == selectedLocation))
-        {
-            <div class="window-type-block">
-                <img src="@Window.GetImage(wc.Type)" />
-                <div>@Window.GetLabelType(wc.Type)</div>
-
-                <div class="counter">
-                    <button type="button" @onclick="() => Decrease(wc)" disabled="@(wc.Count == 0)">-</button>
-                    <span>@wc.Count</span>
-                    <button type="button" @onclick="() => Increase(wc)">+</button>
                 </div>
-            </div>
-        }
-    </div>
+            }
+        </div>
+        
+        <h3>@selectedLocation.Name </h3>
 
-    <!-- TOTAL PRICE -->
-    <div class="total-box">
-        Total: @TotalPrice kr
-    </div>
+        <div class="window-buttons">
+            @foreach (var wc in windowCounts.Where(x => x.Location == selectedLocation))
+            {
+                <div class="window-type-block">
+                    <img src="@wc.Type.ImagePath"/>
+                    <div>@wc.Type.Name </div>
+
+                    <div class="counter">
+                        <button type="button" @onclick="() => Decrease(wc)" disabled="@(wc.Count == 0)">-</button>
+                        <span>@wc.Count</span>
+                        <button type="button" @onclick="() => Increase(wc)">+</button>
+                    </div>
+                </div>
+            }
+        </div>
+        
+        <div class="total-box">
+            Total: @TotalPrice kr
+        </div>
+        
+    }
 </div>
-
-@code {
+    @code {
     [Parameter] public Booking Booking { get; set; } = new();
-    private WindowLocation selectedLocation = WindowLocation.StueEtage;
+    private WindowLocation selectedLocation;
     
     private HashSet<WindowLocation> openLocations = new();
 
@@ -73,17 +77,28 @@
 
     private decimal TotalPrice => Booking.Windows.Sum(w => w.Price);
 
-    protected override void OnInitialized()
+    private List<WindowType> windowTypes = new();
+    private List<WindowLocation> locations = new();
+
+    protected override async Task OnInitializedAsync()
     {
-        windowCounts =
-            (from type in Enum.GetValues(typeof(WindowType)).Cast<WindowType>()
-             from loc in Enum.GetValues(typeof(WindowLocation)).Cast<WindowLocation>()
-             select new WindowCount
-             {
-                 Type = type,
-                 Location = loc,
-                 Count = 0
-             }).ToList();
+        // hent alle typer og lokationer fra databasen
+        windowTypes = await windowservice.GetAllWindowTypes();
+        locations = await windowservice.GetAllWindowLocations();
+
+        // initier selectedLocation til første location
+        selectedLocation = locations.FirstOrDefault();
+
+        // opbyg windowCounts ud fra DB-data
+        windowCounts = (
+            from type in windowTypes
+            from loc in locations
+            select new WindowCount
+            {
+                Type = type,
+                Location = loc,
+                Count = 0
+            }).ToList();
     }
 
     private void SelectLocation(WindowLocation loc)
@@ -95,6 +110,7 @@
 
         selectedLocation = loc;
     }
+    
     private void Increase(WindowCount wc)
     {
         wc.Count++;
@@ -128,4 +144,5 @@
         public WindowLocation Location { get; set; }
         public int Count { get; set; }
     }
-}
+    }
+    
