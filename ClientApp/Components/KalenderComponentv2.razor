@@ -1,7 +1,7 @@
 @using System.Globalization
 
 
-<h3>Kalender</h3>
+<h3>Mine bookinger</h3>
 
 <div class="calendar-wrapperr">
 
@@ -42,8 +42,6 @@
     private DateTime CurrentDate = DateTime.Today;
     private List<DateTime> Days = new();
     private string[] DayNames = new[] { "Ma", "Tir", "Ons", "Tor", "Fr", "Lør", "Søn" };
-
-    // Grønne prikker fra billedet (du kan ændre dem)
     [Parameter]
     public List<int> EventDays { get; set; } = new();
     
