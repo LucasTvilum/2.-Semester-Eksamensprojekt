@@ -1,6 +1,7 @@
 @using Core.Models
 @using ClientApp.Service
 @inject IWindow windowservice
+@inject NavigationManager nav
 
 <div class="row p-3">
     @if (locations == null || windowTypes == null || !locations.Any() || !windowTypes.Any())
@@ -65,6 +66,12 @@
             Total: @TotalPrice kr
         </div>
         
+     
+    <button class="btn btn-primary" @onclick="GoToOneTimeBooking">
+            Enkelt Booking
+        </button>
+        
+        
     }
 </div>
     @code {
@@ -79,6 +86,11 @@
 
     private List<WindowType> windowTypes = new();
     private List<WindowLocation> locations = new();
+
+    private void GoToOneTimeBooking()
+    {
+        nav.NavigateTo("/OneTimeBooking");
+    }
 
     protected override async Task OnInitializedAsync()
     {

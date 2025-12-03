@@ -5,7 +5,9 @@
 @using Microsoft.AspNetCore.Components.Forms
 @inject IBooking bookingService
 @inject IWindow windowService
+@inject Blazored.LocalStorage.ILocalStorageService localStorage;
 @page "/OneTimeBooking"
+
 
 <KalenderComponentv2/>
 <h3>Midlertidig booking oprettelse</h3>
@@ -178,5 +180,7 @@
         worktask.Windows.Add(window);
         window = new Window();    
     }
+    
+    
     
 }
