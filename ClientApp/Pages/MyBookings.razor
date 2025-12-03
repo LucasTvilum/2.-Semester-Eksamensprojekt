@@ -1,5 +1,196 @@
-﻿<h3>MyBookings</h3>
+﻿@page "/mybookings"
+@using ClientApp.Service
+@using Core.Models
+@inject UserState userState
+
+<h3>Mine Bookinger</h3>
+
+@if (!userState.IsLoggedIn) //tjekker om bruger er logget ind
+{
+    <p>Du skal være logget ind for at se dine bookinger</p>
+}
+else
+{
+    @if (showSubscription)
+    {
+        <h5>Dine abonnementer</h5>
+    }
+    else
+    {
+        <h5>Dine enkeltbookinger</h5>
+    }
+    //viser alle brugerens bookinger
+    <table class="table table-striped table-bordered align-middle">
+        <thead class="table-light">
+        <tr>
+            <th>Day</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>InsideJob</th>
+            <th>InsideInterval</th>
+            <th>OutdoorInterval</th>
+            <th>NotesCustomer</th>
+            <th>Vinduer</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        @if (showSubscription)
+        {
+            @foreach (var booking in subscriptionBookings)  @* Tester til abonnement *@
+            {
+                <tr style="background-color:#f0fff0;">
+                    <td>Mandag</td>
+                    <td>299 kr.</td>
+
+                    <td>
+                        <span class="status-badge status-active">
+                            Aktiv
+                        </span>
+                    </td>
+
+                    <td>true</td>                 @* InsideJob *@
+                    <td>4 uger</td>               @* InsideInterval *@
+                    <td>6 uger</td>               @* OutdoorInterval *@
+                    <td>”Fast abonnement – hver 4. uge indendørs, hver 6. uge udendørs”</td>
+                
+
+                    <td>
+                        <button class="btn btn-sm btn-primary"
+                                @onclick="() => OpenModalWindows(booking)">
+                            Vis Vinduer
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            @* Viser enkeltbookinger *@
+            @foreach (var booking in singleBookings)
+            {
+                <tr>
+                    <td>@booking.Day</td>
+                    <td>@booking.Price</td>
+                    <td>@booking.Status</td>
+                    <td>@booking.InsideJob</td>
+                    <td>@booking.InsideInterval</td>
+                    <td>@booking.OutdoorInterval</td>
+                    <td>@booking.NotesCustomer</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary"
+                                @onclick="() => OpenModalWindows(booking)">
+                            Vis Vinduer
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+        </tbody>
+    </table>
+
+    @if (showModalWindows)
+    {
+        <div class="modal d-block" style="background-color: rgba(0,0,0,0.5);">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5>Vinduer</h5>
+                        <button class="btn-close" @onclick="CloseModalWindows"></button>
+                    </div>
+                    <div class="modal-body">
+                        @if (selectedBooking.Windows != null)
+                        {
+                            foreach (var window in selectedBooking.Windows)
+                            {
+                                <li>@window.Type.GetLabel() - @window.Location.GetLabel()</li>
+                            }
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" @onclick="CloseModalWindows">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
 
 @code {
     
+    // bookingService bruges til at hente ALLE bookinger fra API'et.
+    [Inject] private IBooking bookingService { get; set; }
+    
+    // Liste til ALLE abonnementer for den aktuelle bruger.
+    private List<Booking> subscriptionBookings = new();
+    
+    // Liste til ALLE enkelt-bookinger for den aktuelle bruger.
+    private List<Booking> singleBookings = new();
+    
+    // Array til at gemme alle bookinger, før de bliver fordelt i de to lister.
+    private Booking[] bookingArray;
+    
+    private bool showModalWindows = false;
+    private Booking selectedBooking;
+    
+    // Bestemmer hvilken tabel der skal vises i UI'et.
+    // TRUE = vis abonnementer, FALSE = vis enkeltbookinger.
+    private bool showSubscription = true;
+    
+    private void OpenModalWindows(Booking booking)
+    {
+        selectedBooking = booking;
+        showModalWindows = true;
+    }
+    
+    
+    private void CloseModalWindows()
+    {
+        showModalWindows = false;
+    }
+    
+    private string GetStatusClass(string status)
+    {
+        return status switch
+        {
+            "Aktiv" => "status-active",
+            "Godkendt" => "status-approved",
+            "Afventer" => "status-pending",
+            "Afvist" => "status-denied",
+            "Færdig" => "status-finished",
+            _ => "status-default"
+        };
+    }
+    
+    
+    // Her henter vi ALLE bookinger og deler dem op,
+    // så vi kan vise abonnement eller enkeltbooking automatisk.
+    protected override async Task OnInitializedAsync()
+    {
+        bookingArray = (await bookingService.GetAll()) //henter alle bookinger for den aktuelle bruger fra API’et.
+            .Where(b => b.CustomerId == userState.CurrentUser.Id)  // ← filtrér på den loggede bruger
+            .ToArray();
+        
+        subscriptionBookings = bookingArray
+            .Where(b => b.TypeBooking == Booking.BookingType.Abonnement)   // abonnement - Filtrere kun bookinger, der er markeret som abonnement (IsSubscription = true).
+            .ToList();
+        
+        
+        singleBookings = bookingArray
+            .Where(b => b.TypeBooking == Booking.BookingType.EnkeltBooking)  // enkeltbooking - Filtrere kun bookinger, der IKKE er abonnement (enkeltbookinger).
+            .ToList();
+        
+        
+        // Vælger automatisk hvilken tabel der skal vises:
+        // Hvis brugeren har abonnementer → vis abonnement.
+        // Hvis ikke → vis enkeltbooking.
+        showSubscription = subscriptionBookings.Any();
+        
+        // Debugging: skriver alle bookingers ID ud i konsollen.
+        foreach (var VARIABLE in bookingArray)
+        {
+            Console.WriteLine(VARIABLE.Id);
+        }
+    } 
 }
