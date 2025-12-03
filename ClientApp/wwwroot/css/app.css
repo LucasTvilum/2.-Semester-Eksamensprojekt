@@ -156,3 +156,49 @@ code {
     margin-top: 5px;
     color: #333;
 }
+
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.status-active {
+    background-color: #e6f9e6;
+    color: #138a13;
+    border: 1px solid #2db92d;
+}
+
+.status-approved {
+    background-color: #e6f2ff;
+    color: #0a3faa;
+    border: 1px solid #3c6fd1;
+}
+
+.status-pending {
+    background-color: #fff9d6;
+    color: #a98a00;
+    border: 1px solid #d1b300;
+}
+
+.status-denied {
+    background-color: #ffe6e6;
+    color: #b30000;
+    border: 1px solid #cc0000;
+}
+
+.status-finished {
+    background-color: #f0f0f0;
+    color: #555;
+    border: 1px solid #c7c7c7;
+}
+
+.status-default {
+    background-color: #f3f3f3;
+    color: #444;
+    border: 1px solid #ccc;
+}
+

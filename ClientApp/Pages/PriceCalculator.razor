@@ -2,7 +2,9 @@
 @using Core.Models
 @using ClientApp.Components
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject IWindow windowService
 
+<h3>Price Calculator</h3>
 <WindowPriceCalculator Booking="@booking" />
 
 
