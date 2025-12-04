@@ -26,6 +26,12 @@ namespace ServerApp.Controllers
             Console.WriteLine("Add worktask in controller");
             workTaskRepo.Add(workTask);
         }
+        
+        [HttpPost("subscription")]
+        public void AddSubscription([FromBody]List<WorkTask> workTasks) {
+            Console.WriteLine("Add worktask in controller");
+            workTaskRepo.AddSubscription(workTasks);
+        }
 
 
         [HttpPut("{id}")]

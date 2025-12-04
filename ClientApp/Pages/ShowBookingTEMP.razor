@@ -2,6 +2,7 @@
 @using ClientApp.Service
 @using Core.Models
 @inject UserState userState
+@inject IWorkTask workTaskService
 <h3>Alle bookings</h3>
 
 @if (!userState.IsWorker)
@@ -101,7 +102,7 @@
                         <h1>@selectedBooking.Status</h1>
                         <div class="col-md-12 mb-3">
                             <label for="Category">Booking Status</label>
-                            <InputSelect id="Category" @bind-Value="selectedBooking.Status"> 
+                            <InputSelect id="Category" @bind-Value="selectedstatus"> 
                                 @foreach (var cat in statuscategories)
                                 {
                                     <option value="@cat">@cat</option>
@@ -110,6 +111,7 @@
                         </div>
                     }
                 </div>
+                <button class="btn btn-success" @onclick="CloseModalBookingStatusUpdate">Accept</button>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" @onclick="CloseModalBooking">Close</button>
                 </div>
@@ -137,6 +139,7 @@
     private bool showModalWindows = false;
     private bool showModalBooking = false;
     private Booking selectedBooking;
+    private string selectedstatus = "";
     
     private List<string> statuscategories = new List<string> { "Godkendt", "Afventer","Afvist","Færdig","Aktiv"};
 
@@ -154,12 +157,26 @@
     private void OpenModalBooking(Booking booking)
     {
         selectedBooking = booking;
+        selectedstatus = booking.Status;
         showModalBooking = true;
     }
 
     private async Task CloseModalBooking()
     {
+        showModalBooking = false;
+    }
+    
+    private async Task CloseModalBookingStatusUpdate()
+    {
+        selectedBooking.Status = selectedstatus;
         await bookingService.UpdateBooking(selectedBooking);
+        
+        if(selectedBooking.Status == "Godkendt")
+        {
+            Console.WriteLine("Attempt at adding subscription");
+            await workTaskService.AddSubscription(selectedBooking);
+        }
+        
         showModalBooking = false;
     }
     
