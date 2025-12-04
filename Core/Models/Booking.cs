@@ -13,9 +13,6 @@ public class Booking
     public string NotesCustomer { get; set; } = "";
     public string NotesWindowCleaner { get; set; } = "";
     public bool InsideJob { get; set; }
-
-    public List<WorkTask> WorkTasks { get; set; } = new List<WorkTask>();
-
     public int OutdoorInterval { get; set; }
     public int InsideInterval { get; set; }
     

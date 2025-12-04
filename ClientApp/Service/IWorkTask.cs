@@ -6,6 +6,8 @@ public interface IWorkTask
     Task<WorkTask[]> GetAll();
 
     Task Add(WorkTask task);
+
+    Task AddSubscription(Booking booking);
     
     Task UpdateWorkTask(WorkTask task);
 

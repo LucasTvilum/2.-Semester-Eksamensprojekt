@@ -33,6 +33,24 @@
             </div>
         }
     </div>
+    <button class="confirm" @onclick="bookingConf">Bekræft booking</button>
+    
+    @if (showModal)
+    {
+        <div class="modal-overlay" @onclick="CloseModal">
+            
+            <div class="modal-window" @onclick:stopPropagation="true">
+                <h2>Booking bekræftet!</h2>
+                <p>Din booking er blevet registreret.</p>
+
+                <button class="close-btn" @onclick="CloseModal">
+                    Luk
+                </button>
+            </div>
+        </div>
+
+    }
+
 </div>
 
 
@@ -76,5 +94,17 @@
     {
         CurrentDate = CurrentDate.AddMonths(1);
         LoadCalendar();
+    }
+
+    bool showModal = false;
+
+    private void bookingConf()
+    {
+        showModal = true;
+    }
+
+    private void CloseModal()
+    {
+        showModal = false;
     }
 }

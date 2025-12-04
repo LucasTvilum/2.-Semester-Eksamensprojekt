@@ -8,6 +8,9 @@ public interface IWorkTaskRepository
     
     void Add(WorkTask task);
     
+    void AddSubscription(List<WorkTask> workTasks);
+
+    
     WorkTask Update(WorkTask task);
     
     void Delete(string id);

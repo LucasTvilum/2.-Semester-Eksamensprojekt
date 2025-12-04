@@ -6,8 +6,6 @@ namespace ClientApp.Service;
 public interface IWindow
 {
     Task<Window[]> GetAll();
-    
-    Task<WindowList> GetWindowList();
     Task<List<WindowType>> GetAllWindowTypes();
     Task<List<WindowLocation>> GetAllWindowLocations();
     

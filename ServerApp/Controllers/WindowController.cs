@@ -27,12 +27,6 @@ namespace ServerApp.Controllers
             return windowRepo.GetAll();
         }
         
-        [HttpGet("list")]
-        public WindowList GetWindowList()
-        {
-            return windowRepo.GetWindowList();
-        }
-        
         [HttpGet("type")]
         public List<WindowType> GetWindowTypeList()
         {
