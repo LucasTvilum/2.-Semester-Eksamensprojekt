@@ -61,7 +61,7 @@ public class WorkTaskService : IWorkTask
                 BookingId = booking.Id,
                 Windows = booking.Windows,         // copy windows
                 Date = outsideDate,
-                InsideJob = false,                // outside
+                InsideJob = booking.InsideJob,                // outside
                 NotesForTask = booking.NotesWindowCleaner
             });
 

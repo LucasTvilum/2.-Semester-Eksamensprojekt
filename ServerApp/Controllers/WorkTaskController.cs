@@ -44,7 +44,6 @@ namespace ServerApp.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Route("delete")]
         public OkResult Delete(string id)
         {
             workTaskRepo.Delete(id);
