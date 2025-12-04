@@ -21,15 +21,6 @@ public class WindowService : IWindow
 
         return windowArray;
     }
-    
-    public async Task<WindowList> GetWindowList()
-    {
-        Console.WriteLine("GetAll from mock");
-        var windowList = await http.GetFromJsonAsync<WindowList>($"{url}/api/window/list");
-
-        return windowList;
-    }
-
     public async Task Add(Window window)
     {
         Console.WriteLine("Add bookingservice attempted");
