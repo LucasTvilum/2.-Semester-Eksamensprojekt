@@ -1,7 +1,6 @@
 @using System.Globalization
 
-
-<h3>Mine bookinger</h3>
+<h3>Kalender</h3>
 
 <div class="calendar-wrapperr">
 
@@ -26,25 +25,32 @@
                  @onclick="() => dayCell(day)">
                 <span class="day-numberr">@day.Day</span>
 
-
                 @if (EventDays.Contains(day.Day) && day.Month == CurrentDate.Month)
                 {
                     <div class="event-dott"></div>
                 }
-
             </div>
         }
     </div>
 </div>
 
+<!--viser valgt dato-->
+@if (SelectedDate != null)
+{
+    <div style="margin-top: 20px; font-size: 18px; font-weight: bold;">
+        Du har valgt: @SelectedDate?.ToString("dddd d. MMMM yyyy", CultureInfo.GetCultureInfo("da-DK"))
+    </div>
+}
 
 @code {
     private DateTime CurrentDate = DateTime.Today;
     private List<DateTime> Days = new();
     private string[] DayNames = new[] { "Ma", "Tir", "Ons", "Tor", "Fr", "Lør", "Søn" };
+
+    private DateTime? SelectedDate = null; // ⭐ ny variabel
+
     [Parameter]
     public List<int> EventDays { get; set; } = new();
-    
     
     protected override void OnInitialized()
     {
@@ -80,7 +86,6 @@
 
     private void dayCell(DateTime Day)
     {
-        Console.WriteLine("virker datoen i dag" + " " + Day);
-        
+        SelectedDate = Day; 
     }
 }
