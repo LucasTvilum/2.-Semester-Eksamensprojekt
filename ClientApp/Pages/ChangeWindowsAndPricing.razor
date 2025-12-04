@@ -5,10 +5,20 @@
 @page "/ChangeWindowsAndPricing"
 <h3>ChangeWindowsAndPricing</h3>
 
-<EditForm Model="@windowtype" OnValidSubmit="@HandleWindowTypeSubmit" class="row p-3">
+
+<button @onclick="Modal">Opdater vinduer</button>
+    
+@if (showModal)
+{
+    <div class="modal-overlayv2" @onclick="CloseModal">
+            
+        <div class="modal-windowv2" @onclick:stopPropagation="true">
+            <h1>Opdater vindue infomation</h1>
+            
+            <EditForm Model="@windowtype" OnValidSubmit="@HandleWindowTypeSubmit" class="row p-3">
     <DataAnnotationsValidator/>
     <ValidationSummary/>
-
+    
     <div class="col-md-12 mb-3">
         <label for="Category">Type navn</label>
         <div class="col-md-12 mb-3">
@@ -125,6 +135,13 @@
     </tbody>
 </table>
 
+            <button class="close-btn" @onclick="CloseModal">
+                Luk
+            </button>
+        </div>
+    </div>
+    
+
 @code {
 
     private WindowType windowtype = new WindowType();
@@ -154,5 +171,18 @@
        windowlocations = await windowService.GetAllWindowLocations();
        windowtypes = await windowService.GetAllWindowTypes();
     }
+    
+    bool showModal = false;
 
+    private void Modal()
+    {
+        showModal = true;
+    }
+
+    private void CloseModal()
+    {
+        showModal = false;
+    }
+
+}
 }
