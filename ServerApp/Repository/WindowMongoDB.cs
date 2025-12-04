@@ -18,13 +18,6 @@ public class WindowMongoDB : IWindowRepository
     {
         return _collection.Find(_ => true).ToList();
     }
-    
-    public WindowList GetWindowList()
-    {
-        WindowList windowlist = new WindowList(_collection.Find(_ => true).ToList());
-        return windowlist;
-    }
-
     public void Add(Window window)
     {
         _collection.InsertOne(window);

@@ -25,6 +25,11 @@ public class WorkTaskMongoDB : IWorkTaskRepository
         _collection.InsertOne(worktask);
     }
 
+    public void AddSubscription(List<WorkTask> workTasks)
+    {
+        _collection.InsertManyAsync(workTasks);
+    }
+
     public WorkTask Update(WorkTask worktask)
     {
         var filter = Builders<WorkTask>.Filter.Eq(a => a.Id, worktask.Id);
