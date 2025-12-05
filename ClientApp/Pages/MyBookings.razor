@@ -37,6 +37,7 @@ else
                 <th>OutdoorInterval</th>
                 <th>NotesCustomer</th>
                 <th>Vinduer</th>
+                <th>Hanlinger</th> @* Afmelding, afbestilling, skift af ugedag osv *@
             </tr>
             </thead>
 
@@ -63,6 +64,16 @@ else
                                     @onclick="() => OpenModalWindows(booking)">
                                 Vis Vinduer
                             </button>
+                        </td>
+                        <td>
+                            @* Kun mulighed for at afmelde hvis abonnementet er aktivt *@
+                            @if (booking.Status == "Aktiv")
+                            {
+                                <button class="btn btn-sm btn-outline-danger"
+                                        @onclick="() => CancelSubscription(booking)">
+                                    Afmeld
+                                </button>
+                            }
                         </td>
                     </tr>
                 }
@@ -145,7 +156,7 @@ else
     
     // Bestemmer hvilken tabel der skal vises i UI'et.
     // TRUE = vis abonnementer, FALSE = vis enkeltbookinger.
-    private bool showSubscription = true;
+    private bool showSubscription = false;
     
     private void OpenModalWindows(Booking booking)
     {
@@ -159,6 +170,18 @@ else
         showModalWindows = false;
     }
     
+    private async Task CancelSubscription(Booking booking)
+    {
+        // Skift status til “Afmeldt”
+        booking.Status = "Afmeldt";
+    
+        // Gem ændringen i databasen
+        await bookingService.UpdateBooking(booking);
+    
+        //debugging
+        Console.WriteLine($"Abonnement afmeldt for booking: {booking.Id}");
+    }
+    
     private string GetStatusClass(string status)
     {
         return status switch
@@ -168,6 +191,7 @@ else
             "Afventer" => "status-pending",
             "Afvist" => "status-denied",
             "Færdig" => "status-finished",
+            "Afmeldt"  => "status-cancelled",
             _ => "status-default"
         };
     }
@@ -177,6 +201,15 @@ else
     // så vi kan vise abonnement eller enkeltbooking automatisk.
     protected override async Task OnInitializedAsync()
     {
+        // Hvis ingen er logget ind, skal vi ikke prøve at hente bookinger
+        if (userState.CurrentUser == null)
+        {
+            bookingArray = Array.Empty<Booking>();
+            subscriptionBookings = new List<Booking>();
+            singleBookings = new List<Booking>();
+            return;
+        }
+        
         bookingArray = (await bookingService.GetAll()) //henter alle bookinger for den aktuelle bruger fra API’et.
             .Where(b => b.CustomerId == userState.CurrentUser.Id)  // ← filtrér på den loggede bruger
             .ToArray();
