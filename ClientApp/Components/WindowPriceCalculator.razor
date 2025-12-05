@@ -30,7 +30,7 @@
                                 <div class="window-summary">
                                     <img src="@wc.Type.ImagePath"/>
                                     <div class="count">@wc.Count</div>
-                                </div>
+                                </div>  
                             }
                             
                             @if (!windowCounts.Any(x => x.Location == loc && x.Count > 0))
@@ -66,16 +66,13 @@
             Total: @TotalPrice kr
         </div>
         
-     
-    <button class="btn btn-primary" @onclick="GoToOneTimeBooking">
-            Enkelt Booking
-        </button>
-        
-        
+        <button class="btn btn-primary" @onclick="SelectEnkelt">Enkeltbooking</button>
+        <button class="btn btn-primary" @onclick="SelectAbonnement">Abonnement</button>
     }
 </div>
     @code {
     [Parameter] public Booking Booking { get; set; } = new();
+    [Parameter] public EventCallback<string> OnSelectBookingType { get; set; }
     private WindowLocation selectedLocation;
     
     private HashSet<WindowLocation> openLocations = new();
@@ -156,5 +153,15 @@
         public WindowLocation Location { get; set; }
         public int Count { get; set; }
     }
+    private Task SelectEnkelt()
+    {
+        return OnSelectBookingType.InvokeAsync("Enkelt");
+    }
+
+    private Task SelectAbonnement()
+    {
+        return OnSelectBookingType.InvokeAsync("Abonnement");
+    }
+
     }
     

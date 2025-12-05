@@ -1,6 +1,51 @@
 ﻿@page "/Register"
+@using Core.Models
+@using ClientApp.Service
+@using ClientApp.Components
+@inject ICustomer customerService
+@inject IUser userService
+@inject NavigationManager nav
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
 <h3>Register</h3>
 
+<CustomerForm Customer="customer" ButtonText="Opret Konto" OnSubmit="RegisterCustomer" />
+
 @code {
-    
+    private Customer customer = new();
+
+    private async Task RegisterCustomer(Customer c)
+    {
+      
+        c.Usertype = User.UserType.Customer;
+        await customerService.Add(c);
+
+        // hent returnType
+        //også hent users fis
+        await userService.Add(c);
+
+        // mark user as logged in
+        await localStorage.SetItemAsync("currentUser", (User)c);
+
+        // read return type
+        var returnType = await localStorage.GetItemAsync<string>("returnType");
+        await localStorage.RemoveItemAsync("returnType");
+
+        Console.WriteLine("DEBUG:" + returnType);
+
+        if (returnType == "Enkelt")
+        {
+            nav.NavigateTo("/OneTimeBooking");
+            return;
+        }
+
+        if (returnType == "Abonnement")
+        {
+            nav.NavigateTo("/SubscriptionBooking");
+            return;
+        }
+
+        nav.NavigateTo("/");
+    }
+
 }

@@ -1,0 +1,59 @@
+@using Core.Models
+
+<EditForm Model="Customer" OnValidSubmit="Submit" class="row p-3">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="col-12 mb-3">
+        <label>Username</label>
+        <InputText class="form-control" @bind-Value="Customer.Username" />
+    </div>
+
+    <div class="col-12 mb-3">
+        <label>Password</label>
+        <InputText class="form-control" type="password" @bind-Value="Customer.Password" />
+    </div>
+
+    <div class="col-12 mb-3">
+        <label>Navn</label>
+        <InputText class="form-control" @bind-Value="Customer.Name" />
+    </div>
+
+    <div class="col-12 mb-3">
+        <label>Mail</label>
+        <InputText class="form-control" @bind-Value="Customer.Mail" />
+    </div>
+
+    <div class="col-12 mb-3">
+        <label>Telefon</label>
+        <InputText class="form-control" @bind-Value="Customer.PhoneNumber" />
+    </div>
+
+    <div class="col-12 mb-3">
+        <label>Adresse</label>
+        <InputText class="form-control" @bind-Value="Customer.Address" />
+    </div>
+
+    <div class="col-6 mb-3">
+        <label>Region</label>
+        <InputText class="form-control" @bind-Value="Customer.Region" />
+    </div>
+
+    <div class="col-6 mb-3">
+        <label>City</label>
+        <InputText class="form-control" @bind-Value="Customer.City" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">@ButtonText</button>
+</EditForm>
+
+@code {
+    [Parameter] public Customer Customer { get; set; } = new();
+    [Parameter] public string ButtonText { get; set; } = "Opret Kunde";
+    [Parameter] public EventCallback<Customer> OnSubmit { get; set; }
+
+    private async Task Submit()
+    {
+        await OnSubmit.InvokeAsync(Customer);
+    }
+}
