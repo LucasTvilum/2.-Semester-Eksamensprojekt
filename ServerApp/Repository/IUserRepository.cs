@@ -11,4 +11,8 @@ public interface IUserRepository
     User Update(User user);
     
     void Delete(string id);
+
+    Task<List<Customer>> GetCustomers();
+
+    Task<List<Worker>> GetWorkers();
 }
