@@ -26,21 +26,38 @@ public class UserService : IUser
 
     public async Task Add(User user)
     {
-        Console.WriteLine("Add userservice attemppted");
-        var response = await http.PostAsJsonAsync($"{url}/api/user", user);
+        Console.WriteLine("Runtime type service: " + user.GetType().Name);
+
+        if (user is Customer customer)
+        {
+            Console.WriteLine("serviceCustomer Address: " + customer.Address);
+            Console.WriteLine("serviceCustomer Region: " + customer.Region);
+            Console.WriteLine("serviceCustomer City: " + customer.City);
+        }
+
+        Console.WriteLine("Add userservice attempted");
+
+        // Cast to runtime type to include derived properties
+        //Chatgpt magi for at fixe inheritance, uden det så bliver ekstra customer fields ikke inkluderet i payload
+        object payload = user switch
+        {
+            Customer c => c,
+            Worker w => w,
+            _ => user
+        };
+
+        var response = await http.PostAsJsonAsync($"{url}/api/user", payload);
+
         if (!response.IsSuccessStatusCode)
         {
-            // Read error body (this contains ModelState errors)
             var errorText = await response.Content.ReadAsStringAsync();
             Console.WriteLine("Server returned error:");
             Console.WriteLine(errorText);
-
             throw new Exception($"User create failed: {errorText}");
         }
 
         Console.WriteLine("User created successfully");
     }
-
     public async Task Delete(string id)
     {
         await http.DeleteAsync($"{url}/api/user/{id}");

@@ -23,6 +23,18 @@ public class UserMongoDB : IUserRepository
 
     public void Add(User user)
     {
+        //Mere inheritance relateret, checker om RUNTIME typen på user er User eller Customer
+        if (user is Customer customer)
+        {
+            Console.WriteLine("Customer Address: " + customer.Address);
+            Console.WriteLine("Customer Region: " + customer.Region);
+            Console.WriteLine("Customer City: " + customer.City);
+        }
+        else if (user is Worker worker)
+        {
+            Console.WriteLine("Worker object received");
+        }
+        
         _collection.InsertOne(user);
     }
 
