@@ -92,7 +92,7 @@ public class WorkTaskService : IWorkTask
 
         if (tasksToCreate.Count != 0)
         {
-            await http.PostAsJsonAsync("api/worktask/subscription", tasksToCreate);
+            await http.PostAsJsonAsync($"{url}/api/worktask/subscription", tasksToCreate);
         }
     }
     private DateTime GetNextWeekday(string weekday)
