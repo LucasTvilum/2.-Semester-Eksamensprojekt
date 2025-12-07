@@ -12,4 +12,8 @@ public interface IUser
     Task Delete(string userid);
     
     Task<User> ValidateUser(User user);
+
+    Task<List<Customer>> GetCustomers();
+
+    Task<List<Worker>> GetWorkers();
 }

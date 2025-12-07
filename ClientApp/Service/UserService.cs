@@ -72,5 +72,16 @@ public class UserService : IUser
         }
         
     }
-    
+
+    public async Task<List<Worker>> GetWorkers()
+    {
+        var WorkerList = await http.GetFromJsonAsync<List<Worker>>($"{url}/api/user/workers");
+        return WorkerList;
+    }
+
+    public async Task<List<Customer>> GetCustomers()
+    {
+        var CustomerList = await http.GetFromJsonAsync<List<Customer>>($"{url}/api/user/customers");
+        return CustomerList;
+    }
 }

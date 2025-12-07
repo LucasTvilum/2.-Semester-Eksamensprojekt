@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Identity.Data;
 using ServerApp.Repository;
+using ServerApp;
 
+
+MongoDBmappings.Register();
 
 var builder = WebApplication.CreateBuilder(args);
 

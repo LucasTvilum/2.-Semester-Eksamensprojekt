@@ -22,6 +22,18 @@ namespace ServerApp.Controllers
             return userRepo.GetAll();
         }
         
+        [HttpGet("customers")]
+        public Task<List<Customer>> GetCustomers()
+        {
+            return userRepo.GetCustomers();
+        }
+        
+        [HttpGet("workers")]
+        public  Task<List<Worker>> GetWorkers()
+        {
+            return userRepo.GetWorkers();
+        }
+        
         [HttpPost]
         public void Add([FromBody]User user) {
             Console.WriteLine("Add user in controller");

@@ -40,17 +40,97 @@
     <button type="reset" class="btn btn-primary">Reset</button>
 </div>
 
+<!-- Kunde information fields -->
+@if (user.Usertype == User.UserType.Customer)
+{
+    <div class="col-md-12 mb-3">
+        <label for="CustomerCode">Customer Code</label>
+        <InputText id="CustomerCode" @bind-Value="CustomerAddress" class="form-control" />
+    </div>
+    <div class="col-md-12 mb-3">
+        <label for="Address">Address</label>
+        <InputText id="Address" @bind-Value="CustomerRegion" class="form-control" />
+    </div>
+    <div class="col-md-12 mb-3">
+        <label for="Address">Address</label>
+        <InputText id="Address" @bind-Value="CustomerCity" class="form-control" />
+    </div>
+}
+
+<!-- Worker (tom ligenu, worker har kun admin = true) -->
+
+
+
 </EditForm> 
+
+<div class="dropdown">
+<button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+    @type
+</button>
+
+<ul class="dropdown-menu">
+    @foreach (var value in Enum.GetValues<User.UserType>())
+    {
+        <li>
+            <a class="dropdown-item" @onclick="() => SetType(value)">
+                @value
+            </a>
+        </li>
+    }
+</ul>
+</div>
 
 
 @code {
     
     private User user = new User();
+    
+    private User.UserType type = User.UserType.User;
+    
+    private string CustomerAddress = "";
+    private string CustomerRegion = "";
+    private string CustomerCity = "";
+    
+    private void SetType(User.UserType newType)
+    {
+        type = newType;
+    }
 
     private void HandleSubmit()
     {
-        userService.Add(user);
-        user = new User();
+        User newUser;
+
+        switch (user.Usertype)
+        {
+            case User.UserType.Customer:
+                newUser = new Customer
+                {
+                    Username = user.Username,
+                    Password = user.Password
+                    // Add any Customer-specific fields if needed
+                };
+                break;
+
+            case User.UserType.Worker:
+                newUser = new Worker
+                {
+                    Username = user.Username,
+                    Password = user.Password
+                    // Add any Worker-specific fields if needed
+                };
+                break;
+
+            default: // User.UserType.User
+                newUser = new User
+                {
+                    Username = user.Username,
+                    Password = user.Password
+                };
+                break;
+        }
+
+        userService.Add(newUser);
+        newUser = new User();
     }
     
     
