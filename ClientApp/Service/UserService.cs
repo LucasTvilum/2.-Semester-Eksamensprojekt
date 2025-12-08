@@ -82,6 +82,8 @@ public class UserService : IUser
         {
             
             var usertoreturn = await response.Content.ReadFromJsonAsync<User>();
+            Console.WriteLine("Raw JSON received: ");
+            Console.WriteLine(usertoreturn);
             
             return usertoreturn;
         }
