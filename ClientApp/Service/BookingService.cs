@@ -21,6 +21,14 @@ public class BookingService : IBooking
 
         return BookingList;
     }
+    
+    public async Task<Booking> GetBookingById(string  bookingid)
+    {
+        Console.WriteLine("GetAll from mock");
+        var booking = await http.GetFromJsonAsync<Booking>($"{url}/api/booking/{bookingid}");
+
+        return booking;
+    }
 
     public async Task Add(Booking booking)
     {
