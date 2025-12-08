@@ -39,6 +39,84 @@ public class WorkTaskService : IWorkTask
         Console.WriteLine("Booking created successfully");
     }
 
+    public async Task AddSubscription(Booking booking)
+    {
+        Console.WriteLine("Add subscription service attempted");
+        //Add a WorkTask for each interval outside and inside, starting on datetime.day.now using data from booking object
+// 1️⃣ Find the first task date (next weekday based on booking.Day)
+        DateTime firstDate = GetNextWeekday(booking.Day);
+
+        // 2️⃣ Generate next 12 months (you can adjust)
+        DateTime endDate = firstDate.AddMonths(24);
+
+        List<WorkTask> tasksToCreate = new();
+
+        // 3️⃣ OUTSIDE tasks
+        DateTime outsideDate = firstDate;
+
+        while (outsideDate <= endDate)
+        {
+            tasksToCreate.Add(new WorkTask
+            {
+                BookingId = booking.Id,
+                Windows = booking.Windows,         // copy windows
+                Date = outsideDate,
+                InsideJob = booking.InsideJob,                // outside
+                NotesForTask = booking.NotesWindowCleaner
+            });
+
+            outsideDate = outsideDate.AddDays(7 * booking.OutdoorInterval);
+        }
+
+        // 4️⃣ INSIDE tasks (only if booking.InsideJob == true)
+        if (booking.InsideJob)
+        {
+            DateTime insideDate = firstDate;
+
+            while (insideDate <= endDate)
+            {
+                tasksToCreate.Add(new WorkTask
+                {
+                    BookingId = booking.Id,
+                    Windows = booking.Windows,
+                    Date = insideDate,
+                    InsideJob = true,              // inside
+                    NotesForTask = booking.NotesWindowCleaner
+                });
+
+                insideDate = insideDate.AddDays(7 * booking.InsideInterval);
+            }
+
+         
+        }
+
+        if (tasksToCreate.Count != 0)
+        {
+            await http.PostAsJsonAsync($"{url}/api/worktask/subscription", tasksToCreate);
+        }
+    }
+    private DateTime GetNextWeekday(string weekday)
+    {
+        var today = DateTime.Today;
+        var target = weekday switch
+        {
+            "Mandag" => DayOfWeek.Monday,
+            "Tirsdag" => DayOfWeek.Tuesday,
+            "Onsdag" => DayOfWeek.Wednesday,
+            "Torsdag" => DayOfWeek.Thursday,
+            "Fredag" => DayOfWeek.Friday,
+            "Lørdag" => DayOfWeek.Saturday,
+            "Søndag" => DayOfWeek.Sunday,
+            _ => DayOfWeek.Monday
+        };
+
+        int daysToAdd = ((int)target - (int)today.DayOfWeek + 7) % 7;
+        if (daysToAdd == 0) daysToAdd = 7;
+
+        return today.AddDays(daysToAdd);
+    }
+
+
     public async Task Delete(string id)
     {
         await http.DeleteAsync($"{url}/api/worktask/{id}");

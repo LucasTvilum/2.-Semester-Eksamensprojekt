@@ -12,14 +12,29 @@
 <ValidationSummary />
     
 <div class="col-md-12 mb-3">
-    <label for="Name">Username</label>
-    <InputText id="Name" @bind-Value="user.Username" class="form-control" />
+    <label for="Username">Username</label>
+    <InputText id="Username" @bind-Value="user.Username" class="form-control" />
 </div>
 
     
 <div class="col-md-12 mb-3">
-    <label for="Name">Password</label>
+    <label for="Password">Password</label>
     <InputText id="Password" @bind-Value="user.Password" type="password" class="form-control" />
+</div>
+
+<div class="col-md-12 mb-3">
+    <label for="Name">Navn</label>
+    <InputText id="Name" @bind-Value="user.Name"  class="form-control" />
+</div>
+
+<div class="col-md-12 mb-3">
+    <label for="Mail">Mail</label>
+    <InputText id="Mail" @bind-Value="user.Mail" class="form-control" />
+</div>
+
+<div class="col-md-12 mb-3">
+    <label for="PhoneNumber">Telefonnr</label>
+    <InputText id="PhoneNumber" @bind-Value="user.PhoneNumber" class="form-control" />
 </div>
 
 <div class="col-md-12 mb-3">
@@ -32,6 +47,25 @@
     </InputSelect>
 </div>
 
+<!-- Kunde information fields -->
+@if (user.Usertype == User.UserType.Customer)
+{
+    <div class="col-md-12 mb-3">
+        <label for="Address">Adresse</label>
+        <InputText id="Address" @bind-Value="CustomerAddress" class="form-control" />
+    </div>
+    <div class="col-md-12 mb-3">
+        <label for="Region">Region</label>
+        <InputText id="Region" @bind-Value="CustomerRegion" class="form-control" />
+    </div>
+    <div class="col-md-12 mb-3">
+        <label for="City">By</label>
+        <InputText id="City" @bind-Value="CustomerCity" class="form-control" />
+    </div>
+}
+
+<!-- Worker (tom ligenu, worker har kun admin = true) -->
+
 <div class="col-12 mb-3">
     <button type="submit" class="btn btn-primary" >Opret Bruger</button>
 </div>
@@ -42,15 +76,73 @@
 
 </EditForm> 
 
-
 @code {
     
     private User user = new User();
-
+    
+    private string CustomerAddress = "";
+    private string CustomerRegion = "";
+    private string CustomerCity = "";
+    
     private void HandleSubmit()
     {
-        userService.Add(user);
+        
+        User newUser;
+        switch (user.Usertype)
+        {
+            case User.UserType.Customer:
+                newUser = new Customer
+                {
+                    Username = user.Username,
+                    Password = user.Password,
+                    Mail = user.Mail,
+                    Name = user.Name,
+                    PhoneNumber = user.PhoneNumber,
+                    Address = CustomerAddress,
+                    Region = CustomerRegion,
+                    City = CustomerCity
+                    // Tilføj flere kunde felter her
+                };
+                break;
+
+            case User.UserType.Worker:
+                newUser = new Worker
+                {
+                    Username = user.Username,
+                    Password = user.Password,
+                    Mail = user.Mail,
+                    Name = user.Name,
+                    PhoneNumber = user.PhoneNumber
+                    // Tilføj flere worker felter her
+                };
+                break;
+
+            default: // User.UserType.User
+                newUser = new User
+                {
+                    Username = user.Username,
+                    Password = user.Password,
+                    Mail = user.Mail,
+                    Name = user.Name,
+                    PhoneNumber = user.PhoneNumber
+                };
+                break;
+        }
+        Console.WriteLine("Runtime type page: " + newUser.GetType().Name);
+        
+        if (newUser is Customer customer)
+        {
+            Console.WriteLine("pageCustomer Address: " + customer.Address);
+            Console.WriteLine("pageCustomer Region: " + customer.Region);
+            Console.WriteLine("pageCustomer City: " + customer.City);
+        }
+
+        userService.Add(newUser);
+        newUser = new User();
         user = new User();
+        CustomerAddress = "";
+        CustomerRegion = "";
+        CustomerCity = "";
     }
     
     

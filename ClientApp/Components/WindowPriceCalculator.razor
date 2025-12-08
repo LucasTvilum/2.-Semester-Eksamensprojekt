@@ -1,5 +1,7 @@
 @using Core.Models
 @using ClientApp.Service
+@using Blazored.LocalStorage
+@inject ILocalStorageService localStorageService
 @inject IWindow windowservice
 @inject NavigationManager nav
 
@@ -79,14 +81,23 @@
 
     private List<WindowCount> windowCounts = new();
 
-    private decimal TotalPrice => Booking.Windows.Sum(w => w.Price);
+    private decimal TotalPrice => booking.Windows.Sum(w => w.Price);
 
     private List<WindowType> windowTypes = new();
     private List<WindowLocation> locations = new();
 
     private void GoToOneTimeBooking()
     {
+        booking.TypeBooking = Booking.BookingType.EnkeltBooking;
+        localStorageService.SetItemAsync<Booking>("booking", booking);
         nav.NavigateTo("/OneTimeBooking");
+    }
+    
+    private void GoToOpretAbonnement()
+    {
+        booking.TypeBooking = Booking.BookingType.Abonnement;
+        localStorageService.SetItemAsync<Booking>("booking", booking);
+        nav.NavigateTo("/SubscriptionBooking");
     }
 
     protected override async Task OnInitializedAsync()
@@ -131,7 +142,7 @@
             Price = new Window { Type = wc.Type, Location = wc.Location }.CalculatePrice()
         };
 
-        Booking.Windows.Add(w);
+        booking.Windows.Add(w);
     }
 
     private void Decrease(WindowCount wc)
@@ -140,11 +151,11 @@
 
         wc.Count--;
 
-        var toRemove = Booking.Windows
+        var toRemove = booking.Windows
             .LastOrDefault(w => w.Type == wc.Type && w.Location == wc.Location);
 
         if (toRemove != null)
-            Booking.Windows.Remove(toRemove);
+            booking.Windows.Remove(toRemove);
     }
 
     public class WindowCount
