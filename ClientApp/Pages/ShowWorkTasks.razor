@@ -152,18 +152,61 @@
     </div>
 }
 
+<!-- -------------------- CUSTOMER MODAL -------------------- -->
 
-    @code {
+@if (showCustomerModal)
+{
+    <div class="modal d-block" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5>Kundeinformation</h5>
+                    <button class="btn-close" @onclick="CloseCustomerModal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    @if (customer != null)
+                    {
+                        <p><b>Navn:</b> @customer.Name</p>
+                        <p><b>Email:</b> @customer.Mail</p>
+                        <p><b>Telefon:</b> @customer.PhoneNumber</p>
+                        <p><b>Adresse:</b> @customer.Address</p>
+                        <p><b>By:</b> @customer.City</p>
+                        <p><b>Region:</b> @customer.Region</p>
+                    }
+                    else
+                    {
+                        <p>Kunne ikke hente kunde.</p>
+                    }
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseCustomerModal">Luk</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
 
 
-        private string newWindowTypeId;
-        private string newWindowLocationId;
+@code {
 
-        private List<WindowType> windowtypecategories = new List<WindowType>();
-        private List<WindowLocation> windowlocationcategories = new List<WindowLocation>();
 
-        private List<WorkTask> taskList = new();
-        private WorkTask selectedTask;
+    private string newWindowTypeId;
+    private string newWindowLocationId;
+
+    private List<WindowType> windowtypecategories = new List<WindowType>();
+    private List<WindowLocation> windowlocationcategories = new List<WindowLocation>();
+    
+    private List<WorkTask> taskList = new();
+    private List<Customer> customerlist = new();
+    private List<Booking> bookinglist = new();
+    
+    private WorkTask selectedTask;
 
         private bool showWindowsModal = false;
         private bool showEditModal = false;
@@ -172,10 +215,26 @@
         private bool editInsideJob;
         private string editNotes;
 
-        protected override async Task OnInitializedAsync()
+        private bool showCustomerModal = false;
+        private Customer customer;
+
+        private async Task LoadCustomerForTask(WorkTask task)
         {
-            taskList = (await workTaskService.GetAll()).ToList();
+            
         }
+
+        private void CloseCustomerModal()
+        {
+            showCustomerModal = false;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        customerlist = (await userService.GetCustomers()).ToList();
+        bookinglist = (await bookingService.GetAll()).ToList();
+        taskList = (await workTaskService.GetAll()).ToList();
+    }
 
         private void OpenTaskWindows(WorkTask task)
         {
