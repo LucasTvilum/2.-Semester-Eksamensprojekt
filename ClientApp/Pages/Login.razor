@@ -4,6 +4,8 @@
 @using ClientApp.Service
 @inject IUser userRepo
 @inject ILocalStorageService localStorage
+@inject UserState userState
+@inject NavigationManager nav 
 <PageTitle>Log ind</PageTitle>
 
 <div class="login-page-background">
@@ -86,15 +88,24 @@
         
         User userObject = await userRepo.ValidateUser(user);
         
-        Console.WriteLine("userobject:" + userObject.Usertype);
-        
         if (userObject != null)
         {
-            Console.WriteLine("User logged in!");
+            Console.WriteLine("userobject:" + userObject.Usertype);
+            
+            // Ryd gammel login
+            await localStorage.RemoveItemAsync("currentUser");
+            userState.CurrentUser = null;
+            
+
+        // Gem nyt login
             await localStorage.SetItemAsync("currentUser", userObject);
+            userState.CurrentUser = userObject;
+            
             user = userObject;
             LoadedUser = userObject;
             Console.WriteLine("type: " + LoadedUser.Usertype);
+            
+            nav.NavigateTo("/", true);
         }
     }
 
@@ -102,19 +113,28 @@
     {
         user = new();
         LoadedUser = new User();
+        
+        userState.CurrentUser = null;   // ← vigtig linje
+        
         await localStorage.RemoveItemAsync("currentUser");
         Console.WriteLine("User logged out");
+        
+        nav.NavigateTo("/login", true); // reload app
     }
 
     protected override async Task OnInitializedAsync()
     {
+        //henter brugeren fra localstorage
         var loadedUser = await localStorage.GetItemAsync<User>("currentUser");
 
 
         if (loadedUser != null)
         {
+            //sætter data i lokale(din computer) logIn side
             user = loadedUser;
             LoadedUser = loadedUser;
+            //Gendanner den loggede bruger i UserState (RAM=appens hukommelse mens den kører)
+            userState.CurrentUser = loadedUser;
         }
 
         AllCustomers = await userRepo.GetCustomers();

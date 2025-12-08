@@ -100,7 +100,7 @@ else
                     <button class="btn-close" @onclick="CloseModalBooking"></button>
                 </div>
                 <div class="modal-body">
-                    <h2>Booking bliver godkendt indenfor 2 hverdage!</h2>
+                    <h2>Din booking bliver godkendt indenfor 2 hverdage!</h2>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" @onclick="CloseModalBooking">Close</button>
@@ -138,10 +138,20 @@ else
         navigationManager.NavigateTo(("/PriceCalculator"));
     }
 
-    private void HandleSubmit()
+    private async Task HandleSubmit()
     {
-        // user -> customer -> booking.CustomerId mangler
-        bookingService.Add(booking);
+        // Sæt den loggede bruger som ejer af abonnementet
+        booking.CustomerId = currentUser.Id;
+
+        // Markér som et abonnement
+        booking.TypeBooking = Booking.BookingType.Abonnement;
+
+        // Status for nye abonnementer
+        booking.Status = "Aktiv";
+        
+        // Gem abonnement
+        await bookingService.Add(booking);
+        
         showModalBooking = true;
     }
 
@@ -155,12 +165,13 @@ else
         showModalBooking = false;
     }
 
+    
     protected override async Task OnInitializedAsync()
     {
+        
         isLoading = true;
         
         var loadedBooking = await localStorage.GetItemAsync<Booking>("booking");
-        
         
 
         if (loadedBooking != null)
