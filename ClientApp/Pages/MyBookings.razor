@@ -30,17 +30,24 @@ else
         <table class="table table-striped table-bordered align-middle">
             <thead class="table-light">
             <tr>
-                <th>Day</th>
-                <th>Price</th>
+                @if (showSubscription)
+                {
+                    <th>Næste pudsedato</th>
+                }
+                else
+                {
+                    <th>Dato</th>
+                }
+                <th>Pris</th>
                 <th>Status</th>
-                <th>InsideJob</th>
+                <th>Indenfor</th>
                 @* Inside/Outdoor interval giver kun mening for abonnementer *@
                 @if (showSubscription)
                 {
-                    <th>InsideInterval</th>
-                    <th>OutdoorInterval</th>
+                    <th>Indenfor Interval</th>
+                    <th>Udenfor Interval</th>
                 }
-                <th>NotesCustomer</th>
+                <th>Kunde kommentar</th>
                 <th>Vinduer</th>
                 <th>Afmeld</th> @* Afmelding/afbestilling af booking *@
             </tr>
@@ -53,13 +60,15 @@ else
                 @foreach (var booking in subscriptionBookings)
                 {
                     <tr>
-                        <td>@booking.Day</td>
+                        <td>@booking.Date.ToString("dddd dd-MM-yyyy", new System.Globalization.CultureInfo("da-DK"))</td>
+                   
                         <td>@booking.Price</td>
                         <td>
                             <span class="status-badge @GetStatusClass(booking.Status)">
                                 @booking.Status
                             </span>
                         </td>
+                        
                         <td>@booking.InsideJob</td>
                         
                         @if (showSubscription)
@@ -93,7 +102,7 @@ else
                 @foreach (var booking in singleBookings)
                 {
                     <tr>
-                        <td>@booking.Day</td>
+                        <td>@booking.Date.ToString("dddd dd-MM-yyyy", new System.Globalization.CultureInfo("da-DK"))</td>
                         <td>@booking.Price</td>
                         <td>
                             <span class="status-badge @GetStatusClass(booking.Status)">
@@ -137,13 +146,13 @@ else
             <table class="table table-striped table-bordered align-middle">
                 <thead class="table-light">
                 <tr>
-                    <th>Day</th>
-                    <th>Price</th>
+                    <th>Dato</th>
+                    <th>Pris</th>
                     <th>Status</th>
-                    <th>InsideJob</th>
-                    <th>InsideInterval</th>
-                    <th>OutdoorInterval</th>
-                    <th>NotesCustomer</th>
+                    <th>Indenfor Job</th>
+                    <th>Indenfor Interval</th>
+                    <th>Udenfor Interval</th>
+                    <th>Kunde kommentar</th>
                     <th>Vinduer</th>
                 </tr>
                 </thead>
@@ -152,7 +161,7 @@ else
                 @foreach (var booking in previousBookings)
                 {
                     <tr>
-                        <td>@booking.Day</td>
+                        <td>@booking.Date.ToString("dddd dd-MM-yyyy", new System.Globalization.CultureInfo("da-DK"))</td>
                         <td>@booking.Price</td>
                         <td>
                             <span class="status-badge @GetStatusClass(booking.Status)">
@@ -257,8 +266,8 @@ else
     }
 
 
-
 @code {
+    
     // Liste til tidligere bookinger (f.eks. afmeldte abonnementer)
     private List<Booking> previousBookings = new();
     
@@ -310,7 +319,7 @@ else
     private void CloseCancelModal()
     {
         showCancelModal = false;       // luk modal uden at afmelde
-        bookingToCancel = null;        // fjerner refenrence til den booking der var valgt til afmelding
+        bookingToCancel = null;        // Nulstil – ingen booking er længere valgt til afmelding
     }
 
     private async Task ConfirmCancelSubscription()
@@ -390,7 +399,7 @@ else
             .ToArray();
         
         subscriptionBookings = bookingArray
-            .Where(b => b.TypeBooking == Booking.BookingType.Abonnement   // Aktive abonnementer, ikke afmledte
+            .Where(b => b.TypeBooking == Booking.BookingType.Abonnement   // Aktive abonnementer, ikke afmeldte
                                && b.Status != "Afmeldt")
             .ToList();
         
