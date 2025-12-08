@@ -17,16 +17,6 @@
     <DataAnnotationsValidator />
     <ValidationSummary />
     
-    <div class="col-md-12 mb-3">
-        <label for="Name">Interval Udenfor</label>
-        <InputNumber id="Name" @bind-Value="booking.OutdoorInterval" class="form-control" />
-    </div>
-    
-    <div class="col-md-12 mb-3">
-        <label for="Name">Interval Indenfor</label>
-        <InputNumber id="Name" @bind-Value="booking.InsideInterval" class="form-control" />
-    </div>
-
     
     <div class="col-md-12 mb-3">
         <label for="Name">Noter</label>
@@ -62,6 +52,13 @@
         <InputCheckbox id="Indenfor" @bind-Value="booking.InsideJob" class="form-check-input"/>
         <label class="form-check-label" for="Indenfor">
             Pudsning indenfor
+        </label>
+    </div>
+    
+    <div class="form-check mb-3">
+        <InputCheckbox id="Udenfor" @bind-Value="booking.InsideJob" class="form-check-input"/>
+        <label class="form-check-label" for="Udenfor">
+            Pudsning udenfor
         </label>
     </div>
     
@@ -111,6 +108,8 @@
 
 @code {
     
+    private User currentUser = new User();
+    
     private Booking booking = new();
     
     private WorkTask worktask = new();
@@ -118,6 +117,8 @@
     private List<string> daycategories = new List<string> { "Mandag","Tirsdag","Onsdag","Torsdag","Fredag","Lørdag","Søndag" };
     
     private List<Booking.BookingType> bookingcategories = new List<Booking.BookingType> { Booking.BookingType.Abonnement , Booking.BookingType.EnkeltBooking};
+    
+    private bool showModalBooking = false;
     
     private async Task HandleSubmit()
     {
@@ -134,22 +135,22 @@
             Mail = "lucas@mail.com"
         };
         
-        booking.CustomerId = "1";
+        // Sæt den loggede bruger som ejer af enkeltbooking
+        booking.CustomerId = currentUser.Id;
         
-        //Sets status to aktiv
-        booking.Status = "afventer";
-        Console.WriteLine("handle submit");
+        // Markér som et enkeltbooking
+        booking.TypeBooking = Booking.BookingType.EnkeltBooking;
         
-        //Sends the ready Booking object booking to BookingService
-        bookingService.Add(booking);
+        // Status for nye enkeltbookinger
+        booking.Status = "Aktiv";
+        Console.WriteLine("handle submit – enkeltbooking for kunde: " + booking.CustomerId);
         
-        //Add Velux vindue håndtering
-        //if (veluxwindow) {booking.InsideJob = true}
+        // Gem booking
+        await bookingService.Add(booking);
         
-        //adding worktask when making booking, should maybe be different
-        //worktaskService.Add(worktask);
+        showModalBooking = true;
         
-        //Refreshes the current Booking object booking to prepare for new booking 
+        // Reset booking-objektet
         booking = new Booking();
         worktask = new WorkTask();
     }
@@ -168,6 +169,17 @@
     
     protected override async Task OnInitializedAsync()
     {
+        var loadedUser = await localStorage.GetItemAsync<User>("currentUser");
+
+        if (loadedUser != null && loadedUser.Usertype != User.UserType.User)
+        {
+            Console.WriteLine("local storage succesfuld");
+            Console.WriteLine("loaded bruger type: " + User.GetLabel(loadedUser.Usertype));
+            currentUser = loadedUser;
+        }
+        
+        Console.WriteLine("bruger type (OneTimeBooking): " + User.GetLabel(currentUser.Usertype));
+        
         windowtypecategories = await windowService.GetAllWindowTypes();
         windowlocationcategories = await windowService.GetAllWindowLocations(); 
         var savedBooking = await localStorage.GetItemAsync<Booking>("pendingBooking");
@@ -185,7 +197,4 @@
         worktask.Windows.Add(window);
         window = new Window();    
     }
-    
-    
-    
 }

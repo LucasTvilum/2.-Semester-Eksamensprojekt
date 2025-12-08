@@ -174,8 +174,8 @@ code {
 
 .status-approved {
     background-color: #e6f2ff;
-    color: #0a3faa;
-    border: 1px solid #3c6fd1;
+    color: #138a13;
+    border: 1px solid #2db92d;
 }
 
 .status-pending {
@@ -200,5 +200,13 @@ code {
     background-color: #f3f3f3;
     color: #444;
     border: 1px solid #ccc;
+}
+
+.status-cancelled {
+    background-color: #f8d7da;
+    color: #842029;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 0.85rem;
 }
 
