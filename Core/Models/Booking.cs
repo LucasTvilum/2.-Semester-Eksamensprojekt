@@ -6,6 +6,8 @@ public class Booking
     public string CustomerId { get; set; } = "";// FK til Kunde
     public string Status { get; set; } = "";
     public decimal Price { get; set; }
+    
+    public DateTime Date { get; set; } = DateTime.Now.Date; //hvis enkeltbooking så skal den bruges
     public string Day { get; set; } = DateTime.Now.ToString("dddd");
 
     public List<Window> Windows { get; set; } = new List<Window>();

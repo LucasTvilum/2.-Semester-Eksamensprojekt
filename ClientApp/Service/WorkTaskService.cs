@@ -62,7 +62,17 @@ public class WorkTaskService : IWorkTask
                 Windows = booking.Windows,         // copy windows
                 Date = outsideDate,
                 InsideJob = booking.InsideJob,                // outside
-                NotesForTask = booking.NotesWindowCleaner
+                NotesForTask = booking.NotesWindowCleaner,
+                Worker = new Worker
+                {
+                    Username = "lucas",
+                    Password = "Lucas",
+                    Admin = true,
+                    Name = "lucas",
+                    PhoneNumber = "123123",
+                    Mail = "lucas@mail.com"
+                }
+                
             });
 
             outsideDate = outsideDate.AddDays(7 * booking.OutdoorInterval);
@@ -81,7 +91,16 @@ public class WorkTaskService : IWorkTask
                     Windows = booking.Windows,
                     Date = insideDate,
                     InsideJob = true,              // inside
-                    NotesForTask = booking.NotesWindowCleaner
+                    NotesForTask = booking.NotesWindowCleaner,
+                    Worker = new Worker
+                    {
+                        Username = "lucas",
+                        Password = "Lucas",
+                        Admin = true,
+                        Name = "lucas",
+                        PhoneNumber = "123123",
+                        Mail = "lucas@mail.com"
+                    }
                 });
 
                 insideDate = insideDate.AddDays(7 * booking.InsideInterval);
@@ -116,6 +135,31 @@ public class WorkTaskService : IWorkTask
         return today.AddDays(daysToAdd);
     }
 
+    public async Task AddSingleBooking(Booking booking)
+    {
+        Console.WriteLine("Add worktask booking service attempted");
+        
+        WorkTask worktask = new WorkTask
+            {
+                BookingId = booking.Id,
+                Windows = booking.Windows,         // copy windows
+                Date = booking.Date, //
+                InsideJob = booking.InsideJob,                // outside
+                NotesForTask = booking.NotesWindowCleaner,
+                Worker = new Worker
+                {
+                    Username = "lucas",
+                    Password = "Lucas",
+                    Admin = true,
+                    Name = "lucas",
+                    PhoneNumber = "123123",
+                    Mail = "lucas@mail.com"
+                }
+            };
+       
+        await http.PostAsJsonAsync($"{url}/api/worktask/singlebooking", worktask);
+        
+    }
 
     public async Task Delete(string id)
     {
