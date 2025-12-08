@@ -40,4 +40,5 @@ app.UseCors("AllowBlazor");
 
 app.MapControllers();
 
+
 app.Run();

@@ -170,6 +170,11 @@
     {
         windowtypecategories = await windowService.GetAllWindowTypes();
         windowlocationcategories = await windowService.GetAllWindowLocations(); 
+        var savedBooking = await localStorage.GetItemAsync<Booking>("pendingBooking");
+        if (savedBooking != null)
+        {
+            booking = savedBooking;
+        }
     }
 
     
