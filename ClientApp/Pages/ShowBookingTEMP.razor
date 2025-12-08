@@ -72,76 +72,110 @@
                 <div class="modal-body">
                     @if (selectedBooking.Windows != null)
                     {
-                        foreach (var window in selectedBooking.Windows)
-                        {
-                            <li>@window.Type.Name - @window.Location.Name</li>
-                        }
+                        <ul>
+                            @foreach (var window in selectedBooking.Windows.ToList())
+                            {
+                                <li>
+                                    @window.Type.Name - @window.Location.Name
+                                    <button class="btn btn-sm btn-danger ms-2" @onclick="() => DeleteWindow(window)">Slet</button>
+                                </li>
+                            }
+                        </ul>
                     }
+
+                    <hr/>
+                    <h6>Tilføj nyt vindue</h6>
+                    <div class="mb-2">
+                        <label>Type</label>
+                        <InputSelect TValue="string" @bind-Value="newWindowTypeId" class="form-select">
+                            <option value="">Vælg type</option>
+                            @foreach (var type in windowtypecategories)
+                            {
+                                <option value="@type.Id">@type.Name</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="mb-2">
+                        <label>Location</label>
+                        <InputSelect TValue="string" @bind-Value="newWindowLocationId" class="form-select">
+                            <option value="">Vælg lokation</option>
+                            @foreach (var loc in windowlocationcategories)
+                            {
+                                <option value="@loc.Id">@loc.Name</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <button class="btn btn-success" @onclick="AddWindow">Tilføj</button>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" @onclick="CloseModalWindows">Close</button>
+                    <button class="btn btn-primary" @onclick="SaveWindows">Gem ændringer</button>
                 </div>
             </div>
         </div>
     </div>
-}
 
-@if (showModalBooking)
-{
-    <div class="modal d-block" style="background-color: rgba(0,0,0,0.5);">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5>Vinduer</h5>
-                    <button class="btn-close" @onclick="CloseModalBooking"></button>
-                </div>
-                <div class="modal-body">
-                    @if (selectedBooking.Status != null)
-                    {
-                        <h2>Vinduer</h2>
-                        <h1>@selectedBooking.Status</h1>
-                        <div class="col-md-12 mb-3">
-                            <label for="Category">Booking Status</label>
-                            <InputSelect id="Category" @bind-Value="selectedstatus"> 
-                                @foreach (var cat in statuscategories)
-                                {
-                                    <option value="@cat">@cat</option>
-                                }
-                            </InputSelect>
-                        </div>
-                    }
-                </div>
-                <button class="btn btn-success" @onclick="CloseModalBookingStatusUpdate">Accept</button>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" @onclick="CloseModalBooking">Close</button>
+
+    @if (showModalBooking)
+    {
+        <div class="modal d-block" style="background-color: rgba(0,0,0,0.5);">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5>Vinduer</h5>
+                        <button class="btn-close" @onclick="CloseModalBooking"></button>
+                    </div>
+                    <div class="modal-body">
+                        @if (selectedBooking.Status != null)
+                        {
+                            <h2>Vinduer</h2>
+                            <h1>@selectedBooking.Status</h1>
+                            <div class="col-md-12 mb-3">
+                                <label for="Category">Booking Status</label>
+                                <InputSelect id="Category" @bind-Value="selectedstatus">
+                                    @foreach (var cat in statuscategories)
+                                    {
+                                        <option value="@cat">@cat</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                        }
+                    </div>
+                    <button class="btn btn-success" @onclick="CloseModalBookingStatusUpdate">Accept</button>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" @onclick="CloseModalBooking">Close</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-}
+    
 
 
 @code {
-    
+
+    private string newWindowTypeId;
+    private string newWindowLocationId;
+
+
     [Inject] private IBooking bookingService { get; set; }
-    
+
     [Inject] private IWindow windowService { get; set; }
-    
+
     private List<WindowType> windowtypecategories = new List<WindowType>();
     private List<WindowLocation> windowlocationcategories = new List<WindowLocation>();
-    
+
     private List<Booking> bookinglist = new List<Booking>();
     private Booking[] bookingArray;
-    
+
     private List<Window> windowlist = new List<Window>();
     private Window[] windowArray;
-    
+
     private bool showModalWindows = false;
     private bool showModalBooking = false;
     private Booking selectedBooking;
     private string selectedstatus = "";
-    
-    private List<string> statuscategories = new List<string> { "Godkendt", "Afventer","Afvist","Færdig","Aktiv"};
+
+    private List<string> statuscategories = new List<string> { "Godkendt", "Afventer", "Afvist", "Færdig", "Aktiv" };
 
     private void OpenModalWindows(Booking booking)
     {
@@ -153,7 +187,7 @@
     {
         showModalWindows = false;
     }
-    
+
     private void OpenModalBooking(Booking booking)
     {
         selectedBooking = booking;
@@ -165,21 +199,21 @@
     {
         showModalBooking = false;
     }
-    
+
     private async Task CloseModalBookingStatusUpdate()
     {
         selectedBooking.Status = selectedstatus;
         await bookingService.UpdateBooking(selectedBooking);
-        
-        if(selectedBooking.Status == "Godkendt")
+
+        if (selectedBooking.Status == "Godkendt")
         {
             Console.WriteLine("Attempt at adding subscription");
             await workTaskService.AddSubscription(selectedBooking);
         }
-        
+
         showModalBooking = false;
     }
-    
+
 
 
     private async Task UpdateBookingStatus()
@@ -187,12 +221,12 @@
         await bookingService.UpdateBooking(selectedBooking);
     }
 
-    
+
     protected override async Task OnInitializedAsync()
     {
         windowtypecategories = await windowService.GetAllWindowTypes();
         windowlocationcategories = await windowService.GetAllWindowLocations();
-        
+
         windowArray = await windowService.GetAll();
         windowlist = windowArray.ToList();
         bookingArray = await bookingService.GetAll();
@@ -202,4 +236,43 @@
             Console.WriteLine(VARIABLE.Id);
         }
     }
+    private void AddWindow()
+    {
+        if (!string.IsNullOrWhiteSpace(newWindowTypeId) &&
+            !string.IsNullOrWhiteSpace(newWindowLocationId))
+        {
+            var type = windowtypecategories.FirstOrDefault(t => t.Id == newWindowTypeId);
+            var location = windowlocationcategories.FirstOrDefault(l => l.Id == newWindowLocationId);
+
+            if (type != null && location != null)
+            {
+                if (selectedBooking.Windows == null)
+                    selectedBooking.Windows = new List<Window>();
+
+                selectedBooking.Windows.Add(new Window
+                {
+                    Type = type,
+                    Location = location
+                });
+
+                newWindowTypeId = null;
+                newWindowLocationId = null;
+            }
+        }
+    }
+
+    private void DeleteWindow(Window window)
+    {
+        selectedBooking.Windows.Remove(window);
+    }
+
+    private async Task SaveWindows()
+    {
+        await bookingService.UpdateBooking(selectedBooking);
+        showModalWindows = false;
+    }
+    
+}
+}
+
 }
