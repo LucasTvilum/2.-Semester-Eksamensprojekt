@@ -9,6 +9,8 @@ public interface IWorkTask
 
     Task AddSubscription(Booking booking);
     
+    Task AddSingleBooking(Booking booking);
+    
     Task UpdateWorkTask(WorkTask task);
 
     Task Delete(string taskid);

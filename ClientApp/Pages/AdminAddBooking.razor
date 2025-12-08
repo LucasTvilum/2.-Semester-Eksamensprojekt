@@ -1,4 +1,5 @@
 @using System.Diagnostics
+@using Blazored.LocalStorage
 @using ClientApp.Components
 @using Core.Models
 @using ClientApp.Service
@@ -7,6 +8,7 @@
 @inject ICustomer customerService
 @inject IWorkTask worktaskService
 @inject IWindow windowService
+@inject ILocalStorageService localStorage
 @page "/AdminAddBooking"
 <h3>Admin kunde og booking oprettelse</h3>
 
@@ -130,6 +132,10 @@
     
     private WorkTask worktask = new();
     
+    private User user = new();
+
+    private User LoadedUser = new();
+    
     private List<string> daycategories = new List<string> { "Mandag","Tirsdag","Onsdag","Torsdag","Fredag","Lørdag","Søndag" };
     
     private List<string> bookingcategories = new List<string> { "Abonnement", "Enkelt Booking"};
@@ -150,7 +156,7 @@
             Mail = "lucas@mail.com"
         };
         
-        //Sets status to aktiv
+        //sætter status til afventer, klar til at blive godkendt
         booking.Status = "afventer";
         Console.WriteLine("handle submit");
         
@@ -160,12 +166,8 @@
         //Add Velux vindue håndtering
         //if (veluxwindow) {booking.InsideJob = true}
         
-        //adding worktask when making booking, should maybe be different
-        worktaskService.Add(worktask);
-        
         //Refreshes the current Booking object booking to prepare for new booking 
         booking = new Booking();
-        worktask = new WorkTask();
     }
     private List<Booking.BookingType> bookingtypecategories = Enum.GetValues<Booking.BookingType>().ToList();
     private List<WindowType> windowtypecategories = new List<WindowType>();
@@ -179,6 +181,15 @@
     
     protected override async Task OnInitializedAsync()
     {
+        var loadedUser = await localStorage.GetItemAsync<User>("currentUser");
+
+
+        if (loadedUser != null)
+        {
+            user = loadedUser;
+            LoadedUser = loadedUser;
+        }
+        
         windowtypecategories = await windowService.GetAllWindowTypes();
         windowlocationcategories = await windowService.GetAllWindowLocations(); 
     }

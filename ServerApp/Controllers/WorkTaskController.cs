@@ -29,8 +29,14 @@ namespace ServerApp.Controllers
         
         [HttpPost("subscription")]
         public void AddSubscription([FromBody]List<WorkTask> workTasks) {
-            Console.WriteLine("Add worktask in controller");
+            Console.WriteLine("Add worktask subscription in controller");
             workTaskRepo.AddSubscription(workTasks);
+        }
+        
+        [HttpPost("singlebooking")]
+        public void AddSingleBooking([FromBody]WorkTask workTask) {
+            Console.WriteLine("Add worktask single booking in controller");
+            workTaskRepo.Add(workTask);
         }
 
 

@@ -73,7 +73,7 @@
     }
 </div>
     @code {
-    [Parameter] public Booking Booking { get; set; } = new();
+    [Parameter] public Booking booking { get; set; } = new();
     [Parameter] public EventCallback<string> OnSelectBookingType { get; set; }
     private WindowLocation selectedLocation;
     
