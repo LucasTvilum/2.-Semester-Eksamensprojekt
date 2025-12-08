@@ -9,9 +9,10 @@
 }
 else
 {
-    @* Hvis brugeren slet ingen bookinger har *@
-    if (bookingArray == null || bookingArray.Length == 0)
+    @* Hvis brugeren INGEN AKTIVE bookinger har (hverken abonnement eller enkeltbooking) *@
+    @if (!subscriptionBookings.Any() && !singleBookings.Any())
     {
+        <h3>Dine bookinger</h3>
         <p>Du har ingen bookinger tilgængelige endnu.</p>
     }
     else
@@ -25,7 +26,7 @@ else
             <h3>Dine bookinger</h3>
         }
 
-        //viser alle brugerens bookinger
+        @*viser alle brugerens bookinger*@
         <table class="table table-striped table-bordered align-middle">
             <thead class="table-light">
             <tr>
@@ -33,18 +34,22 @@ else
                 <th>Price</th>
                 <th>Status</th>
                 <th>InsideJob</th>
-                <th>InsideInterval</th>
-                <th>OutdoorInterval</th>
+                @* Inside/Outdoor interval giver kun mening for abonnementer *@
+                @if (showSubscription)
+                {
+                    <th>InsideInterval</th>
+                    <th>OutdoorInterval</th>
+                }
                 <th>NotesCustomer</th>
                 <th>Vinduer</th>
-                <th>Hanlinger</th> @* Afmelding, afbestilling, skift af ugedag osv *@
+                <th>Afmeld</th> @* Afmelding/afbestilling af booking *@
             </tr>
             </thead>
 
             <tbody>
             @if (showSubscription)
             {
-                @* Viser abonnementer på et tidspunkt hehe *@
+                @* Viser abonnementer *@
                 @foreach (var booking in subscriptionBookings)
                 {
                     <tr>
@@ -56,8 +61,12 @@ else
                             </span>
                         </td>
                         <td>@booking.InsideJob</td>
-                        <td>@booking.InsideInterval</td>
-                        <td>@booking.OutdoorInterval</td>
+                        
+                        @if (showSubscription)
+                        {
+                            <td>@booking.InsideInterval</td>
+                            <td>@booking.OutdoorInterval</td>
+                        }
                         <td>@booking.NotesCustomer</td>
                         <td>
                             <button class="btn btn-sm btn-primary"
@@ -70,7 +79,7 @@ else
                             @if (booking.Status == "Aktiv")
                             {
                                 <button class="btn btn-sm btn-outline-danger"
-                                        @onclick="() => CancelSubscription(booking)">
+                                        @onclick="() => OpenCancelModal(booking)">
                                     Afmeld
                                 </button>
                             }
@@ -80,9 +89,67 @@ else
             }
             else
             {
-                
                 @* Viser enkeltbookinger *@
                 @foreach (var booking in singleBookings)
+                {
+                    <tr>
+                        <td>@booking.Day</td>
+                        <td>@booking.Price</td>
+                        <td>
+                            <span class="status-badge @GetStatusClass(booking.Status)">
+                                @booking.Status
+                            </span>
+                        </td>
+                        <td>@booking.InsideJob</td>
+                        <td>@booking.NotesCustomer</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary"
+                                    @onclick="() => OpenModalWindows(booking)">
+                                Vis Vinduer
+                            </button>
+                        </td>
+                        <td>
+                            @* Afbestil enkeltbooking, hvis den stadig er gældene *@
+                            @if (booking.Status == "Aktiv" || booking.Status == "Godkendt" || booking.Status == "Afventer")
+                            {
+                                <button class="btn btn-sm btn-outline-danger"
+                                        @onclick="() => OpenCancelModal(booking)">
+                                    Afbestil
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    }
+
+    @*viser indhold under 'tidligere bookinger*@
+    <h3 class="mt-4">Tidligere bookinger</h3>
+
+        @if (previousBookings == null || !previousBookings.Any())
+        {
+            <p>Du har ingen tidligere bookinger.</p>
+        }
+        else
+        {
+            <table class="table table-striped table-bordered align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th>Day</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>InsideJob</th>
+                    <th>InsideInterval</th>
+                    <th>OutdoorInterval</th>
+                    <th>NotesCustomer</th>
+                    <th>Vinduer</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                @foreach (var booking in previousBookings)
                 {
                     <tr>
                         <td>@booking.Day</td>
@@ -104,10 +171,10 @@ else
                         </td>
                     </tr>
                 }
-            }
-            </tbody>
-        </table>
-
+                </tbody>
+            </table>
+        }
+        
         @if (showModalWindows)
         {
             <div class="modal d-block" style="background-color: rgba(0,0,0,0.5);">
@@ -133,30 +200,94 @@ else
                 </div>
             </div>
         }
+        
+        @if (showCancelModal)
+        {
+            <div class="modal d-block" style="background-color: rgba(0,0,0,0.5);">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                       
+                        <div class="modal-header">
+                            @* Afmeld eller afbestil?, kommer an på om der er tale om et abonnement eller ejeltbooking *@
+                            @if (bookingToCancel?.TypeBooking == Booking.BookingType.Abonnement)
+                            {
+                                <h5>Afmeld abonnement</h5>
+                            }
+                            else
+                            {
+                                <h5>Afbestil booking</h5>
+                            }
+                            <button class="btn-close" @onclick="CloseCancelModal"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            @if (bookingToCancel?.TypeBooking == Booking.BookingType.Abonnement)
+                            {
+                                <p>Er du sikker på, at du vil afmelde dit abonnement hos Tvillum?</p>
+                            }
+                            else
+                            {
+                                <p>Er du sikker på, at du vil afbestille denne booking hos Tvillum?</p>
+                            }
+                        </div>
+                        
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" @onclick="CloseCancelModal">
+                                Gå tilbage
+                            </button>
+
+                            @if (bookingToCancel?.TypeBooking == Booking.BookingType.Abonnement)
+                            {
+                                <button class="btn btn-danger" @onclick="ConfirmCancelSubscription">
+                                    Afmeld
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-danger" @onclick="ConfirmCancelSubscription">
+                                    Afbestil
+                                </button>
+                            }
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
     }
-}
+
 
 
 @code {
+    // Liste til tidligere bookinger (f.eks. afmeldte abonnementer)
+    private List<Booking> previousBookings = new();
     
-    // bookingService bruges til at hente ALLE bookinger fra API'et.
+    // styrer om "er du sikker?"-modalen for afmeld/afbestil vises
+    private bool showCancelModal = false;  
+    
+    // den booking, der er ved at blive afmeldt/afbestilt af kunden
+    private Booking bookingToCancel;        
+    
+    // Service der henter/gemmer bookinger via API'et.
     [Inject] private IBooking bookingService { get; set; }
     
-    // Liste til ALLE abonnementer for den aktuelle bruger.
+    // Liste til alle abonnementer for den aktuelle bruger (aktive i UI)
     private List<Booking> subscriptionBookings = new();
     
-    // Liste til ALLE enkelt-bookinger for den aktuelle bruger.
+    // Liste til alle enkelt-bookinger for den aktuelle bruger (aktive i UI)
     private List<Booking> singleBookings = new();
     
-    // Array til at gemme alle bookinger, før de bliver fordelt i de to lister.
+    // Array med ALLE bookinger for brugeren - bruges som rå data før filtrering (de bliver fordelt i tre lister - subscription, single og previousBookings)
     private Booking[] bookingArray;
     
+    //Styrer 'vis vinduer' modalen
     private bool showModalWindows = false;
     private Booking selectedBooking;
     
     // Bestemmer hvilken tabel der skal vises i UI'et.
     // TRUE = vis abonnementer, FALSE = vis enkeltbookinger.
     private bool showSubscription = false;
+    
     
     private void OpenModalWindows(Booking booking)
     {
@@ -170,16 +301,57 @@ else
         showModalWindows = false;
     }
     
-    private async Task CancelSubscription(Booking booking)
+    private void OpenCancelModal(Booking booking)
     {
-        // Skift status til “Afmeldt”
-        booking.Status = "Afmeldt";
-    
+        bookingToCancel = booking;     // gem bookingen, som kunden vil afmelde
+        showCancelModal = true;        // vis modal
+    }
+
+    private void CloseCancelModal()
+    {
+        showCancelModal = false;       // luk modal uden at afmelde
+        bookingToCancel = null;        // fjerner refenrence til den booking der var valgt til afmelding
+    }
+
+    private async Task ConfirmCancelSubscription()
+    {
+        if (bookingToCancel == null)
+        {
+            showCancelModal = false;
+            return;
+        }
+
+        // Kunden er gået igennem med annulleringen  ->  sæt status til “Afmeldt”
+        bookingToCancel.Status = "Afmeldt";
+
         // Gem ændringen i databasen
-        await bookingService.UpdateBooking(booking);
-    
-        //debugging
-        Console.WriteLine($"Abonnement afmeldt for booking: {booking.Id}");
+        await bookingService.UpdateBooking(bookingToCancel);
+
+        // Fjern fra den AKTIVE abonnementsliste i UI (så den forsvinder fra "Dine abonnementer")
+        if (bookingToCancel.TypeBooking == Booking.BookingType.Abonnement)
+        {
+            subscriptionBookings.Remove(bookingToCancel);
+        }
+        else if (bookingToCancel.TypeBooking == Booking.BookingType.EnkeltBooking)
+        {
+            singleBookings.Remove(bookingToCancel);
+        }
+
+        // Flyt til 'tidligere bookinger', så kunden stadig kan se den
+        if (!previousBookings.Contains(bookingToCancel))
+        {
+            previousBookings.Add(bookingToCancel);
+            StateHasChanged(); // sikrer at UI opdateres med det samme
+        }
+        
+        // Hvis der ikke er flere abonnementer, så skift overskrift til 'dine bookinger' (hvor enkeltbookinger kommer under hvis kunden har nogle
+        showSubscription = subscriptionBookings.Any();
+
+        Console.WriteLine($"Abonnement afmeldt for booking: {bookingToCancel.Id}");
+
+        // Luk modal og ryd
+        showCancelModal = false;
+        bookingToCancel = null;
     }
     
     private string GetStatusClass(string status)
@@ -196,9 +368,11 @@ else
         };
     }
     
-    
-    // Her henter vi ALLE bookinger og deler dem op,
-    // så vi kan vise abonnement eller enkeltbooking automatisk.
+    //Her sker filtreringen
+    // Vi henter ALLE bookinger og deler dem op i:
+    // - aktive abonnementer
+    // - aktive enkeltbookinger
+    // - tidligere bookinger
     protected override async Task OnInitializedAsync()
     {
         // Hvis ingen er logget ind, skal vi ikke prøve at hente bookinger
@@ -207,6 +381,7 @@ else
             bookingArray = Array.Empty<Booking>();
             subscriptionBookings = new List<Booking>();
             singleBookings = new List<Booking>();
+            previousBookings = new List<Booking>();
             return;
         }
         
@@ -215,18 +390,29 @@ else
             .ToArray();
         
         subscriptionBookings = bookingArray
-            .Where(b => b.TypeBooking == Booking.BookingType.Abonnement)   // abonnement - Filtrere kun bookinger, der er markeret som abonnement (IsSubscription = true).
+            .Where(b => b.TypeBooking == Booking.BookingType.Abonnement   // Aktive abonnementer, ikke afmledte
+                               && b.Status != "Afmeldt")
             .ToList();
         
         
+        // Aktive enkeltbooking (ikke afmeldte eller færdige).
         singleBookings = bookingArray
-            .Where(b => b.TypeBooking == Booking.BookingType.EnkeltBooking)  // enkeltbooking - Filtrere kun bookinger, der IKKE er abonnement (enkeltbookinger).
+            .Where(b => b.TypeBooking == Booking.BookingType.EnkeltBooking  
+                         && b.Status != "Afmeldt"
+                         && b.Status != "Færdig")
             .ToList();
         
+        // Tidligere bookinger
+        // - Alt der er "Afmledt"
+        // - Enkeltbookinger der er "Færdig"
+        previousBookings = bookingArray
+            .Where(b => b.Status == "Afmeldt" || 
+            (b.TypeBooking == Booking.BookingType.EnkeltBooking && b.Status == "Færdig"))
+            .ToList();
         
         // Vælger automatisk hvilken tabel der skal vises:
-        // Hvis brugeren har abonnementer → vis abonnement.
-        // Hvis ikke → vis enkeltbooking.
+        // Hvis der er mindst ét abonnement → start med at vise abonnementer
+        // Ellers vis enkeltbookinger
         showSubscription = subscriptionBookings.Any();
         
         // Debugging: skriver alle bookingers ID ud i konsollen.
