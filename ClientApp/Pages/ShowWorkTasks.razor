@@ -74,21 +74,47 @@
                         <ul>
                             @foreach (var w in selectedTask.Windows)
                             {
-                                <li>@w.Type.Name – @w.Location.Name</li>
+                                <li>
+                                    @w.Type.Name – @w.Location.Name
+                                    <button class="btn btn-sm btn-danger ms-2" @onclick="() => DeleteWindow(w)">Slet</button>
+                                </li>
                             }
                         </ul>
                     }
+                    
+                    <hr/>
+                    <h6>Tilføj nyt vindue</h6>
+                    <div class="mb-2">
+                        <label>Type</label>
+                        <InputSelect TValue="string" @bind-Value="newWindowTypeId" class="form-select">
+                            <option value="">Vælg type</option>
+                            @foreach (var type in windowtypecategories)
+                            {
+                                <option value="@type.Id">@type.Name</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="mb-2">
+                        <label>Location</label>
+                        <InputSelect TValue="string" @bind-Value="newWindowLocationId" class="form-select">
+                            <option value="">Vælg lokation</option>
+                            @foreach (var loc in windowlocationcategories)
+                            {
+                                <option value="@loc.Id">@loc.Name</option>
+                            }
+                        </InputSelect>
                 </div>
 
+                    <button class="btn btn-success" @onclick="AddWindow">Tilføj</button>
+                </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" @onclick="CloseTaskWindows">Close</button>
+                   <!---- <button class="btn btn-primary" @onclick="SaveWindows">Gem ændringer</button> --->
                 </div>
-
             </div>
         </div>
     </div>
 }
-
 <!-- -------------------- EDIT TASK MODAL -------------------- -->
 
 @if (showEditModal)
@@ -127,56 +153,102 @@
 }
 
 
-@code {
-    private List<WorkTask> taskList = new();
-    private WorkTask selectedTask;
+    @code {
 
-    private bool showWindowsModal = false;
-    private bool showEditModal = false;
 
-    // Edit fields
-    private bool editInsideJob;
-    private string editNotes;
+        private string newWindowTypeId;
+        private string newWindowLocationId;
 
-    protected override async Task OnInitializedAsync()
-    {
-        taskList = (await workTaskService.GetAll()).ToList();
+        private List<WindowType> windowtypecategories = new List<WindowType>();
+        private List<WindowLocation> windowlocationcategories = new List<WindowLocation>();
+
+        private List<WorkTask> taskList = new();
+        private WorkTask selectedTask;
+
+        private bool showWindowsModal = false;
+        private bool showEditModal = false;
+
+        // Edit fields
+        private bool editInsideJob;
+        private string editNotes;
+
+        protected override async Task OnInitializedAsync()
+        {
+            taskList = (await workTaskService.GetAll()).ToList();
+        }
+
+        private void OpenTaskWindows(WorkTask task)
+        {
+            selectedTask = task;
+            showWindowsModal = true;
+        }
+
+        private void CloseTaskWindows()
+        {
+            showWindowsModal = false;
+        }
+
+        private void OpenEditTask(WorkTask task)
+        {
+            selectedTask = task;
+
+            // Copy fields into edit variables
+            editInsideJob = task.InsideJob;
+            editNotes = task.NotesForTask;
+
+            showEditModal = true;
+        }
+
+        private void CloseEditTask()
+        {
+            showEditModal = false;
+        }
+
+        private async Task SaveEditedTask()
+        {
+            selectedTask.InsideJob = editInsideJob;
+            selectedTask.NotesForTask = editNotes;
+
+            await workTaskService.UpdateWorkTask(selectedTask);
+
+            showEditModal = false;
+        }
+        private void AddWindow()
+        {
+            if (!string.IsNullOrWhiteSpace(newWindowTypeId) &&
+                !string.IsNullOrWhiteSpace(newWindowLocationId))
+            {
+                var type = windowtypecategories.FirstOrDefault(t => t.Id == newWindowTypeId);
+                var location = windowlocationcategories.FirstOrDefault(l => l.Id == newWindowLocationId);
+
+                if (type != null && location != null)
+                {
+                    if (selectedTask.Windows == null)
+                        selectedTask.Windows = new List<Window>();
+
+                    selectedTask.Windows.Add(new Window
+                    {
+                        Type = type,
+                        Location = location
+                    });
+
+                    newWindowTypeId = null;
+                    newWindowLocationId = null;
+                }
+            }
+        }
+
+        private void DeleteWindow(Window window)
+        {
+            selectedTask.Windows.Remove(window);
+        }
+
+       /* private async Task SaveWindows()
+        {
+            selectedTask.BookingId
+            await bookingService.UpdateBooking(selectedTask);
+            showWindowsModal = false;
+        }*/
     }
 
-    private void OpenTaskWindows(WorkTask task)
-    {
-        selectedTask = task;
-        showWindowsModal = true;
-    }
-
-    private void CloseTaskWindows()
-    {
-        showWindowsModal = false;
-    }
-
-    private void OpenEditTask(WorkTask task)
-    {
-        selectedTask = task;
-
-        // Copy fields into edit variables
-        editInsideJob = task.InsideJob;
-        editNotes = task.NotesForTask;
-
-        showEditModal = true;
-    }
-
-    private void CloseEditTask()
-    {
-        showEditModal = false;
-    }
-
-    private async Task SaveEditedTask()
-    {
-        selectedTask.InsideJob = editInsideJob;
-        selectedTask.NotesForTask = editNotes;
-
-        await workTaskService.UpdateWorkTask(selectedTask);
-
-        showEditModal = false;
-    }
-}
+    
