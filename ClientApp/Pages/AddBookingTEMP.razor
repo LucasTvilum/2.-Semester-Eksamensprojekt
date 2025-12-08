@@ -154,11 +154,8 @@
         
         private Booking booking = new();
 
-        private WorkTask worktask = new()
-        {
-            Windows = new List<Window>()
-        };
-
+        private WorkTask worktask = new();
+    
         private List<string> daycategories = new List<string> { "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag" };
 
         private List<string> bookingcategories = new List<string> { "Abonnement", "Enkelt Booking" };
@@ -196,10 +193,7 @@
             //Refreshes the current Booking object booking to prepare for new booking 
             booking = new Booking();
 
-            worktask = new WorkTask
-            {
-                Windows = new List<Window>()
-            };
+            worktask = new WorkTask();
         }
 
         private List<WindowType> windowtypecategories = new List<WindowType>();
@@ -239,7 +233,6 @@
         {
             window.Price = window.CalculatePrice();
             booking.Windows.Add(window);
-            worktask.Windows.Add(window);
             window = new Window();
             StateHasChanged();
         }

@@ -9,6 +9,8 @@ public interface IUser
 
     Task Add(User user);
     
+    Task<Customer> GetCustomerById(string userid);
+    
     Task Delete(string userid);
     
     Task<User> ValidateUser(User user);
