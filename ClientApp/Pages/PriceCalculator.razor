@@ -1,16 +1,170 @@
 ﻿@page "/PriceCalculator"
 @using Core.Models
 @using ClientApp.Components
+@using ClientApp.Service
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject IBooking bookingService
 @inject NavigationManager nav
 
 <h3>Price Calculator</h3>
 
 <WindowPriceCalculator Booking="@booking" OnSelectBookingType="HandleBookingType" />
+@if (showSubscriptionModal)
+{
+    <div class="modal d-block" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5>Opret abonnement</h5>
+                    <button class="btn-close" @onclick="() => showSubscriptionModal = false"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <EditForm Model="@booking" OnValidSubmit="@HandleSubscriptionSubmit" class="row p-3">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="col-md-12 mb-3">
+                            <label>Uge interval udenfor:</label>
+                            <InputSelect @bind-Value="booking.OutdoorInterval">
+                                @foreach (var cat in intervalcategories)
+                                {
+                                    <option value="@cat">@cat</option>
+                                }
+                            </InputSelect>
+                        </div>
+                        
+                        <div class="col-md-12 mb-3">
+                            <label>Uge interval indenfor:</label>
+                            <InputSelect @bind-Value="booking.InsideInterval">
+                                @foreach (var cat in intervalcategories)
+                                {
+                                    <option value="@cat">@cat</option>
+                                }
+                            </InputSelect>
+                        </div>
+
+                        @if (booking.InsideJob)
+                        {
+                            <div class="col-md-12 mb-3">
+                                <label>Uge interval indenfor:</label>
+                                <InputSelect @bind-Value="booking.InsideInterval">
+                                    @foreach (var cat in intervalcategories)
+                                    {
+                                        <option value="@cat">@cat</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                        }
+
+                        <div class="col-md-12 mb-3">
+                            <label>Noter</label>
+                            <InputText class="form-control" @bind-Value="booking.NotesCustomer" />
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label>Dag:</label>
+                            <InputSelect @bind-Value="booking.Day">
+                                @foreach (var d in daycategories)
+                                {
+                                    <option value="@d">@d</option>
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Opret abonnement</button>
+                    </EditForm>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+@if (showOneTimeModal)
+{
+    <div class="modal d-block" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5>Enkeltbooking</h5>
+                    <button class="btn-close" @onclick="() => showOneTimeModal = false"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <KalenderComponentv2 />
+
+                    <EditForm Model="@booking" OnValidSubmit="@HandleOneTimeSubmit" class="mt-3">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        
+                        <div class="mb-3">
+                            <label>Noter</label>
+                            <InputText class="form-control" @bind-Value="booking.NotesCustomer" />
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Opret enkeltbooking</button>
+                    </EditForm>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+}
 
 @code {
     private Booking booking = new();
+    private bool showOneTimeModal = false;
+    private bool showSubscriptionModal = false;
+    private List<int> intervalcategories = new() { 2, 4, 8, 12, 24 };
+    private List<string> daycategories = new() { "Mandag","Tirsdag","Onsdag","Torsdag","Fredag","Lørdag","Søndag" };
     
+    private async Task HandleSubscriptionSubmit()
+    {
+        // hent bruger OG sæt customer id FØR du sender til backend
+        var user = await localStorage.GetItemAsync<User>("currentUser");
+        booking.CustomerId = user?.Id;
+
+        booking.TypeBooking = Booking.BookingType.Abonnement;
+        booking.Status = "afventer";
+
+        // await så kaldet fuldføres før vi lukker modal / nulstiller
+        await bookingService.Add(booking);
+
+        // ryd pending og luk modal
+        await localStorage.RemoveItemAsync("pendingBooking");
+        showSubscriptionModal = false;
+        booking = new Booking();
+    }
+
+    private async Task HandleOneTimeSubmit()
+    {
+        var user = await localStorage.GetItemAsync<User>("currentUser");
+        booking.CustomerId = user?.Id;
+
+        booking.TypeBooking = Booking.BookingType.EnkeltBooking;
+        booking.Status = "afventer";
+
+        await bookingService.Add(booking);
+
+        await localStorage.RemoveItemAsync("pendingBooking");
+        showOneTimeModal = false;
+        booking = new Booking();
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var saved = await localStorage.GetItemAsync<Booking>("pendingBooking");
+        if (saved != null)
+            booking = saved;
+    }
     private async Task HandleBookingType(string type)
     {
         var user = await localStorage.GetItemAsync<User>("currentUser");
@@ -26,12 +180,10 @@
         }
 
         if (type == "Enkelt")
-        {
-            nav.NavigateTo("/OneTimeBooking");
-        }
-        else if (type == "Abonnement")
-        {
-            nav.NavigateTo("/SubscriptionBooking");
-        }
+            showOneTimeModal = true;
+
+        if (type == "Abonnement")
+            showSubscriptionModal = true;
+    }
     }
 }
