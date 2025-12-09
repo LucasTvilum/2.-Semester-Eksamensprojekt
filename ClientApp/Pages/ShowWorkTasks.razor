@@ -1,4 +1,5 @@
 @page "/ShowWorkTasks"
+@using ClientApp.Components
 @using ClientApp.Service
 @using Core.Models
 @inject UserState userState
@@ -6,7 +7,9 @@
 @inject IBooking bookingService
 @inject IUser userService
 
-<h3>Alle arbejdsopgaver (WorkTasks)</h3>
+<ShowTaskKalenderKomponent OnDateSelected="HandleDateSelected"/>
+
+<h3>Arbejdssopgaver for valgte dato</h3>
 
 @if (!userState.IsWorker)
 {
@@ -24,24 +27,20 @@
             <th>Actions</th>
         </tr>
     </thead>
-
     <tbody>
-        @if (taskList != null)
+        @if (FilteredTasks.Any())
         {
-            @foreach (var t in taskList)
+            @foreach (var t in FilteredTasks)
             {
                 <tr>
                     <td>@t.Date.ToShortDateString()</td>
                     <td>@(t.InsideJob ? "Ja" : "Nej")</td>
+                    <td>@bookinglist.First(b => b.Id == t.BookingId).Windows.Count</td>
                     <td>@t.NotesForTask</td>
                     <td>@t.Worker.Name</td>
-
                     <td>
                         <button class="btn btn-sm btn-primary"
-                                @onclick="() => OpenTaskWindows(t)">
-                            Vis Vinduer
-                        </button>
-
+                                @onclick="() => OpenTaskWindows(t)">Vis Vinduer</button>
                         <button class="btn btn-sm btn-warning"
                                 @onclick="() => OpenEditTask(t)">
                             Rediger
@@ -55,9 +54,14 @@
                 </tr>
             }
         }
+        else
+        {
+            <tr><td colspan="6">Ingen opgaver for denne dato</td></tr>
+        }
     </tbody>
 </table>
 
+<h3>Alle arbejdsopgaver (WorkTasks)</h3>
 
 <!-- -------------------- WINDOWS MODAL -------------------- -->
 
@@ -160,27 +164,29 @@
     </div>
 }
 
+        }
+    </tbody>
+</table>
 
 
 @code {
     private List<WorkTask> taskList = new();
     private List<Customer> customerlist = new();
     private List<Booking> bookinglist = new();
-    
-    private WorkTask selectedTask;
 
+    private WorkTask selectedTask;
     private bool showWindowsModal = false;
     private bool showEditModal = false;
+    private bool showCustomerModal = false;
+    private Customer customer;
 
-    // Edit fields
     private bool editInsideJob;
     private string editNotes;
-    
-    @code {
 
-        private bool showCustomerModal = false;
-        private Customer customer;
-
+    private string newWindowTypeId;
+    private string newWindowLocationId;
+    private List<WindowType> windowtypecategories = new List<WindowType>();
+    private List<WindowLocation> windowlocationcategories = new List<WindowLocation>();
         private void ShowCustomerForTask(WorkTask task)
         {
             // 1. Find booking based on BookingId
@@ -200,11 +206,12 @@
             showCustomerModal = true;
         }
 
-        private void CloseCustomerModal()
-        {
-            showCustomerModal = false;
-        }
-    }
+    
+    private DateTime? selectedDate;
+    private List<WorkTask> FilteredTasks =>
+        selectedDate.HasValue
+            ? taskList.Where(t => t.Date.Date == selectedDate.Value.Date).ToList()
+            : new List<WorkTask>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -213,40 +220,72 @@
         taskList = (await workTaskService.GetAll()).ToList();
     }
 
-    private void OpenTaskWindows(WorkTask task)
+    private void HandleDateSelected(DateTime date)
     {
-        selectedTask = task;
-        showWindowsModal = true;
+        selectedDate = date;
+        Console.WriteLine(selectedDate);
     }
 
-    private void CloseTaskWindows()
-    {
-        showWindowsModal = false;
-    }
+
+    private void OpenTaskWindows(WorkTask task) { selectedTask = task; showWindowsModal = true; }
+    private void CloseTaskWindows() { showWindowsModal = false; }
 
     private void OpenEditTask(WorkTask task)
     {
         selectedTask = task;
-
-        // Copy fields into edit variables
         editInsideJob = task.InsideJob;
         editNotes = task.NotesForTask;
-
         showEditModal = true;
     }
 
-    private void CloseEditTask()
-    {
-        showEditModal = false;
-    }
+    private void CloseEditTask() { showEditModal = false; }
 
     private async Task SaveEditedTask()
     {
         selectedTask.InsideJob = editInsideJob;
         selectedTask.NotesForTask = editNotes;
-
         await workTaskService.UpdateWorkTask(selectedTask);
-
         showEditModal = false;
     }
+
+    private void AddWindow()
+    {
+        if (!string.IsNullOrWhiteSpace(newWindowTypeId) &&
+            !string.IsNullOrWhiteSpace(newWindowLocationId))
+        {
+            var type = windowtypecategories.FirstOrDefault(t => t.Id == newWindowTypeId);
+            var location = windowlocationcategories.FirstOrDefault(l => l.Id == newWindowLocationId);
+
+            if (type != null && location != null)
+            {
+                var booking = bookinglist.FirstOrDefault(b => b.Id == selectedTask.BookingId);
+                if (booking != null)
+                {
+                    if (booking.Windows == null) booking.Windows = new List<Window>();
+                    booking.Windows.Add(new Window { Type = type, Location = location });
+                }
+
+                newWindowTypeId = null;
+                newWindowLocationId = null;
+            }
+        }
+    }
+
+    private void DeleteWindow(Window window)
+    {
+        var booking = bookinglist.FirstOrDefault(b => b.Id == selectedTask.BookingId);
+        booking?.Windows?.Remove(window);
+    }
+
+    private async Task SaveWindows()
+    {
+        var booking = bookinglist.FirstOrDefault(b => b.Id == selectedTask.BookingId);
+        if (booking != null)
+        {
+            await bookingService.UpdateBooking(booking);
+            showWindowsModal = false;
+        }
+    }
+
+    private void CloseCustomerModal() { showCustomerModal = false; }
 }

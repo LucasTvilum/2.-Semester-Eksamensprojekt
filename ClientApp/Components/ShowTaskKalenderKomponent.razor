@@ -1,0 +1,85 @@
+@using System.Globalization
+
+<div class="calendar-wrapperv3">
+
+    <div class="calendar-headerv3">
+        <h2>@CurrentDate.ToString("MMMM yyyy", CultureInfo.GetCultureInfo("da-DK"))</h2>
+
+        <div class="nav-buttonsv3">
+            <span class="nav-arrowv3" @onclick="PreviousMonth">‹</span>
+            <span class="nav-arrowv3" @onclick="NextMonth">›</span>
+        </div>
+    </div>
+
+    <div class="calendar-gridv3">
+        @foreach (var dayName in DayNames)
+        {
+            <div class="day-namev3">@dayName</div>
+        }
+
+        @foreach (var day in Days)
+        {
+            <div class="day-cellv3 @(day.Month != CurrentDate.Month ? "inactivev3" : "")"
+                 @onclick="() => DayClicked(day)">
+                <div class="day-numberv3">@day.Day</div>
+                @if (EventDays.Contains(day.Day) && day.Month == CurrentDate.Month)
+                {
+                    <div class="event-dotv3"></div>
+                }
+            </div>
+        }
+    </div>
+
+</div>
+
+@code {
+    private DateTime CurrentDate = DateTime.Today;
+    private List<DateTime> Days = new();
+    private string[] DayNames = new[] { "Ma", "Tir", "Ons", "Tor", "Fr", "Lør", "Søn" };
+
+    [Parameter]
+    public List<int> EventDays { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<DateTime> OnDateSelected { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        LoadCalendar();
+    }
+
+    private void LoadCalendar()
+    {
+        Days.Clear();
+
+        var firstDay = new DateTime(CurrentDate.Year, CurrentDate.Month, 1);
+        int offset = ((int)firstDay.DayOfWeek + 6) % 7;
+
+        var startDate = firstDay.AddDays(-offset);
+
+        for (int i = 0; i < 42; i++)
+        {
+            Days.Add(startDate.AddDays(i));
+        }
+    }
+
+    private void PreviousMonth()
+    {
+        CurrentDate = CurrentDate.AddMonths(-1);
+        LoadCalendar();
+    }
+
+    private void NextMonth()
+    {
+        CurrentDate = CurrentDate.AddMonths(1);
+        LoadCalendar();
+    }
+
+    private async Task DayClicked(DateTime date)
+    {
+        if (OnDateSelected.HasDelegate)
+        {
+            await OnDateSelected.InvokeAsync(date);
+        }
+    }
+}
