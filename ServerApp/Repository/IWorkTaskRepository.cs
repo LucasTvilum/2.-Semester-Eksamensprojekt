@@ -14,4 +14,6 @@ public interface IWorkTaskRepository
     WorkTask Update(WorkTask task);
     
     void Delete(string id);
+    
+    void DeleteAllWorktasksFromBookingId(string bookingid);
 }
