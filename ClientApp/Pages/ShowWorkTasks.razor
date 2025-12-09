@@ -63,6 +63,41 @@
 
 <h3>Alle arbejdsopgaver (WorkTasks)</h3>
 
+<table class="table table-striped table-bordered align-middle">
+    <thead class="table-light">
+    <tr>
+        <th>Dato</th>
+        <th>Inside Job</th>
+        <th>Vinduer</th>
+        <th>Notes</th>
+        <th>Worker</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (taskList != null)
+    {
+        @foreach (var t in taskList)
+        {
+            <tr>
+                <td>@t.Date.ToShortDateString()</td>
+                <td>@(t.InsideJob ? "Ja" : "Nej")</td>
+                <td>@bookinglist.First(b => b.Id == t.BookingId).Windows.Count</td>
+                <td>@t.NotesForTask</td>
+                <td>@t.Worker.Name</td>
+                <td>
+                    <button class="btn btn-sm btn-primary"
+                            @onclick="() => OpenTaskWindows(t)">Vis Vinduer</button>
+                    <button class="btn btn-sm btn-warning"
+                            @onclick="() => OpenEditTask(t)">Rediger</button>
+                </td>
+            </tr>
+        }
+
+    }
+    </tbody>
+</table>
+
 <!-- -------------------- WINDOWS MODAL -------------------- -->
 
 @if (showWindowsModal)
