@@ -13,7 +13,6 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddSingleton<IBookingRepository, BookingMongoDB>();
-builder.Services.AddSingleton<ICustomerRepository, CustomerMongoDB>();
 builder.Services.AddSingleton<IWindowRepository, WindowMongoDB>();
 builder.Services.AddSingleton<IUserRepository, UserMongoDB>();
 builder.Services.AddSingleton<IWorkTaskRepository, WorkTaskMongoDB>();
