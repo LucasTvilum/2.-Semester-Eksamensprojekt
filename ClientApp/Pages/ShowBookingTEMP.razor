@@ -202,35 +202,53 @@
         showModalBooking = false;
     }
 
+    
     private async Task CloseModalBookingStatusUpdate()
     {
-        selectedBooking.Status = selectedstatus;
-        await bookingService.UpdateBooking(selectedBooking);
-        
-        if(selectedBooking.Status == "Godkendt" && selectedBooking.TypeBooking == Booking.BookingType.Abonnement)
+        // Sætter status ud fra det vinduespudseren har valgt
+        if (selectedstatus == "Godkendt")
         {
-            selectedBooking.Status = "Aktiv";
-            Console.WriteLine("Attempt at adding subscription");
-            await workTaskService.AddSubscription(selectedBooking);
+            selectedBooking.Status = "Aktiv";   // springer "Godkendt" over i databasen så det ikke er synligt for kunden
         }
-        else if (selectedBooking.Status == "Godkendt" && selectedBooking.TypeBooking == Booking.BookingType.EnkeltBooking)
-        {
-            selectedBooking.Status = "Aktiv";
-            Console.WriteLine("Attempt at adding single booking worktask");
-            await workTaskService.AddSingleBooking(selectedBooking);
-        }
-        
-        if(selectedBooking.Status == "Afvist")
+        else if (selectedstatus == "Afvist")
         {
             selectedBooking.Status = "Inaktiv";
-            Console.WriteLine("Attempt at adding subscription");
-            await workTaskService.AddSubscription(selectedBooking);
+        }
+        else
+        {
+            // Afmeldt" hvis I bruger det
+            selectedBooking.Status = selectedstatus;
+        }
+
+        // Gem booking med den nye status
+        await bookingService.UpdateBooking(selectedBooking);
+
+        // Håndter arbejdsopgaver til vinduespudseren
+        if (selectedBooking.Status == "Aktiv")
+        {
+            // Opret arbejdsopgaver
+            if (selectedBooking.TypeBooking == Booking.BookingType.Abonnement)
+            {
+                Console.WriteLine("Attempt at adding subscription worktasks");
+                await workTaskService.AddSubscription(selectedBooking);
+            }
+            else if (selectedBooking.TypeBooking == Booking.BookingType.EnkeltBooking)
+            {
+                Console.WriteLine("Attempt at adding single booking worktask");
+                await workTaskService.AddSingleBooking(selectedBooking);
+            }
+        }
+        else if (selectedBooking.Status == "Afmeldt" || selectedBooking.Status == "Inaktiv")
+        {
+            // Slet ALLE arbejdsopgaver knyttet til denne booking
+            Console.WriteLine("Deleting worktasks for booking");
+            await workTaskService.DeleteAllWorkTasksForBookingId(selectedBooking.Id);
         }
 
         showModalBooking = false;
     }
 
-
+    
 
     private async Task UpdateBookingStatus()
     {
