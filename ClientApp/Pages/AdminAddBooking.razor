@@ -6,7 +6,7 @@
 @using ClientApp.Service
 @using Microsoft.AspNetCore.Components.Forms
 @inject IBooking bookingService
-@inject ICustomer customerService
+@inject IUser userService
 @inject IWorkTask worktaskService
 @inject IWindow windowService
 @inject ILocalStorageService localStorage
@@ -229,7 +229,7 @@
         // if logged in Username = UserState.Name, Password = UserState.Password
         model.Usertype = User.UserType.Customer;
         customer = model;
-        await customerService.Add(customer);
+        await userService.Add(customer);
     }
     
 }

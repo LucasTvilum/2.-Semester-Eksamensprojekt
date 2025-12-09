@@ -2,7 +2,6 @@
 @using Core.Models
 @using ClientApp.Service
 @using ClientApp.Components
-@inject ICustomer customerService
 @inject IUser userService
 @inject NavigationManager nav
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
@@ -17,8 +16,7 @@
     private async Task RegisterCustomer(Customer c)
     {
         c.Usertype = User.UserType.Customer;
-
-        await customerService.Add(c);
+        
         await userService.Add(c);
 
         // sæt brugeren som logget ind
