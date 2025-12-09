@@ -112,17 +112,75 @@
                 </div>
 
                 <div class="modal-body">
-            
+
+                    @if (selectedBooking?.Windows != null && selectedBooking.Windows.Any())
+                    {
+                        <ul>
+                            @foreach (var w in selectedBooking.Windows)
+                            {
+                                <li>
+                                    @w.Type.Name – @w.Location.Name
+                                    <button class="btn btn-sm btn-danger ms-2"
+                                            @onclick="() => DeleteWindow(w)">
+                                        Slet
+                                    </button>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p>Ingen vinduer registreret.</p>
+                    }
+
+                    <hr />
+                    <h6>Tilføj nyt vindue</h6>
+
+                    <div class="mb-2">
+                        <label>Type</label>
+                        <InputSelect TValue="string"
+                                     @bind-Value="newWindowTypeId"
+                                     class="form-select">
+                            <option value="">Vælg type</option>
+                            @foreach (var type in windowtypecategories)
+                            {
+                                <option value="@type.Id">@type.Name</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Location</label>
+                        <InputSelect TValue="string"
+                                     @bind-Value="newWindowLocationId"
+                                     class="form-select">
+                            <option value="">Vælg lokation</option>
+                            @foreach (var loc in windowlocationcategories)
+                            {
+                                <option value="@loc.Id">@loc.Name</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <button class="btn btn-success" @onclick="AddWindow">Tilføj</button>
+
                 </div>
 
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" @onclick="CloseTaskWindows">Close</button>
+                    <button class="btn btn-secondary" @onclick="CloseTaskWindows">
+                        Luk
+                    </button>
+
+                    <button class="btn btn-primary" @onclick="SaveWindows">
+                        Gem ændringer
+                    </button>
                 </div>
 
             </div>
         </div>
     </div>
 }
+
 
 <!-- -------------------- EDIT TASK MODAL -------------------- -->
 
@@ -206,6 +264,7 @@
     private List<Customer> customerlist = new();
     private List<Booking> bookinglist = new();
 
+    private Booking selectedBooking;
     private WorkTask selectedTask;
     private bool showWindowsModal = false;
     private bool showEditModal = false;
@@ -258,9 +317,21 @@
         Console.WriteLine(selectedDate);
     }
 
+    private void OpenTaskWindows(WorkTask task)
+    {
+        selectedTask = task;
+        selectedBooking = bookinglist.FirstOrDefault(b => b.Id == task.BookingId);
 
-    private void OpenTaskWindows(WorkTask task) { selectedTask = task; showWindowsModal = true; }
-    private void CloseTaskWindows() { showWindowsModal = false; }
+        if (selectedBooking == null)
+            Console.WriteLine("Booking not found for windows modal.");
+
+        showWindowsModal = true;
+    }
+
+    private void CloseTaskWindows()
+    {
+        showWindowsModal = false;
+    }
 
     private void OpenEditTask(WorkTask task)
     {
@@ -270,7 +341,10 @@
         showEditModal = true;
     }
 
-    private void CloseEditTask() { showEditModal = false; }
+    private void CloseEditTask()
+    {
+        showEditModal = false;
+    }
 
     private async Task SaveEditedTask()
     {
@@ -279,6 +353,8 @@
         await workTaskService.UpdateWorkTask(selectedTask);
         showEditModal = false;
     }
+    
+    
 
     private void AddWindow()
     {
