@@ -1,0 +1,82 @@
+@page "/CustomerList"
+@using ClientApp.Service
+@using Core.Models
+@inject IUser userService
+@inject UserState userState
+
+<h3>Kundeliste</h3>
+
+@if (!userState.IsWorker)
+{
+    <p>Du har ikke adgang til denne side. (not admin)</p>
+    return;
+}
+
+@if (customers == null)
+{
+    <p>Henter kunder...</p>
+}
+else
+{
+    <input type="text" @bind="searchText" placeholder="Søg efter kunde..." class="form-control" />
+
+    <br />
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Navn</th>
+            <th>Email</th>
+            <th>Telefon</th>
+            <th>Adresse</th>
+            <th>Slet</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var c in FilteredCustomers)
+        {
+            <tr>
+                <td>@c.Name</td>
+                <td>@c.Mail</td>
+                <td>@c.PhoneNumber</td>
+                <td>@c.Address</td>
+                <td>
+                    <button class="btn btn-danger btn-sm" @onclick="() => DeleteCustomer(c.Id)">
+                        Slet
+                    </button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Customer>? customers;
+    private string searchText = "";
+
+    private IEnumerable<Customer> FilteredCustomers =>
+        string.IsNullOrWhiteSpace(searchText)
+            ? customers
+            : customers.Where(c =>
+                (c.Name ?? "").Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                (c.Mail ?? "").Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                (c.PhoneNumber ?? "").Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                (c.Address ?? "").Contains(searchText, StringComparison.OrdinalIgnoreCase)
+            );
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!userState.IsWorker)
+            return;
+
+        customers = await userService.GetCustomers();
+    }
+    private async Task DeleteCustomer(string id)
+    {
+        await userService.Delete(id);
+
+        // Remove from list locally to update UI instantly
+        customers = customers.Where(c => c.Id != id).ToList();
+    }
+}

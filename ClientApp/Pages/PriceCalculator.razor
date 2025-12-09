@@ -161,9 +161,30 @@
     
     protected override async Task OnInitializedAsync()
     {
+        // indlæs eventuel pending booking
         var saved = await localStorage.GetItemAsync<Booking>("pendingBooking");
         if (saved != null)
             booking = saved;
+
+        // check om vi blev sendt hertil pga. redirect fra Register
+        var returnType = await localStorage.GetItemAsync<string>("returnType");
+        if (!string.IsNullOrEmpty(returnType))
+        {
+            // fjern returnType så vi ikke genåbner modal ved reload
+            await localStorage.RemoveItemAsync("returnType");
+
+            if (returnType == "Enkelt")
+            {
+                // lav ny booking-objekt med nyt id men behold windows/pris
+                booking = new Booking { Windows = booking.Windows, Price = booking.Price, InsideJob = booking.InsideJob };
+                showOneTimeModal = true;
+            }
+            else if (returnType == "Abonnement")
+            {
+                booking = new Booking { Windows = booking.Windows, Price = booking.Price, InsideJob = booking.InsideJob };
+                showSubscriptionModal = true;
+            }
+        }
     }
     private async Task HandleBookingType(string type)
     {

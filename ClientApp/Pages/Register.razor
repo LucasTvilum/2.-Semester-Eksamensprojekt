@@ -16,36 +16,22 @@
 
     private async Task RegisterCustomer(Customer c)
     {
-      
         c.Usertype = User.UserType.Customer;
-        await customerService.Add(c);
 
-        // hent returnType
-        //også hent users fis
+        await customerService.Add(c);
         await userService.Add(c);
 
-        // mark user as logged in
+        // sæt brugeren som logget ind
         await localStorage.SetItemAsync("currentUser", (User)c);
 
-        // read return type
+        // læs returnType (men fjern den IKKE endnu)
         var returnType = await localStorage.GetItemAsync<string>("returnType");
-        await localStorage.RemoveItemAsync("returnType");
+        Console.WriteLine("DEBUG returnType: " + returnType);
 
-        Console.WriteLine("DEBUG:" + returnType);
-
-        if (returnType == "Enkelt")
-        {
-            nav.NavigateTo("/OneTimeBooking");
-            return;
-        }
-
-        if (returnType == "Abonnement")
-        {
-            nav.NavigateTo("/SubscriptionBooking");
-            return;
-        }
-
-        nav.NavigateTo("/");
+        // send altid tilbage til PriceCalculator.
+        // PriceCalculator vil selv checke returnType og åbne korrekt modal.
+        nav.NavigateTo("/PriceCalculator");
+        
     }
 
 }
