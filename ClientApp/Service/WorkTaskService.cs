@@ -61,7 +61,6 @@ public class WorkTaskService : IWorkTask
                 BookingId = booking.Id,
                 Date = outsideDate,
                 InsideJob = booking.InsideJob,                // outside
-                NotesForTask = booking.NotesWindowCleaner,
                 Worker = new Worker
                 {
                     Username = "lucas",
@@ -89,7 +88,6 @@ public class WorkTaskService : IWorkTask
                     BookingId = booking.Id,
                     Date = insideDate,
                     InsideJob = true,              // inside
-                    NotesForTask = booking.NotesWindowCleaner,
                     Worker = new Worker
                     {
                         Username = "lucas",
@@ -142,7 +140,6 @@ public class WorkTaskService : IWorkTask
                 BookingId = booking.Id,
                 Date = booking.Date, //
                 InsideJob = booking.InsideJob,                // outside
-                NotesForTask = booking.NotesWindowCleaner,
                 Worker = new Worker
                 {
                     Username = "lucas",

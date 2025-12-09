@@ -24,6 +24,7 @@
             <th>Vinduer</th>
             <th>Notes</th>
             <th>Worker</th>
+            <th>Status</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -36,8 +37,9 @@
                     <td>@t.Date.ToShortDateString()</td>
                     <td>@(t.InsideJob ? "Ja" : "Nej")</td>
                     <td>@bookinglist.First(b => b.Id == t.BookingId).Windows.Count</td>
-                    <td>@t.NotesForTask</td>
+                    <td>@bookinglist.FirstOrDefault(b => b.Id == t.BookingId).NotesWindowCleaner</td>
                     <td>@t.Worker.Name</td>
+                    <td>@t.Status</td>
                     <td>
                         <button class="btn btn-sm btn-primary"
                                 @onclick="() => OpenTaskWindows(t)">Vis Vinduer</button>
@@ -71,6 +73,7 @@
         <th>Vinduer</th>
         <th>Notes</th>
         <th>Worker</th>
+        <th>Status</th>
         <th>Actions</th>
     </tr>
     </thead>
@@ -83,13 +86,18 @@
                 <td>@t.Date.ToShortDateString()</td>
                 <td>@(t.InsideJob ? "Ja" : "Nej")</td>
                 <td>@bookinglist.First(b => b.Id == t.BookingId).Windows.Count</td>
-                <td>@t.NotesForTask</td>
+                <td>@bookinglist.FirstOrDefault(b => b.Id == t.BookingId).NotesWindowCleaner</td>
                 <td>@t.Worker.Name</td>
+                <td>@t.Status</td>
                 <td>
                     <button class="btn btn-sm btn-primary"
                             @onclick="() => OpenTaskWindows(t)">Vis Vinduer</button>
                     <button class="btn btn-sm btn-warning"
                             @onclick="() => OpenEditTask(t)">Rediger</button>
+                    <button class="btn btn-sm btn-info"
+                            @onclick="() => ShowCustomerForTask(t)">
+                        Kundeinfo
+                    </button>
                 </td>
             </tr>
         }
@@ -191,20 +199,26 @@
             <div class="modal-content">
 
                 <div class="modal-header">
-                    <h5>Rediger WorkTask</h5>
+                    <h5>Rediger Booking & Status</h5>
                     <button class="btn-close" @onclick="CloseEditTask"></button>
                 </div>
 
                 <div class="modal-body">
 
                     <div class="mb-3">
-                        <label>Inside Job</label>
-                        <InputCheckbox @bind-Value="editInsideJob" />
+                        <label>Notes fra Booking</label>
+                        <InputTextArea class="form-control" @bind-Value="editBookingNotes" />
                     </div>
 
                     <div class="mb-3">
-                        <label>Notes</label>
-                        <InputTextArea class="form-control" @bind-Value="editNotes" />
+                        <label>Status</label>
+                        <InputSelect class="form-select" @bind-Value="editStatus">
+                            <option value="">Vælg status</option>
+                            <option value="Pending">Afventer</option>
+                            <option value="InProgress">I gang</option>
+                            <option value="Completed">Færdig</option>
+                            <option value="Cancelled">Annulleret</option>
+                        </InputSelect>
                     </div>
 
                 </div>
@@ -218,6 +232,7 @@
         </div>
     </div>
 }
+
 
 <!-- -------------------- CUSTOMER MODAL -------------------- -->
 
@@ -273,6 +288,8 @@
 
     private bool editInsideJob;
     private string editNotes;
+    private string editStatus;
+    private string editBookingNotes;
 
     private string newWindowTypeId;
     private string newWindowLocationId;
@@ -336,10 +353,15 @@
     private void OpenEditTask(WorkTask task)
     {
         selectedTask = task;
-        editInsideJob = task.InsideJob;
-        editNotes = task.NotesForTask;
+
+        var booking = bookinglist.FirstOrDefault(b => b.Id == task.BookingId);
+        editBookingNotes = booking?.NotesWindowCleaner;
+
+        editStatus = task.Status; // assuming WorkTask.Status is string
+
         showEditModal = true;
     }
+
 
     private void CloseEditTask()
     {
@@ -348,9 +370,18 @@
 
     private async Task SaveEditedTask()
     {
-        selectedTask.InsideJob = editInsideJob;
-        selectedTask.NotesForTask = editNotes;
+        // save task status
+        selectedTask.Status = editStatus;
         await workTaskService.UpdateWorkTask(selectedTask);
+
+        // save booking notes
+        var booking = bookinglist.FirstOrDefault(b => b.Id == selectedTask.BookingId);
+        if (booking != null)
+        {
+            booking.NotesWindowCleaner = editBookingNotes;
+            await bookingService.UpdateBooking(booking);
+        }
+
         showEditModal = false;
     }
     
