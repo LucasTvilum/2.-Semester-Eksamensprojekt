@@ -21,6 +21,20 @@ namespace ServerApp.Controllers
             return workTaskRepo.GetAll();
         }
         
+        [HttpGet("bybooking/{bookingId}")]
+        public ActionResult<WorkTask> GetTaskByBookingId(string bookingId)
+        {
+            Console.WriteLine($"Fetching single task for booking: {bookingId}");
+
+            var task = workTaskRepo.GetAll()
+                .FirstOrDefault(t => t.BookingId == bookingId);
+
+            if (task == null)
+                return NotFound();
+
+            return Ok(task);
+        }
+        
         [HttpPost]
         public void Add([FromBody]WorkTask workTask) {
             Console.WriteLine("Add worktask in controller");
@@ -53,6 +67,13 @@ namespace ServerApp.Controllers
         public OkResult Delete(string id)
         {
             workTaskRepo.Delete(id);
+            return Ok();
+        }
+        
+        [HttpDelete("deletebookings/{id}")]
+        public OkResult DeleteAllWorktasksFromBookingId(string id)
+        {
+            workTaskRepo.DeleteAllWorktasksFromBookingId(id);
             return Ok();
         }
     }

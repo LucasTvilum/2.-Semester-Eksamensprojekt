@@ -22,6 +22,18 @@ public class WorkTaskService : IWorkTask
         return worktaskList;
     }
 
+    public async Task<WorkTask> GetByBookingId(string bookingid)
+    {
+        try
+        {
+            return await http.GetFromJsonAsync<WorkTask>($"{url}/api/worktask/bybooking/{bookingid}");
+        }
+        catch
+        {
+            return null; // NotFound or other error
+        }
+    }
+
     public async Task Add(WorkTask worktask)
     {
         Console.WriteLine("Add worktask service attempted");
@@ -42,6 +54,14 @@ public class WorkTaskService : IWorkTask
     public async Task AddSubscription(Booking booking)
     {
         Console.WriteLine("Add subscription service attempted");
+        
+        var existingTask = await GetByBookingId(booking.Id);
+        if (existingTask != null)
+        {
+            Console.WriteLine("Tasks already exist for this subscription — skipping creation.");
+            return;
+        }
+        
         //Add a WorkTask for each interval outside and inside, starting on datetime.day.now using data from booking object
 // 1️⃣ Find the first task date (next weekday based on booking.Day)
         DateTime firstDate = GetNextWeekday(booking.Day);
@@ -135,6 +155,13 @@ public class WorkTaskService : IWorkTask
     {
         Console.WriteLine("Add worktask booking service attempted");
         
+        var existingTask = await GetByBookingId(booking.Id);
+        if (existingTask != null)
+        {
+            Console.WriteLine("Tasks already exist for this booking — skipping creation.");
+            return;
+        }
+        
         WorkTask worktask = new WorkTask
             {
                 BookingId = booking.Id,
@@ -165,5 +192,9 @@ public class WorkTaskService : IWorkTask
     {
         await http.PutAsJsonAsync<WorkTask>($"{url}/api/worktask/{worktask.Id}", worktask);
     }
-    
+
+    public async Task DeleteAllWorkTaskFromBookingId(string bookingid)
+    {
+        await http.DeleteAsync($"{url}/api/worktask/deletetasks/{bookingid}");
+    }
 }

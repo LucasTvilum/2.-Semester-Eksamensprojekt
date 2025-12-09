@@ -5,6 +5,7 @@
 @inject UserState userState
 @inject IWorkTask workTaskService
 @inject IBooking bookingService
+@inject IWindow windowService
 @inject IUser userService
 
 <ShowTaskKalenderKomponent OnDateSelected="HandleDateSelected"/>
@@ -326,6 +327,8 @@
         customerlist = (await userService.GetCustomers()).ToList();
         bookinglist = (await bookingService.GetAll()).ToList();
         taskList = (await workTaskService.GetAll()).ToList();
+        windowlocationcategories = (await windowService.GetAllWindowLocations());
+        windowtypecategories = (await windowService.GetAllWindowTypes());
     }
 
     private void HandleDateSelected(DateTime date)
