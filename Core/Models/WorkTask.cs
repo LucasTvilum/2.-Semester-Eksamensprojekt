@@ -7,5 +7,7 @@ public class WorkTask
     public DateTime Date { get; set; }
     public bool InsideJob { get; set; }
     public Worker Worker { get; set; } = new Worker();
-    public string NotesForTask { get; set; } = "";
+
+    public string Status { get; set; } = "";
+
 }
