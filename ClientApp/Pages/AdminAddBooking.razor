@@ -1,4 +1,5 @@
 @using System.Diagnostics
+@using System.Text.Json
 @using Blazored.LocalStorage
 @using ClientApp.Components
 @using Core.Models
@@ -181,24 +182,43 @@
     
     protected override async Task OnInitializedAsync()
     {
-        var loadedUser = await localStorage.GetItemAsync<User>("currentUser");
+        // 1️⃣ Load raw JSON from localStorage
+        var userJson = await localStorage.GetItemAsStringAsync("currentUser");
 
-
-        if (loadedUser != null)
+        if (!string.IsNullOrEmpty(userJson))
         {
+            // 2️⃣ Parse JSON to get userType before deserialization
+            using var doc = JsonDocument.Parse(userJson);
+            int userTypeInt = doc.RootElement.GetProperty("Usertype").GetInt32();
+            var userType = (User.UserType)userTypeInt;
+
+            // 3️⃣ Deserialize to the correct concrete type
+            User loadedUser = userType switch
+            {
+                User.UserType.Customer => JsonSerializer.Deserialize<Customer>(userJson),
+                User.UserType.Worker => JsonSerializer.Deserialize<Worker>(userJson),
+                _ => JsonSerializer.Deserialize<User>(userJson)
+            };
+
+            // 4️⃣ Assign to component state
             user = loadedUser;
             LoadedUser = loadedUser;
+
+            if (loadedUser is Customer c)
+            {
+                customer = c;
+            }
         }
-        
+
+        // 5️⃣ Load additional data
         windowtypecategories = await windowService.GetAllWindowTypes();
-        windowlocationcategories = await windowService.GetAllWindowLocations(); 
+        windowlocationcategories = await windowService.GetAllWindowLocations();
     }
     
     private async Task HandleWindowSubmit()
     {
         window.Price = window.CalculatePrice();
         booking.Windows.Add(window);
-        worktask.Windows.Add(window);
         window = new Window();    
     }
     

@@ -23,6 +23,14 @@ public class UserService : IUser
 
         return BookingList;
     }
+    
+    public async Task<User> Get(string userid)
+    {
+        Console.WriteLine("Get from userservice");
+        var user = await http.GetFromJsonAsync<User>($"{url}/api/user/{userid}");
+
+        return user;
+    }
 
     public async Task Add(User user)
     {
@@ -74,6 +82,8 @@ public class UserService : IUser
         {
             
             var usertoreturn = await response.Content.ReadFromJsonAsync<User>();
+            Console.WriteLine("Raw JSON received: ");
+            Console.WriteLine(usertoreturn);
             
             return usertoreturn;
         }
@@ -100,5 +110,11 @@ public class UserService : IUser
     {
         var CustomerList = await http.GetFromJsonAsync<List<Customer>>($"{url}/api/user/customers");
         return CustomerList;
+    }
+    
+    public async Task<Customer> GetCustomerById(string customerid)
+    {
+        var customer = await http.GetFromJsonAsync<Customer>($"{url}/api/user/customers/{customerid}");
+        return customer;
     }
 }

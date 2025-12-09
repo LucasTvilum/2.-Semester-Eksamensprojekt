@@ -6,6 +6,8 @@ namespace ClientApp.Service;
 public interface IBooking
 {
     Task<Booking[]> GetAll();
+    
+    Task<Booking> GetBookingById(string bookingid);
 
     Task Add(Booking booking);
     

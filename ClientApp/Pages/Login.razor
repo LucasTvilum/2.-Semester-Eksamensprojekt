@@ -86,7 +86,7 @@
             return;
         }
         
-        User userObject = await userRepo.ValidateUser(user);
+        var userObject = await userRepo.ValidateUser(user);
         
         if (userObject != null)
         {

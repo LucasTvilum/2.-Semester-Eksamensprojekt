@@ -59,7 +59,6 @@ public class WorkTaskService : IWorkTask
             tasksToCreate.Add(new WorkTask
             {
                 BookingId = booking.Id,
-                Windows = booking.Windows,         // copy windows
                 Date = outsideDate,
                 InsideJob = booking.InsideJob,                // outside
                 NotesForTask = booking.NotesWindowCleaner,
@@ -88,7 +87,6 @@ public class WorkTaskService : IWorkTask
                 tasksToCreate.Add(new WorkTask
                 {
                     BookingId = booking.Id,
-                    Windows = booking.Windows,
                     Date = insideDate,
                     InsideJob = true,              // inside
                     NotesForTask = booking.NotesWindowCleaner,
@@ -142,7 +140,6 @@ public class WorkTaskService : IWorkTask
         WorkTask worktask = new WorkTask
             {
                 BookingId = booking.Id,
-                Windows = booking.Windows,         // copy windows
                 Date = booking.Date, //
                 InsideJob = booking.InsideJob,                // outside
                 NotesForTask = booking.NotesWindowCleaner,
