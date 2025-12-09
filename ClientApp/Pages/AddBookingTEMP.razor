@@ -1,9 +1,11 @@
 @using System.Diagnostics
+@using System.Text.Json
+@using Blazored.LocalStorage
 @using Core.Models
 @using ClientApp.Service
 @using Microsoft.AspNetCore.Components.Forms
 @inject IBooking bookingService
-
+@inject ILocalStorageService localStorage
     
 @inject IWindow windowService
 @page "/AddBookingTEMP"
@@ -155,6 +157,12 @@
         private Booking booking = new();
 
         private WorkTask worktask = new();
+        
+        private User user = new();
+
+        private User LoadedUser = new();
+        
+        private Customer customer = new();
     
         private List<string> daycategories = new List<string> { "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag" };
 
@@ -162,20 +170,9 @@
 
         private async Task HandleSubmit()
         {
-            worktask.BookingId = booking.Id;
-            worktask.InsideJob = booking.InsideJob;
-            worktask.Date = new DateTime(2025, 12, 1, 14, 30, 0);
-            worktask.Worker = new Worker
-            {
-                Username = "lucas",
-                Password = "Lucas",
-                Admin = true,
-                Name = "lucas",
-                PhoneNumber = "123123",
-                Mail = "lucas@mail.com"
-            };
+           Console.WriteLine(customer.Id);
 
-            booking.CustomerId = "1";
+           booking.CustomerId = customer.Id;
 
             //Sets status to aktiv
             booking.Status = "afventer";
@@ -208,6 +205,34 @@
 
         protected override async Task OnInitializedAsync()
         {
+            
+            // 1️⃣ Load raw JSON from localStorage
+            var userJson = await localStorage.GetItemAsStringAsync("currentUser");
+
+            if (!string.IsNullOrEmpty(userJson))
+            {
+                // 2️⃣ Parse JSON to get userType before deserialization
+                using var doc = JsonDocument.Parse(userJson);
+                int userTypeInt = doc.RootElement.GetProperty("Usertype").GetInt32();
+                var userType = (User.UserType)userTypeInt;
+
+                // 3️⃣ Deserialize to the correct concrete type
+                User loadedUser = userType switch
+                {
+                    User.UserType.Customer => JsonSerializer.Deserialize<Customer>(userJson),
+                    User.UserType.Worker => JsonSerializer.Deserialize<Worker>(userJson),
+                    _ => JsonSerializer.Deserialize<User>(userJson)
+                };
+
+                // 4️⃣ Assign to component state
+                user = loadedUser;
+                LoadedUser = loadedUser;
+
+                if (loadedUser is Customer c)
+                {
+                    customer = c;
+                }
+            }
 
             windowtypecategories = await windowService.GetAllWindowTypes();
             windowlocationcategories = await windowService.GetAllWindowLocations();

@@ -102,18 +102,34 @@ namespace ServerApp.Controllers
         }
         
         [HttpPut("login")]
-        public ActionResult<User> Login([FromBody] User user)
+        public ActionResult<User> Login([FromBody] User loginRequest)
         {
-            
             Console.WriteLine("Controller login check");
-            
-            var matchinguser = userRepo.GetAll()
-                .FirstOrDefault(u => u.Username == user.Username && u.Password == user.Password);
 
-            if (matchinguser == null)
+            // Find user in repository
+            var matchingUser = userRepo.GetAll()
+                .FirstOrDefault(u => u.Username == loginRequest.Username 
+                                     && u.Password == loginRequest.Password);
+
+            if (matchingUser == null)
                 return Unauthorized("Invalid username or password.");
-            
-            return Ok(matchinguser);
+
+            // Check runtime type
+            if (matchingUser is Customer customer)
+            {
+                Console.WriteLine($"Login Customer: {customer.Username}, Address: {customer.Address}, City: {customer.City}");
+            }
+            else if (matchingUser is Worker worker)
+            {
+                Console.WriteLine($"Login Worker: {worker.Username}, Admin: {worker.Admin}");
+            }
+            else
+            {
+                Console.WriteLine($"Login User: {matchingUser.Username}");
+            }
+
+            // Return as-is; MongoDB mapping ensures Customer/Worker fields are included
+            return Ok(matchingUser);
         }
         
 
