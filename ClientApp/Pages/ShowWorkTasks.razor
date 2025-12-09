@@ -48,7 +48,7 @@
                         </button>
                         
                         <button class="btn btn-sm btn-info"
-                                @onclick="() => LoadCustomerForTask(t)">
+                                @onclick="() => ShowCustomerForTask(t)">
                             Kundeinfo
                         </button>
                     </td>
@@ -136,7 +136,6 @@
                 </div>
 
                 <div class="modal-body">
-
                     @if (customer != null)
                     {
                         <p><b>Navn:</b> @customer.Name</p>
@@ -148,9 +147,8 @@
                     }
                     else
                     {
-                        <p>Kunne ikke hente kunde.</p>
+                        <p>Kunde ikke fundet.</p>
                     }
-
                 </div>
 
                 <div class="modal-footer">
@@ -161,6 +159,7 @@
         </div>
     </div>
 }
+
 
 
 @code {
@@ -182,9 +181,23 @@
         private bool showCustomerModal = false;
         private Customer customer;
 
-        private async Task LoadCustomerForTask(WorkTask task)
+        private void ShowCustomerForTask(WorkTask task)
         {
-            
+            // 1. Find booking based on BookingId
+            var booking = bookinglist.FirstOrDefault(b => b.Id == task.BookingId);
+
+            if (booking == null)
+            {
+                Console.WriteLine("Booking not found for task");
+                customer = null;
+                showCustomerModal = true;
+                return;
+            }
+
+            // 2. Find customer based on CustomerId from booking
+            customer = customerlist.FirstOrDefault(c => c.Id == booking.CustomerId);
+
+            showCustomerModal = true;
         }
 
         private void CloseCustomerModal()
