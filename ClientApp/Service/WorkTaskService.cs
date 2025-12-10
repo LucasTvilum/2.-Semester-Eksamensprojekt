@@ -53,82 +53,69 @@ public class WorkTaskService : IWorkTask
 
     public async Task AddSubscription(Booking booking)
     {
-        Console.WriteLine("Add subscription service attempted");
-        
-        var existingTask = await GetByBookingId(booking.Id);
-        if (existingTask != null)
+    Console.WriteLine("Add subscription service attempted");
+
+    var existingTask = await GetByBookingId(booking.Id);
+    if (existingTask != null)
+    {
+        Console.WriteLine("Tasks already exist for this subscription — skipping creation.");
+        return;
+    }
+
+    DateTime firstDate = GetNextWeekday(booking.Day);
+    DateTime endDate = firstDate.AddMonths(24);
+
+    // Key = Date, Value = WorkTask
+    Dictionary<DateTime, WorkTask> tasks = new();
+
+    // ----- Generate outside jobs -----
+    DateTime outsideDate = firstDate;
+    while (outsideDate <= endDate)
+    {
+        if (!tasks.ContainsKey(outsideDate))
         {
-            Console.WriteLine("Tasks already exist for this subscription — skipping creation.");
-            return;
-        }
-        
-        //Add a WorkTask for each interval outside and inside, starting on datetime.day.now using data from booking object
-// 1️⃣ Find the first task date (next weekday based on booking.Day)
-        DateTime firstDate = GetNextWeekday(booking.Day);
-
-        // 2️⃣ Generate next 12 months (you can adjust)
-        DateTime endDate = firstDate.AddMonths(24);
-
-        List<WorkTask> tasksToCreate = new();
-
-        // 3️⃣ OUTSIDE tasks
-        DateTime outsideDate = firstDate;
-
-        while (outsideDate <= endDate)
-        {
-            tasksToCreate.Add(new WorkTask
+            tasks[outsideDate] = new WorkTask
             {
                 BookingId = booking.Id,
                 Date = outsideDate,
-                InsideJob = booking.InsideJob,                // outside
-                Worker = new Worker
-                {
-                    Username = "lucas",
-                    Password = "Lucas",
-                    Admin = true,
-                    Name = "lucas",
-                    PhoneNumber = "123123",
-                    Mail = "lucas@mail.com"
-                }
-                
-            });
-
-            outsideDate = outsideDate.AddDays(7 * booking.OutdoorInterval);
+                InsideJob = false, // outside only
+                Worker = new Worker { /* ... */ }
+            };
         }
 
-        // 4️⃣ INSIDE tasks (only if booking.InsideJob == true)
-        if (booking.InsideJob)
-        {
-            DateTime insideDate = firstDate;
+        outsideDate = outsideDate.AddDays(7 * booking.OutdoorInterval);
+    }
 
-            while (insideDate <= endDate)
+    // ----- Generate inside jobs (only if inside is enabled) -----
+    if (booking.InsideJob)
+    {
+        DateTime insideDate = firstDate;
+        while (insideDate <= endDate)
+        {
+            // If outside job already exists → merge by setting InsideJob = true
+            if (tasks.ContainsKey(insideDate))
             {
-                tasksToCreate.Add(new WorkTask
+                tasks[insideDate].InsideJob = true;
+            }
+            else
+            {
+                // Should never happen since outside always exists,
+                // but safe fallback:
+                tasks[insideDate] = new WorkTask
                 {
                     BookingId = booking.Id,
                     Date = insideDate,
-                    InsideJob = true,              // inside
-                    Worker = new Worker
-                    {
-                        Username = "lucas",
-                        Password = "Lucas",
-                        Admin = true,
-                        Name = "lucas",
-                        PhoneNumber = "123123",
-                        Mail = "lucas@mail.com"
-                    }
-                });
-
-                insideDate = insideDate.AddDays(7 * booking.InsideInterval);
+                    InsideJob = true,
+                    Worker = new Worker { /* ... */ }
+                };
             }
 
-         
+            insideDate = insideDate.AddDays(7 * booking.InsideInterval);
         }
+    }
 
-        if (tasksToCreate.Count != 0)
-        {
-            await http.PostAsJsonAsync($"{url}/api/worktask/subscription", tasksToCreate);
-        }
+    var taskList = tasks.Values.ToList();
+    await http.PostAsJsonAsync($"{url}/api/worktask/subscription", taskList);
     }
     private DateTime GetNextWeekday(string weekday)
     {
@@ -165,8 +152,8 @@ public class WorkTaskService : IWorkTask
         WorkTask worktask = new WorkTask
             {
                 BookingId = booking.Id,
-                Date = booking.Date, //
-                InsideJob = booking.InsideJob,                // outside
+                Date = booking.Date, 
+                InsideJob = booking.InsideJob,                
                 Worker = new Worker
                 {
                     Username = "lucas",

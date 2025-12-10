@@ -14,7 +14,7 @@
 
 <h3>Admin kunde og booking oprettelse</h3>
 <h2>Kundeoprettelse</h2>
-<CustomerForm Customer="customer" ButtonText="Opret Kunde" OnSubmit="HandleCustomerSubmit" />
+<CustomerForm customer="customer" ButtonText="Opret Kunde" OnSubmit="HandleCustomerSubmit" />
 
 @if (customer != null)
 {
@@ -146,6 +146,8 @@
     
     private async Task HandleSubscriptionSubmit()
     {
+        Console.WriteLine(customer.Id);
+        
         booking.CustomerId = customer.Id;
 
         booking.TypeBooking = Booking.BookingType.Abonnement;
@@ -157,10 +159,12 @@
         // ryd pending og luk modal
         showSubscriptionModal = false;
         booking = new Booking();
+        customer = new Customer();
     }
 
     private async Task HandleOneTimeSubmit()
     {
+        Console.WriteLine(customer.Id);
        
         booking.CustomerId = customer.Id;
 
@@ -171,6 +175,7 @@
         
         showOneTimeModal = false;
         booking = new Booking();
+        customer = new Customer();
     }
     
     protected override async Task OnInitializedAsync()
@@ -183,11 +188,10 @@
     
     private Customer customer = new Customer();
 
-    private async Task HandleCustomerSubmit(Customer model)
+    private async Task HandleCustomerSubmit()
     {
-        // if logged in Username = UserState.Name, Password = UserState.Password
-        model.Usertype = User.UserType.Customer;
-        customer = model;
+        Console.WriteLine("customer submitted:" + customer.Id);
+        customer.Usertype = User.UserType.Customer;
         await userService.Add(customer);
     }
     

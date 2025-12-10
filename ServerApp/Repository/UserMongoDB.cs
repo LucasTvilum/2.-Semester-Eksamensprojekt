@@ -29,6 +29,7 @@ public class UserMongoDB : IUserRepository
             Console.WriteLine("Customer Address: " + customer.Address);
             Console.WriteLine("Customer Region: " + customer.Region);
             Console.WriteLine("Customer City: " + customer.City);
+            Console.WriteLine("Customer Id: " +  customer.Id);
         }
         else if (user is Worker worker)
         {
