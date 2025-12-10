@@ -57,6 +57,7 @@ namespace ServerApp.Controllers
         {
             Core.Models.User.UserType.Customer => new Customer
             {
+                Id = GetString(body, "id"),  
                 Username = GetString(body, "username"),
                 Password = GetString(body, "password"),
                 Name = GetString(body, "name"),
@@ -69,6 +70,7 @@ namespace ServerApp.Controllers
             },
             Core.Models.User.UserType.Worker => new Worker
             {
+                Id = GetString(body, "id"),  
                 Username = GetString(body, "username"),
                 Password = GetString(body, "password"),
                 Name = GetString(body, "name"),
@@ -79,6 +81,7 @@ namespace ServerApp.Controllers
             },
             _ => new User
             {
+                Id = GetString(body, "id"),  
                 Username = GetString(body, "username"),
                 Password = GetString(body, "password"),
                 Name = GetString(body, "name"),
@@ -94,6 +97,7 @@ namespace ServerApp.Controllers
             Console.WriteLine($"controllerCustomer Address: {customer.Address}");
             Console.WriteLine($"controllerCustomer Region: {customer.Region}");
             Console.WriteLine($"controllerCustomer City: {customer.City}");
+            Console.WriteLine($"controllerCustomer City: {customer.Id}");
         }
         
         userRepo.Add(newUser);
