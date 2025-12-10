@@ -351,7 +351,7 @@ else
 
     private async Task SaveWindows()
     {
-        // update booking in DB
+        // update booking in DBs
         await bookingService.UpdateBooking(selectedBooking);
 
         // after saving, refresh server copy of bookings and the selected customer's bookings
