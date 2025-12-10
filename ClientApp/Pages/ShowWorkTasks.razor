@@ -64,7 +64,7 @@
     </tbody>
 </table>
 
-<h3>Alle arbejdsopgaver (WorkTasks)</h3>
+<h3>Alle arbejdsopgaver fremtidige arbejdsopgaver</h3>
 
 <table class="table table-striped table-bordered align-middle">
     <thead class="table-light">
@@ -317,10 +317,7 @@
 
     
     private DateTime? selectedDate;
-    private List<WorkTask> FilteredTasks =>
-        selectedDate.HasValue
-            ? taskList.Where(t => t.Date.Date == selectedDate.Value.Date).ToList()
-            : new List<WorkTask>();
+    private List<WorkTask> FilteredTasks = new List<WorkTask>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -330,11 +327,26 @@
         windowlocationcategories = (await windowService.GetAllWindowLocations());
         windowtypecategories = (await windowService.GetAllWindowTypes());
     }
+    
+    private void FilterTasksByDate(DateTime? date)
+    {
+        if (date.HasValue)
+        {
+            FilteredTasks = taskList
+                .Where(t => t.Date.Date == date.Value.Date)
+                .ToList();
+        }
+        else
+        {
+            FilteredTasks = new List<WorkTask>();
+        }
+    }
 
     private void HandleDateSelected(DateTime date)
     {
         selectedDate = date;
         Console.WriteLine(selectedDate);
+        FilterTasksByDate(selectedDate);
     }
 
     private void OpenTaskWindows(WorkTask task)
