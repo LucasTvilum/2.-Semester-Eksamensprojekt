@@ -47,7 +47,8 @@ public class UserMongoDB : IUserRepository
 
     public void Delete(string id)
     {
-        _collection.DeleteOne(id);
+        var filter = Builders<User>.Filter.Eq(u => u.Id, id);
+        _collection.DeleteOne(filter);
     }
     public Task<List<Customer>> GetCustomers()
     {

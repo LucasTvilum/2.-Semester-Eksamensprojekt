@@ -102,34 +102,18 @@ namespace ServerApp.Controllers
         }
         
         [HttpPut("login")]
-        public ActionResult<User> Login([FromBody] User loginRequest)
+        public ActionResult<User> Login([FromBody] User user)
         {
+            
             Console.WriteLine("Controller login check");
+            
+            var matchinguser = userRepo.GetAll()
+                .FirstOrDefault(u => u.Username == user.Username && u.Password == user.Password);
 
-            // Find user in repository
-            var matchingUser = userRepo.GetAll()
-                .FirstOrDefault(u => u.Username == loginRequest.Username 
-                                     && u.Password == loginRequest.Password);
-
-            if (matchingUser == null)
+            if (matchinguser == null)
                 return Unauthorized("Invalid username or password.");
-
-            // Check runtime type
-            if (matchingUser is Customer customer)
-            {
-                Console.WriteLine($"Login Customer: {customer.Username}, Address: {customer.Address}, City: {customer.City}");
-            }
-            else if (matchingUser is Worker worker)
-            {
-                Console.WriteLine($"Login Worker: {worker.Username}, Admin: {worker.Admin}");
-            }
-            else
-            {
-                Console.WriteLine($"Login User: {matchingUser.Username}");
-            }
-
-            // Return as-is; MongoDB mapping ensures Customer/Worker fields are included
-            return Ok(matchingUser);
+            
+            return Ok(matchinguser);
         }
         
 
@@ -143,8 +127,7 @@ namespace ServerApp.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Route("delete")]
-        public OkResult Delete(string id)
+        public IActionResult Delete(string id)
         {
             userRepo.Delete(id);
             return Ok();

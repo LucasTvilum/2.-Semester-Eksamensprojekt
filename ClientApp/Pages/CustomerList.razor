@@ -1,8 +1,10 @@
 @page "/CustomerList"
 @using ClientApp.Service
 @using Core.Models
+@inject IBooking bookingService
 @inject IUser userService
 @inject UserState userState
+@inject HttpClient http
 
 <h3>Kundeliste</h3>
 
@@ -29,6 +31,8 @@ else
             <th>Email</th>
             <th>Telefon</th>
             <th>Adresse</th>
+            <th>Booking Type</th>
+            <th>Status</th>
             <th>Slet</th>
         </tr>
         </thead>
@@ -40,6 +44,8 @@ else
                 <td>@c.Mail</td>
                 <td>@c.PhoneNumber</td>
                 <td>@c.Address</td>
+                <td>@GetBookingForCustomer(c.Id)?.TypeBooking</td>
+                <td>@GetBookingForCustomer(c.Id)?.Status</td>
                 <td>
                     <button class="btn btn-danger btn-sm" @onclick="() => DeleteCustomer(c.Id)">
                         Slet
@@ -52,7 +58,9 @@ else
 }
 
 @code {
-    private List<Customer>? customers;
+    private List<Customer> customers = new();
+    private List<Booking> bookings = new();
+    private Booking[] bookingArray;
     private string searchText = "";
 
     private IEnumerable<Customer> FilteredCustomers =>
@@ -64,19 +72,21 @@ else
                 (c.PhoneNumber ?? "").Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
                 (c.Address ?? "").Contains(searchText, StringComparison.OrdinalIgnoreCase)
             );
+    private Booking? GetBookingForCustomer(string customerId)
+    {
+        return bookings.FirstOrDefault(b => b.CustomerId == customerId);
+    }
 
     protected override async Task OnInitializedAsync()
-    {
-        if (!userState.IsWorker)
-            return;
-
+    { 
         customers = await userService.GetCustomers();
+    bookingArray = await bookingService.GetAll();
+    bookings = bookingArray.ToList();
     }
     private async Task DeleteCustomer(string id)
     {
         await userService.Delete(id);
-
-        // Remove from list locally to update UI instantly
+        
         customers = customers.Where(c => c.Id != id).ToList();
     }
 }

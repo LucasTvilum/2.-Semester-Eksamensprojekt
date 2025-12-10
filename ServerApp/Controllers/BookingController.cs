@@ -45,8 +45,7 @@ namespace ServerApp.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Route("delete")]
-        public OkResult Delete(string id)
+        public IActionResult Delete(string id)
         {
             bookingRepo.Delete(id);
             return Ok();
