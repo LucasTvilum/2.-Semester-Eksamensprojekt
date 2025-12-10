@@ -8,7 +8,7 @@
 <div class="row p-3">
     @if (locations == null || windowTypes == null || !locations.Any() || !windowTypes.Any())
     {
-        <p>Loading...</p>
+        <p>Loader...</p>
     }
     else
     {
@@ -72,6 +72,7 @@
         <button class="btn btn-primary" @onclick="SelectAbonnement">Abonnement</button>
     }
 </div>
+
     @code {
     [Parameter] public Booking booking { get; set; } = new();
     [Parameter] public EventCallback<string> OnSelectBookingType { get; set; }

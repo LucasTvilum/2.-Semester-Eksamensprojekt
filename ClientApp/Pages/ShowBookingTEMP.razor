@@ -7,23 +7,22 @@
 
 @if (!userState.IsWorker)
 {
-    <p>You are not allowed here. (not a worker)</p>
+    <p>Kun for medarbejdere</p>
 }
 
 <table class="table table-striped table-bordered align-middle">
     <thead class="table-light">
     <tr>
         <th>Booking type</th>
-        <th>Day</th>
-        <th>InsideInterval</th>
-        <th>InsideJob</th>
-        <th>NotesCustomer</th>
-        <th>NotesWindowCleaner</th>
-        <th>OutdoorInterval</th>
-        <th>Price</th>
+        <th>Dag</th>
+        <th>Indenfor Interval</th>
+        <th>Indenfor Job</th>
+        <th>Kunde Note</th>
+        <th>Vinduespudser Note</th>
+        <th>Udenfor Interval</th>
+        <th>Pris</th>
         <th>Status</th>
         <th>Vinduer</th>
-        <th>Bookingstatus</th>
     </tr>
     </thead>
 
@@ -110,7 +109,7 @@
                     <button class="btn btn-success" @onclick="AddWindow">Tilføj</button>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" @onclick="CloseModalWindows">Close</button>
+                    <button class="btn btn-secondary" @onclick="CloseModalWindows">Luk</button>
                     <button class="btn btn-primary" @onclick="SaveWindows">Gem ændringer</button>
                 </div>
             </div>
@@ -160,8 +159,8 @@
 
 
     [Inject] private IBooking bookingService { get; set; }
-
     [Inject] private IWindow windowService { get; set; }
+    [Inject] private IWorkTask WorkTaskService { get; set; }
 
     private List<WindowType> windowtypecategories = new List<WindowType>();
     private List<WindowLocation> windowlocationcategories = new List<WindowLocation>();
@@ -204,33 +203,49 @@
 
     private async Task CloseModalBookingStatusUpdate()
     {
-        //showmodal=false i toppen så vinduet ik er blocked
         showModalBooking = false;
-        selectedBooking.Status = selectedstatus;
-        await bookingService.UpdateBooking(selectedBooking);
         
-        if(selectedBooking.Status == "Godkendt" && selectedBooking.TypeBooking == Booking.BookingType.Abonnement)
+        // Bestem status ud fra valgt status i dropdown
+        if (selectedstatus == "Godkendt")
         {
-            selectedBooking.Status = "Aktiv";
-            Console.WriteLine("Attempt at adding subscription");
-            await workTaskService.AddSubscription(selectedBooking);
+            selectedBooking.Status = "Aktiv";   // vi går direkte til Aktiv
         }
-        else if (selectedBooking.Status == "Godkendt" && selectedBooking.TypeBooking == Booking.BookingType.EnkeltBooking)
-        {
-            selectedBooking.Status = "Aktiv";
-            Console.WriteLine("Attempt at adding single booking worktask");
-            await workTaskService.AddSingleBooking(selectedBooking);
-        }
-        
-        if(selectedBooking.Status == "Afvist")
+        else if (selectedstatus == "Afvist")
         {
             selectedBooking.Status = "Inaktiv";
-            Console.WriteLine("Attempt at adding subscription");
+        }
+        else
+        {
+            // Hvis Afmeldt
+            selectedBooking.Status = selectedstatus;
+        }
+
+        // Gem booking i databasen med den nye status
+        await bookingService.UpdateBooking(selectedBooking);
+
+        // Hvis booking er AKTIV → opret arbejdsopgaver
+        if (selectedBooking.Status == "Aktiv")
+        {
+            if (selectedBooking.TypeBooking == Booking.BookingType.Abonnement)
+            {
+                Console.WriteLine("Adding subscription work tasks");
+                await workTaskService.AddSubscription(selectedBooking);
+            }
+            else if (selectedBooking.TypeBooking == Booking.BookingType.EnkeltBooking)
+            {
+                Console.WriteLine("Adding single booking work task");
+                await workTaskService.AddSingleBooking(selectedBooking);
+            }
+        }
+        // Hvis booking bliver afmledt eller inaktiv → slet arbejdsopgaver
+        else if (selectedBooking.Status == "Afmeldt" || selectedBooking.Status == "Inaktiv")
+        {
+            Console.WriteLine("Deleting all worktasks for booking");
+            await workTaskService.DeleteAllWorkTaskFromBookingId(selectedBooking.Id);
         }
     }
 
-
-
+    
     private async Task UpdateBookingStatus()
     {
         await bookingService.UpdateBooking(selectedBooking);
