@@ -7,7 +7,11 @@
 @inject IBooking bookingService
 @inject IUser userService
 
-<ShowTaskKalenderKomponent OnDateSelected="HandleDateSelected"/>
+
+<ShowTaskKalenderKomponent
+    TaskDates="taskDates"
+    OnDateSelected="HandleDateSelected"/>
+
 
 <h3>Arbejdssopgaver for valgte dato</h3>
 
@@ -18,46 +22,49 @@
 
 <table class="table table-striped table-bordered align-middle">
     <thead class="table-light">
-        <tr>
-            <th>Dato</th>
-            <th>Inside Job</th>
-            <th>Vinduer</th>
-            <th>Notes</th>
-            <th>Worker</th>
-            <th>Actions</th>
-        </tr>
+    <tr>
+        <th>Dato</th>
+        <th>Inside Job</th>
+        <th>Vinduer</th>
+        <th>Notes</th>
+        <th>Worker</th>
+        <th>Actions</th>
+    </tr>
     </thead>
     <tbody>
-        @if (FilteredTasks.Any())
+    @if (FilteredTasks.Any())
+    {
+        @foreach (var t in FilteredTasks)
         {
-            @foreach (var t in FilteredTasks)
-            {
-                <tr>
-                    <td>@t.Date.ToShortDateString()</td>
-                    <td>@(t.InsideJob ? "Ja" : "Nej")</td>
-                    <td>@bookinglist.First(b => b.Id == t.BookingId).Windows.Count</td>
-                    <td>@t.NotesForTask</td>
-                    <td>@t.Worker.Name</td>
-                    <td>
-                        <button class="btn btn-sm btn-primary"
-                                @onclick="() => OpenTaskWindows(t)">Vis Vinduer</button>
-                        <button class="btn btn-sm btn-warning"
-                                @onclick="() => OpenEditTask(t)">
-                            Rediger
-                        </button>
-                        
-                        <button class="btn btn-sm btn-info"
-                                @onclick="() => ShowCustomerForTask(t)">
-                            Kundeinfo
-                        </button>
-                    </td>
-                </tr>
-            }
+            <tr>
+                <td>@t.Date.ToShortDateString()</td>
+                <td>@(t.InsideJob ? "Ja" : "Nej")</td>
+                <td>@bookinglist.First(b => b.Id == t.BookingId).Windows.Count</td>
+                <td>@t.NotesForTask</td>
+                <td>@t.Worker.Name</td>
+                <td>
+                    <button class="btn btn-sm btn-primary"
+                            @onclick="() => OpenTaskWindows(t)">Vis Vinduer
+                    </button>
+                    <button class="btn btn-sm btn-warning"
+                            @onclick="() => OpenEditTask(t)">
+                        Rediger
+                    </button>
+
+                    <button class="btn btn-sm btn-info"
+                            @onclick="() => ShowCustomerForTask(t)">
+                        Kundeinfo
+                    </button>
+                </td>
+            </tr>
         }
-        else
-        {
-            <tr><td colspan="6">Ingen opgaver for denne dato</td></tr>
-        }
+    }
+    else
+    {
+        <tr>
+            <td colspan="6">Ingen opgaver for denne dato</td>
+        </tr>
+    }
     </tbody>
 </table>
 
@@ -87,13 +94,14 @@
                 <td>@t.Worker.Name</td>
                 <td>
                     <button class="btn btn-sm btn-primary"
-                            @onclick="() => OpenTaskWindows(t)">Vis Vinduer</button>
+                            @onclick="() => OpenTaskWindows(t)">Vis Vinduer
+                    </button>
                     <button class="btn btn-sm btn-warning"
-                            @onclick="() => OpenEditTask(t)">Rediger</button>
+                            @onclick="() => OpenEditTask(t)">Rediger
+                    </button>
                 </td>
             </tr>
         }
-
     }
     </tbody>
 </table>
@@ -133,7 +141,7 @@
                         <p>Ingen vinduer registreret.</p>
                     }
 
-                    <hr />
+                    <hr/>
                     <h6>Tilføj nyt vindue</h6>
 
                     <div class="mb-2">
@@ -199,12 +207,12 @@
 
                     <div class="mb-3">
                         <label>Inside Job</label>
-                        <InputCheckbox @bind-Value="editInsideJob" />
+                        <InputCheckbox @bind-Value="editInsideJob"/>
                     </div>
 
                     <div class="mb-3">
                         <label>Notes</label>
-                        <InputTextArea class="form-control" @bind-Value="editNotes" />
+                        <InputTextArea class="form-control" @bind-Value="editNotes"/>
                     </div>
 
                 </div>
@@ -260,6 +268,7 @@
 
 
 @code {
+    private List<DateTime> taskDates = new();
     private List<WorkTask> taskList = new();
     private List<Customer> customerlist = new();
     private List<Booking> bookinglist = new();
@@ -278,27 +287,29 @@
     private string newWindowLocationId;
     private List<WindowType> windowtypecategories = new List<WindowType>();
     private List<WindowLocation> windowlocationcategories = new List<WindowLocation>();
-        private void ShowCustomerForTask(WorkTask task)
+
+    private void ShowCustomerForTask(WorkTask task)
+    {
+        // 1. Find booking based on BookingId
+        var booking = bookinglist.FirstOrDefault(b => b.Id == task.BookingId);
+
+        if (booking == null)
         {
-            // 1. Find booking based on BookingId
-            var booking = bookinglist.FirstOrDefault(b => b.Id == task.BookingId);
-
-            if (booking == null)
-            {
-                Console.WriteLine("Booking not found for task");
-                customer = null;
-                showCustomerModal = true;
-                return;
-            }
-
-            // 2. Find customer based on CustomerId from booking
-            customer = customerlist.FirstOrDefault(c => c.Id == booking.CustomerId);
-
+            Console.WriteLine("Booking not found for task");
+            customer = null;
             showCustomerModal = true;
+            return;
         }
 
-    
+        // 2. Find customer based on CustomerId from booking
+        customer = customerlist.FirstOrDefault(c => c.Id == booking.CustomerId);
+
+        showCustomerModal = true;
+    }
+
+
     private DateTime? selectedDate;
+
     private List<WorkTask> FilteredTasks =>
         selectedDate.HasValue
             ? taskList.Where(t => t.Date.Date == selectedDate.Value.Date).ToList()
@@ -309,6 +320,7 @@
         customerlist = (await userService.GetCustomers()).ToList();
         bookinglist = (await bookingService.GetAll()).ToList();
         taskList = (await workTaskService.GetAll()).ToList();
+        taskDates = taskList.Select(t => t.Date).ToList();
     }
 
     private void HandleDateSelected(DateTime date)
@@ -353,8 +365,7 @@
         await workTaskService.UpdateWorkTask(selectedTask);
         showEditModal = false;
     }
-    
-    
+
 
     private void AddWindow()
     {
@@ -395,5 +406,9 @@
         }
     }
 
-    private void CloseCustomerModal() { showCustomerModal = false; }
+    private void CloseCustomerModal()
+    {
+        showCustomerModal = false;
+    }
+
 }
