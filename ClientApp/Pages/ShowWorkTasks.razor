@@ -63,35 +63,10 @@
         }
         else
         {
-            <tr>
-                <td>@t.Date.ToShortDateString()</td>
-                <td>@(t.InsideJob ? "Ja" : "Nej")</td>
-                <td>@bookinglist.First(b => b.Id == t.BookingId).Windows.Count</td>
-                <td>@t.NotesForTask</td>
-                <td>@t.Worker.Name</td>
-                <td>
-                    <button class="btn btn-sm btn-primary"
-                            @onclick="() => OpenTaskWindows(t)">Vis Vinduer
-                    </button>
-                    <button class="btn btn-sm btn-warning"
-                            @onclick="() => OpenEditTask(t)">
-                        Rediger
-                    </button>
-
-                    <button class="btn btn-sm btn-info"
-                            @onclick="() => ShowCustomerForTask(t)">
-                        Kundeinfo
-                    </button>
-                </td>
-            </tr>
-        }
-    }
-    else
-    {
         <tr>
             <td colspan="6">Ingen opgaver for denne dato</td>
         </tr>
-    }
+        }
     </tbody>
 </table>
 
