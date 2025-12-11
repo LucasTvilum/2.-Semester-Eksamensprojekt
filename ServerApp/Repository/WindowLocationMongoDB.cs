@@ -6,13 +6,13 @@ namespace ServerApp.Repository;
 public class WindowLocationMongoDB : IWindowLocationRepository
 {
     private readonly IMongoCollection<WindowLocation> _collection;
-
-    public WindowLocationMongoDB()
-    {
-        var client = new MongoClient("mongodb://localhost:27017");
-        var database = client.GetDatabase("Vinduespudsning");
-        _collection = database.GetCollection<WindowLocation>("WindowLocations");
-    }
+    
+  public WindowLocationMongoDB(DatabaseSettings settings)
+  {
+      var client = new MongoClient(settings.ConnectionString);
+      var database = client.GetDatabase(settings.DatabaseName);
+      _collection = database.GetCollection<WindowLocation>("WindowLocations");
+  }
 
     public List<WindowLocation> GetAll()
     {

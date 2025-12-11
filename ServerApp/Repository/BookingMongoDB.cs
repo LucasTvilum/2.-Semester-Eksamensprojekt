@@ -7,13 +7,13 @@ namespace ServerApp.Repository;
 public class BookingMongoDB : IBookingRepository
 {
     private readonly IMongoCollection<Booking> _collection;
-
-    public BookingMongoDB()
-    {
-        var client = new MongoClient("mongodb://localhost:27017");
-        var database = client.GetDatabase("Vinduespudsning");
-        _collection = database.GetCollection<Booking>("Bookings");
-    }
+    
+   public BookingMongoDB(DatabaseSettings settings)
+   {
+       var client = new MongoClient(settings.ConnectionString);
+       var database = client.GetDatabase(settings.DatabaseName);
+       _collection = database.GetCollection<Booking>("Bookings");
+   }
 
     public List<Booking> GetAll()
     {

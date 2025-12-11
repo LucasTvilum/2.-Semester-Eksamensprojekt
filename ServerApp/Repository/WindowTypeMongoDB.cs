@@ -6,13 +6,13 @@ namespace ServerApp.Repository;
 public class WindowTypeMongoDB : IWindowTypeRepository
 {
     private readonly IMongoCollection<WindowType> _collection;
-
-    public WindowTypeMongoDB()
-    {
-        var client = new MongoClient("mongodb://localhost:27017");
-        var database = client.GetDatabase("Vinduespudsning");
-        _collection = database.GetCollection<WindowType>("WindowTypes");
-    }
+    
+   public WindowTypeMongoDB(DatabaseSettings settings)
+   {
+       var client = new MongoClient(settings.ConnectionString);
+       var database = client.GetDatabase(settings.DatabaseName);
+       _collection = database.GetCollection<WindowType>("WindowTypes");
+   }
 
     public List<WindowType> GetAll()
     {

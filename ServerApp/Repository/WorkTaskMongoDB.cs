@@ -8,12 +8,12 @@ public class WorkTaskMongoDB : IWorkTaskRepository
 {
     private readonly IMongoCollection<WorkTask> _collection;
 
-    public WorkTaskMongoDB()
-    {
-        var client = new MongoClient("mongodb://localhost:27017");
-        var database = client.GetDatabase("Vinduespudsning");
-        _collection = database.GetCollection<WorkTask>("WorkTasks");
-    }
+  public WorkTaskMongoDB(DatabaseSettings settings)
+  {
+      var client = new MongoClient(settings.ConnectionString);
+      var database = client.GetDatabase(settings.DatabaseName);
+      _collection = database.GetCollection<WorkTask>("WorkTasks");
+  }
 
     public List<WorkTask> GetAll()
     {
