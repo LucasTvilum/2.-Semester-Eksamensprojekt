@@ -235,4 +235,20 @@ code {
     margin-bottom: 0;
 }
 
+.bruger-menu {
+    width: 30px;
+    height: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.bruger-menu div {
+    height: 3px;
+    background-color: black;
+    border-radius: 2px;
+}
+
+
 
