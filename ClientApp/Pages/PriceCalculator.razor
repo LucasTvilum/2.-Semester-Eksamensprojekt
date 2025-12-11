@@ -98,7 +98,7 @@
 
                 <div class="modal-body">
 
-                    <KalenderComponentv2 @bind-SelectedDay="booking.Day"/>
+                    <KalenderComponentv2 @bind-SelectedDay="booking.Day" @bind-SelectedDate="booking.Date"/>
 
                     <EditForm Model="@booking" OnValidSubmit="@HandleOneTimeSubmit" class="mt-3">
                         <DataAnnotationsValidator/>
@@ -121,6 +121,7 @@
     private bool showSubscriptionModal = false;
     private List<int> intervalcategories = new() { 2, 4, 8, 12, 24 };
     private List<string> daycategories = new() { "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag" };
+    private DateTime? selectedDate = new DateTime();
 
 
     private async Task HandleSubscriptionSubmit()

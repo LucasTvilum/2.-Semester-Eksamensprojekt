@@ -64,11 +64,12 @@
 
     [Parameter] public string SelectedDay { get; set; }
     [Parameter] public EventCallback<string> SelectedDayChanged { get; set; }
+    [Parameter] public DateTime? SelectedDate { get; set; }
+    [Parameter] public EventCallback<DateTime> SelectedDateChanged { get; set; }
 
     private DateTime CurrentDate = DateTime.Today;
     private List<DateTime> Days = new();
     private string[] DayNames = new[] { "Ma", "Tir", "Ons", "Tor", "Fr", "Lør", "Søn" };
-    private DateTime? SelectedDate = null;
 
     private Dictionary<DateTime, int> BookingsPerDay = new();
 
@@ -129,6 +130,9 @@
 
         SelectedDate = day;
         SelectedDay = day.ToString("dddd");
-        await SelectedDayChanged.InvokeAsync(SelectedDay);
+        await Task.WhenAll(
+            SelectedDayChanged.InvokeAsync(SelectedDay),
+            SelectedDateChanged.InvokeAsync((DateTime)SelectedDate)
+        );
     }
 }

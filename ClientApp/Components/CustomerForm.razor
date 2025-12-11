@@ -6,12 +6,12 @@
 
     <div class="col-12 mb-3">
         <label>Brugernavn</label>
-        <InputText class="form-control" @bind-Value="Customer.Username" />
+        <InputText class="form-control" @bind-Value="customer.Username" />
     </div>
 
     <div class="col-12 mb-3">
         <label>Adgangskode</label>
-        <InputText class="form-control" type="password" @bind-Value="Customer.Password" />
+        <InputText class="form-control" type="password" @bind-Value="customer.Password" />
     </div>
 
     <div class="col-12 mb-3">
@@ -41,7 +41,7 @@
 
     <div class="col-6 mb-3">
         <label>By</label>
-        <InputText class="form-control" @bind-Value="Customer.City" />
+        <InputText class="form-control" @bind-Value="customer.City" />
     </div>
 
     <button type="submit" class="btn btn-primary">@ButtonText</button>
