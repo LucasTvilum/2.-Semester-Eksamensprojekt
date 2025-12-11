@@ -1,5 +1,9 @@
 ﻿@page "/Home"
+@using ClientApp.Service
 @inject NavigationManager navigationManager
+@inject UserState userState
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
 
 <div class="home-container">
 
@@ -16,22 +20,41 @@
         <!-- Logo (Tvilum) -->
         <div class="logo">Tvilum</div>
 
-        <!-- Profile icon -->
-        <div class="profile-icon" @onclick="ToggleProfile">
-            <img src="image/Logo/ProfileLogo.png" />
+        
+        <!-- Profile icon + dropdown -->
+        <div class="d-flex flex-column align-items-end me-3">
+
+            <img src="image/Logo/ProfileLogo.png"
+                 style="width:50px; height:50px; cursor:pointer;"
+                 @onclick="ToggleProfile" />
+
+            @if (userState.IsLoggedIn)
+            {
+                <span class="fw-bold mt-1" style="font-size: 0.95rem;">
+                    Velkommen, @userState.CurrentUser.Name
+                </span>
+            }
+
+            @if (showProfileMenu)
+            {
+                <div class="profile-menu">
+                    @if (userState.IsLoggedIn)
+                    {
+                        <button class="profile-menu-btn" @onclick="Logout">Log ud</button>
+                    }
+                    else
+                    {
+                        <button class="profile-menu-btn" @onclick="GoToRegister">Opret bruger</button>
+                        <button class="profile-menu-btn" @onclick="GoToLogin">Log ind</button>
+                    }
+                </div>
+            }
+
         </div>
+    </div>   
 
-        <!-- Profile dropdown -->
-        @if (showProfileMenu)
-        {
-            <div class="profile-menu">
-                <button @onclick="GoToRegister">Opret bruger</button>
-                <button @onclick="GoToLogin">Log ind</button>
-            </div>
-        }
-    </div>
 
-    <!-- Background image -->
+        <!-- Background image -->
     <div class="hero">
         <img src="image/Logo/HomeBillede.png" class="hero-img" />
 
@@ -69,5 +92,20 @@
     void GoToLogin()
     {
         navigationManager.NavigateTo("/Login");
+    }
+    
+    private async Task Logout()
+    {
+        // Fjern bruger i localStorage
+        await localStorage.RemoveItemAsync("currentUser");
+
+        // Nulstil userState
+        userState.CurrentUser = null;
+
+        // Luk menu
+        showProfileMenu = false;
+
+        // Naviger til Home (eller "/")
+        navigationManager.NavigateTo("/Home", true);
     }
 }
