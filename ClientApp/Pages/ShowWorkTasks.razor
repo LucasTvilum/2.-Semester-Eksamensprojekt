@@ -8,7 +8,11 @@
 @inject IWindow windowService
 @inject IUser userService
 
-<ShowTaskKalenderKomponent OnDateSelected="HandleDateSelected"/>
+
+<ShowTaskKalenderKomponent
+    TaskDates="taskDates"
+    OnDateSelected="HandleDateSelected"/>
+
 
 <h3>Arbejdssopgaver for valgte dato</h3>
 
@@ -59,12 +63,14 @@
         }
         else
         {
-            <tr><td colspan="6">Ingen opgaver for denne dato</td></tr>
+        <tr>
+            <td colspan="6">Ingen opgaver for denne dato</td>
+        </tr>
         }
     </tbody>
 </table>
 
-<h3>Alle arbejdsopgaver (WorkTasks)</h3>
+<h3>Alle arbejdsopgaver fremtidige arbejdsopgaver</h3>
 
 <table class="table table-striped table-bordered align-middle">
     <thead class="table-light">
@@ -92,7 +98,8 @@
                 <td>@t.Status</td>
                 <td>
                     <button class="btn btn-sm btn-primary"
-                            @onclick="() => OpenTaskWindows(t)">Vis Vinduer</button>
+                            @onclick="() => OpenTaskWindows(t)">Vis Vinduer
+                    </button>
                     <button class="btn btn-sm btn-warning"
                             @onclick="() => OpenEditTask(t)">Rediger</button>
                     <button class="btn btn-sm btn-info"
@@ -102,7 +109,6 @@
                 </td>
             </tr>
         }
-
     }
     </tbody>
 </table>
@@ -142,7 +148,7 @@
                         <p>Ingen vinduer registreret.</p>
                     }
 
-                    <hr />
+                    <hr/>
                     <h6>Tilføj nyt vindue</h6>
 
                     <div class="mb-2">
@@ -276,6 +282,7 @@
 
 
 @code {
+    private List<DateTime> taskDates = new();
     private List<WorkTask> taskList = new();
     private List<Customer> customerlist = new();
     private List<Booking> bookinglist = new();
@@ -296,45 +303,59 @@
     private string newWindowLocationId;
     private List<WindowType> windowtypecategories = new List<WindowType>();
     private List<WindowLocation> windowlocationcategories = new List<WindowLocation>();
-        private void ShowCustomerForTask(WorkTask task)
+
+    private void ShowCustomerForTask(WorkTask task)
+    {
+        // 1. Find booking based on BookingId
+        var booking = bookinglist.FirstOrDefault(b => b.Id == task.BookingId);
+
+        if (booking == null)
         {
-            // 1. Find booking based on BookingId
-            var booking = bookinglist.FirstOrDefault(b => b.Id == task.BookingId);
-
-            if (booking == null)
-            {
-                Console.WriteLine("Booking not found for task");
-                customer = null;
-                showCustomerModal = true;
-                return;
-            }
-
-            // 2. Find customer based on CustomerId from booking
-            customer = customerlist.FirstOrDefault(c => c.Id == booking.CustomerId);
-
+            Console.WriteLine("Booking not found for task");
+            customer = null;
             showCustomerModal = true;
+            return;
         }
 
-    
+        // 2. Find customer based on CustomerId from booking
+        customer = customerlist.FirstOrDefault(c => c.Id == booking.CustomerId);
+
+        showCustomerModal = true;
+    }
+
+
     private DateTime? selectedDate;
-    private List<WorkTask> FilteredTasks =>
-        selectedDate.HasValue
-            ? taskList.Where(t => t.Date.Date == selectedDate.Value.Date).ToList()
-            : new List<WorkTask>();
+    private List<WorkTask> FilteredTasks = new List<WorkTask>();
 
     protected override async Task OnInitializedAsync()
     {
         customerlist = (await userService.GetCustomers()).ToList();
         bookinglist = (await bookingService.GetAll()).ToList();
         taskList = (await workTaskService.GetAll()).ToList();
+        taskDates = taskList.Select(t => t.Date).ToList();
         windowlocationcategories = (await windowService.GetAllWindowLocations());
         windowtypecategories = (await windowService.GetAllWindowTypes());
+    }
+    
+    private void FilterTasksByDate(DateTime? date)
+    {
+        if (date.HasValue)
+        {
+            FilteredTasks = taskList
+                .Where(t => t.Date.Date == date.Value.Date)
+                .ToList();
+        }
+        else
+        {
+            FilteredTasks = new List<WorkTask>();
+        }
     }
 
     private void HandleDateSelected(DateTime date)
     {
         selectedDate = date;
         Console.WriteLine(selectedDate);
+        FilterTasksByDate(selectedDate);
     }
 
     private void OpenTaskWindows(WorkTask task)
@@ -360,7 +381,7 @@
         var booking = bookinglist.FirstOrDefault(b => b.Id == task.BookingId);
         editBookingNotes = booking?.NotesWindowCleaner;
 
-        editStatus = task.Status; // assuming WorkTask.Status is string
+        editStatus = task.Status;
 
         showEditModal = true;
     }
@@ -377,7 +398,7 @@
         selectedTask.Status = editStatus;
         await workTaskService.UpdateWorkTask(selectedTask);
 
-        // save booking notes
+        // save booking notes by finding first matching booking and updating with new note
         var booking = bookinglist.FirstOrDefault(b => b.Id == selectedTask.BookingId);
         if (booking != null)
         {
@@ -387,8 +408,7 @@
 
         showEditModal = false;
     }
-    
-    
+
 
     private void AddWindow()
     {
@@ -429,5 +449,9 @@
         }
     }
 
-    private void CloseCustomerModal() { showCustomerModal = false; }
+    private void CloseCustomerModal()
+    {
+        showCustomerModal = false;
+    }
+
 }

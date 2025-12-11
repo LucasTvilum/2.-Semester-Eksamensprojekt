@@ -77,11 +77,23 @@
     z-index: 1;
 }
 
-.event-dott {
+.dot {
     width: 8px;
     height: 8px;
-    background-color: #55d471;
-    border-radius: 100%;
+    background-color: #6cc96f;
+    border-radius: 50%;
+    margin-top: 3px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.day-celll {
+    position: relative;
+}
+
+.dot {
     position: absolute;
-    bottom: 6px;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
 }

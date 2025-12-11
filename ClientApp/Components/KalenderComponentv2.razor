@@ -1,4 +1,7 @@
 @using System.Globalization
+@using Core.Models
+@using ClientApp.Service
+@inject IWorkTask WorkTaskService
 
 <h3>Kalender</h3>
 
@@ -21,47 +24,58 @@
 
         @foreach (var day in Days)
         {
-            <div class="day-celll @(day.Month != CurrentDate.Month ? "inactivee" : "")"
+            var classes = "day-celll";
+            if (day.Month != CurrentDate.Month)
+                classes += " inactivee";
+
+            bool isAvailable = false;
+
+            if (BookingsPerDay.TryGetValue(day.Date, out int count))
+            {
+                if (count < 10 && day.DayOfWeek != DayOfWeek.Saturday && day.DayOfWeek != DayOfWeek.Sunday)
+                {
+                    isAvailable = true;
+                }
+            }
+
+
+
+            <div class="@classes"
                  @onclick="() => dayCell(day)">
                 <span class="day-numberr">@day.Day</span>
-
-                @if (EventDays.Contains(day.Day) && day.Month == CurrentDate.Month)
+                
+                @if (isAvailable)
                 {
-                    <div class="event-dott"></div>
+                    <div class="dot"></div>  
                 }
             </div>
         }
     </div>
 </div>
 
-<!--viser valgt dato-->
 @if (SelectedDate != null)
 {
-    <div style="margin-top: 20px; font-size: 18px; font-weight: bold;">
-        Du har valgt: @SelectedDate?.ToString("dddd d. MMMM yyyy", CultureInfo.GetCultureInfo("da-DK"))
+    <div>
+        @SelectedDate?.ToString("dddd d. MMMM yyyy", CultureInfo.GetCultureInfo("da-DK"))
     </div>
 }
 
 @code {
+
+    [Parameter] public string SelectedDay { get; set; }
+    [Parameter] public EventCallback<string> SelectedDayChanged { get; set; }
+
     private DateTime CurrentDate = DateTime.Today;
     private List<DateTime> Days = new();
     private string[] DayNames = new[] { "Ma", "Tir", "Ons", "Tor", "Fr", "Lør", "Søn" };
+    private DateTime? SelectedDate = null;
 
-    private DateTime? SelectedDate = null; // ⭐ ny variabel
+    private Dictionary<DateTime, int> BookingsPerDay = new();
 
-    [Parameter]
-    public List<int> EventDays { get; set; } = new();
-    
-    [Parameter]
-    public DateTime? SelectedDateFromParent { get; set; }
-
-    [Parameter]
-    public EventCallback<DateTime?> SelectedDateFromParentChanged { get; set; }
-
-    
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         LoadCalendar();
+        await LoadBookingsForMonth();
     }
 
     private void LoadCalendar()
@@ -79,22 +93,42 @@
         }
     }
 
-    private void PreviousMonth()
+    private async Task LoadBookingsForMonth()
+    {
+        BookingsPerDay.Clear();
+
+        var workTasks = await WorkTaskService.GetAll();
+
+        foreach (var day in Days)
+        {
+            int count = workTasks.Count(x => x.Date.Date == day.Date);
+
+            BookingsPerDay[day.Date] = count;
+        }
+    }
+
+
+    private async Task PreviousMonth()
     {
         CurrentDate = CurrentDate.AddMonths(-1);
         LoadCalendar();
+        await LoadBookingsForMonth();
     }
 
-    private void NextMonth()
+    private async Task NextMonth()
     {
         CurrentDate = CurrentDate.AddMonths(1);
         LoadCalendar();
+        await LoadBookingsForMonth();
     }
 
-    private async void dayCell(DateTime Day)
+    private async Task dayCell(DateTime day)
     {
-        SelectedDate = Day;
-        await SelectedDateFromParentChanged.InvokeAsync(Day);
-    }
+        if (BookingsPerDay[day.Date] >= 10)
+            return; // Bloker valg af dato der er fuldt booket
 
+        SelectedDate = day;
+        SelectedDay = day.ToString("dddd");
+        await SelectedDayChanged.InvokeAsync(SelectedDay);
+    }
 }
