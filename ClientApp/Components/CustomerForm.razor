@@ -5,13 +5,13 @@
     <ValidationSummary />
 
     <div class="col-12 mb-3">
-        <label>Username</label>
-        <InputText class="form-control" @bind-Value="customer.Username" />
+        <label>Brugernavn</label>
+        <InputText class="form-control" @bind-Value="Customer.Username" />
     </div>
 
     <div class="col-12 mb-3">
-        <label>Password</label>
-        <InputText class="form-control" type="password" @bind-Value="customer.Password" />
+        <label>Adgangskode</label>
+        <InputText class="form-control" type="password" @bind-Value="Customer.Password" />
     </div>
 
     <div class="col-12 mb-3">
@@ -40,8 +40,8 @@
     </div>
 
     <div class="col-6 mb-3">
-        <label>City</label>
-        <InputText class="form-control" @bind-Value="customer.City" />
+        <label>By</label>
+        <InputText class="form-control" @bind-Value="Customer.City" />
     </div>
 
     <button type="submit" class="btn btn-primary">@ButtonText</button>

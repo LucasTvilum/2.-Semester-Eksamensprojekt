@@ -178,6 +178,6 @@ public class WorkTaskService : IWorkTask
 
     public async Task DeleteAllWorkTaskFromBookingId(string bookingid)
     {
-        await http.DeleteAsync($"{url}/api/worktask/deletetasks/{bookingid}");
+        await http.DeleteAsync($"{url}/api/worktask/deletebookings/{bookingid}");
     }
 }

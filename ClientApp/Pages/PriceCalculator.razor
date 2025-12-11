@@ -6,7 +6,7 @@
 @inject IBooking bookingService
 @inject NavigationManager nav
 
-<h3>Price Calculator</h3>
+<h3>Pris Beregner</h3>
 
 <WindowPriceCalculator Booking="@booking" OnSelectBookingType="HandleBookingType"/>
 @if (showSubscriptionModal)
@@ -148,6 +148,9 @@
 
         booking.TypeBooking = Booking.BookingType.EnkeltBooking;
         booking.Status = "afventer";
+     
+        booking.Date = selectedDate.HasValue ? selectedDate.Value : DateTime.Today;
+
 
         await bookingService.Add(booking);
 

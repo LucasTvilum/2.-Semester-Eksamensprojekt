@@ -42,9 +42,9 @@ public class WorkTaskMongoDB : IWorkTaskRepository
         _collection.DeleteOne(id);
     }
 
-    public void DeleteAllWorktasksFromBookingId(string bookingid)
+    public void DeleteAllWorktasksFromBookingId(string bookingId)
     {
-        _collection.DeleteManyAsync(Builders<WorkTask>.Filter.Eq(a => a.Id, bookingid));
+        _collection.DeleteMany(t => t.BookingId == bookingId);
     }
-
+    
 }
