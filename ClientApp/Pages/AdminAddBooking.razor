@@ -7,13 +7,14 @@
 @using Microsoft.AspNetCore.Components.Forms
 @inject IBooking bookingService
 @inject IUser userService
-@inject IWorkTask worktaskService
-@inject IWindow windowService
+@inject UserState userState
 @inject ILocalStorageService localStorage
+@inject NavigationManager nav
 @page "/AdminAddBooking"
-<h3>Admin kunde og booking oprettelse</h3>
 
-<CustomerForm Customer="customer" ButtonText="Opret Kunde" OnSubmit="HandleCustomerSubmit" />
+<h3>Admin kunde og booking oprettelse</h3>
+<h2>Kundeoprettelse</h2>
+<CustomerForm customer="customer" ButtonText="Opret Kunde" OnSubmit="HandleCustomerSubmit" />
 
 @if (customer != null)
 {
@@ -21,215 +22,186 @@
     <h3>@customer.Name</h3>
 }
 
+<WindowPriceCalculator Booking="@booking" OnSelectBookingType="HandleBookingType" />
 
-<EditForm Model="@booking"  OnValidSubmit="@HandleSubmit" class="row p-3">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-    
-    <div class="col-md-12 mb-3">
-        <label for="IntervalOutside">Interval Udenfor</label>
-        <InputNumber id="IntervalOutside" @bind-Value="booking.OutdoorInterval" class="form-control" />
-    </div>
-    
-    <div class="col-md-12 mb-3">
-        <label for="IntervalInside">Interval Indenfor</label>
-        <InputNumber id="IntervalInside" @bind-Value="booking.InsideInterval" class="form-control" />
-    </div>
+@if (showSubscriptionModal)
+{
+    <div class="modal d-block" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
 
-    
-    <div class="col-md-12 mb-3">
-        <label for="NotesCustomer">Noter</label>
-        <InputText id="NotesCustomer" @bind-Value="booking.NotesCustomer" class="form-control" />
-    </div>
-    
-    <div class="col-md-6 mb-3">
-        <label for="Price">Pris</label>
-        <InputNumber id="Price" @bind-Value="booking.Price" class="form-control" />
-    </div>
-    
-    <div class="col-md-12 mb-3">
-        <label for="Category">Booking type</label>
-        <InputSelect id="Category" @bind-Value="booking.TypeBooking"> 
-            @foreach (var type in bookingtypecategories)
-            {
-                <option value="@type">@Booking.GetLabel(type)</option>
-            }
-        </InputSelect>
-    </div>
-    
-    @if (booking.TypeBooking == Booking.BookingType.Abonnement)
-    {
-        <div class="col-md-12 mb-3">
-            <label for="daylist">Dato for abonnement pudsning</label>
-            <InputSelect id="daylist" @bind-Value="booking.Day"> 
-                @foreach (var cat in daycategories)
-                {
-                    <option value="@cat">@cat</option>
-                }
-            </InputSelect>
+                <div class="modal-header">
+                    <h5>Opret abonnement</h5>
+                    <button class="btn-close" @onclick="() => showSubscriptionModal = false"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <EditForm Model="@booking" OnValidSubmit="@HandleSubscriptionSubmit" class="row p-3">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="col-md-12 mb-3">
+                            <label>Uge interval udenfor:</label>
+                            <InputSelect @bind-Value="booking.OutdoorInterval">
+                                @foreach (var cat in intervalcategories)
+                                {
+                                    <option value="@cat">@cat</option>
+                                }
+                            </InputSelect>
+                        </div>
+                        
+                        <div class="col-md-12 mb-3">
+                            <label>Uge interval indenfor:</label>
+                            <InputSelect @bind-Value="booking.InsideInterval">
+                                @foreach (var cat in intervalcategories)
+                                {
+                                    <option value="@cat">@cat</option>
+                                }
+                            </InputSelect>
+                        </div>
+
+                        @if (booking.InsideJob)
+                        {
+                            <div class="col-md-12 mb-3">
+                                <label>Uge interval indenfor:</label>
+                                <InputSelect @bind-Value="booking.InsideInterval">
+                                    @foreach (var cat in intervalcategories)
+                                    {
+                                        <option value="@cat">@cat</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                        }
+
+                        <div class="col-md-12 mb-3">
+                            <label>Dag:</label>
+                            <InputSelect @bind-Value="booking.Day">
+                                @foreach (var d in daycategories)
+                                {
+                                    <option value="@d">@d</option>
+                                }
+                            </InputSelect>
+                        </div>
+                        
+                        <div class="col-md-12 mb-3">
+                            <label>Noter</label>
+                            <InputText class="form-control" @bind-Value="booking.NotesCustomer" />
+                        </div>
+                        
+
+                        <button type="submit" class="btn btn-primary">Opret abonnement</button>
+                    </EditForm>
+
+                </div>
+
+            </div>
         </div>
-    }  else if (booking.TypeBooking == Booking.BookingType.EnkeltBooking)
-    {
-        <label for="dato">Dato for enkeltpudsning</label>
-        <InputDate @bind-Value="worktask.Date" class="form-control" />
-    }
-    <div class="form-check mb-3">
-        <InputCheckbox id="Indenfor" @bind-Value="booking.InsideJob" class="form-check-input"/>
-        <label class="form-check-label" for="Indenfor">
-            Pudsning indenfor
-        </label>
     </div>
-    
-    <div class="col-12 mb-3">
-        <button type="submit" class="btn btn-primary" >Opret Booking</button>
-    </div>
-    
-    <div class="col-12 mb-3">
-        <button type="reset" class="btn btn-primary">Reset</button>
-    </div>
-    
-</EditForm> 
+}
 
-<h3>Price Calculator</h3>
+@if (showOneTimeModal)
+{
+    <div class="modal d-block" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
 
-<WindowPriceCalculator Booking="@booking" />
-<EditForm Model="@window"  OnValidSubmit="@HandleWindowSubmit" class="row p-3">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-    
-    <div class="col-md-12 mb-3">
-        <label for="Category">Vindue Type</label>
-        <InputSelect id="Type" @bind-Value="window.Type">
-            @foreach (var type in windowtypecategories)
-            {
-                <option value="@type">@type.Name</option>
-            }
-        </InputSelect>
+                <div class="modal-header">
+                    <h5>Enkeltbooking</h5>
+                    <button class="btn-close" @onclick="() => showOneTimeModal = false"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <KalenderComponentv2 />
+
+                    <EditForm Model="@booking" OnValidSubmit="@HandleOneTimeSubmit" class="mt-3">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        
+                        <div class="mb-3">
+                            <label>Noter</label>
+                            <InputText class="form-control" @bind-Value="booking.NotesCustomer" />
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Opret enkeltbooking</button>
+                    </EditForm>
+
+                </div>
+
+            </div>
+        </div>
     </div>
-    
-    <div class="col-md-12 mb-3">
-        <label for="Category">Vindue lokation</label>
-        <InputSelect id="Location" @bind-Value="window.Location">
-            @foreach (var location in windowlocationcategories)
-            {
-                <option value="@location">@location.Name</option>
-            }
-        </InputSelect>
-    </div>
-    
-    <div class="col-12 mb-3">
-        <button type="submit" class="btn btn-primary" >Tilføj vindue</button>
-    </div>
-    
-    <div class="col-12 mb-3">
-        <button type="reset" class="btn btn-primary">Reset</button>
-    </div>
-    
-</EditForm> 
+
+}
 
 @code {
     
     private Booking booking = new();
     
-    private WorkTask worktask = new();
+    private bool showOneTimeModal = false;
+    private bool showSubscriptionModal = false;
+    private List<int> intervalcategories = new() { 2, 4, 8, 12, 24 };
+    private List<string> daycategories = new() { "Mandag","Tirsdag","Onsdag","Torsdag","Fredag","Lørdag","Søndag" };
     
-    private User user = new();
-
-    private User LoadedUser = new();
-    
-    private List<string> daycategories = new List<string> { "Mandag","Tirsdag","Onsdag","Torsdag","Fredag","Lørdag","Søndag" };
-    
-    private List<string> bookingcategories = new List<string> { "Abonnement", "Enkelt Booking"};
-    
-    private async Task HandleSubmit()
+    private async Task HandleSubscriptionSubmit()
     {
+        Console.WriteLine(customer.Id);
+        
         booking.CustomerId = customer.Id;
-        worktask.BookingId = booking.Id;
-        worktask.InsideJob = booking.InsideJob;
-        worktask.Date = new DateTime(2025, 12, 1, 14, 30, 0);
-        worktask.Worker = new Worker
-        {
-            Username = "lucas",
-            Password = "Lucas",
-            Admin = true,
-            Name = "lucas",
-            PhoneNumber = "123123",
-            Mail = "lucas@mail.com"
-        };
-        
-        //sætter status til afventer, klar til at blive godkendt
+
+        booking.TypeBooking = Booking.BookingType.Abonnement;
         booking.Status = "afventer";
-        Console.WriteLine("handle submit");
-        
-        //Sends the ready Booking object booking to BookingService
-        bookingService.Add(booking);
-        
-        //Add Velux vindue håndtering
-        //if (veluxwindow) {booking.InsideJob = true}
-        
-        //Refreshes the current Booking object booking to prepare for new booking 
+
+        // await så kaldet fuldføres før vi lukker modal / nulstiller
+        await bookingService.Add(booking);
+
+        // ryd pending og luk modal
+        showSubscriptionModal = false;
         booking = new Booking();
+        customer = new Customer();
     }
-    private List<Booking.BookingType> bookingtypecategories = Enum.GetValues<Booking.BookingType>().ToList();
-    private List<WindowType> windowtypecategories = new List<WindowType>();
-    private List<WindowLocation> windowlocationcategories = new List<WindowLocation>();
-    WindowType windowtypes;
-    WindowLocation windowlocations;
-    
-    private Window window = new Window
+
+    private async Task HandleOneTimeSubmit()
     {
-    };
+        Console.WriteLine(customer.Id);
+       
+        booking.CustomerId = customer.Id;
+
+        booking.TypeBooking = Booking.BookingType.EnkeltBooking;
+        booking.Status = "afventer";
+
+        await bookingService.Add(booking);
+        
+        showOneTimeModal = false;
+        booking = new Booking();
+        customer = new Customer();
+    }
     
     protected override async Task OnInitializedAsync()
     {
-        // 1️⃣ Load raw JSON from localStorage
-        var userJson = await localStorage.GetItemAsStringAsync("currentUser");
-
-        if (!string.IsNullOrEmpty(userJson))
+        if (userState.CurrentUser?.Usertype != User.UserType.Worker)
         {
-            // 2️⃣ Parse JSON to get userType before deserialization
-            using var doc = JsonDocument.Parse(userJson);
-            int userTypeInt = doc.RootElement.GetProperty("Usertype").GetInt32();
-            var userType = (User.UserType)userTypeInt;
-
-            // 3️⃣ Deserialize to the correct concrete type
-            User loadedUser = userType switch
-            {
-                User.UserType.Customer => JsonSerializer.Deserialize<Customer>(userJson),
-                User.UserType.Worker => JsonSerializer.Deserialize<Worker>(userJson),
-                _ => JsonSerializer.Deserialize<User>(userJson)
-            };
-
-            // 4️⃣ Assign to component state
-            user = loadedUser;
-            LoadedUser = loadedUser;
-
-            if (loadedUser is Customer c)
-            {
-                customer = c;
-            }
+            nav.NavigateTo("/notallowed", true);
         }
-
-        // 5️⃣ Load additional data
-        windowtypecategories = await windowService.GetAllWindowTypes();
-        windowlocationcategories = await windowService.GetAllWindowLocations();
-    }
-    
-    private async Task HandleWindowSubmit()
-    {
-        window.Price = window.CalculatePrice();
-        booking.Windows.Add(window);
-        window = new Window();    
     }
     
     private Customer customer = new Customer();
 
-    private async Task HandleCustomerSubmit(Customer model)
+    private async Task HandleCustomerSubmit()
     {
-        // if logged in Username = UserState.Name, Password = UserState.Password
-        model.Usertype = User.UserType.Customer;
-        customer = model;
+        Console.WriteLine("customer submitted:" + customer.Id);
+        customer.Usertype = User.UserType.Customer;
         await userService.Add(customer);
+    }
+    
+    private async Task HandleBookingType(string type)
+    {
+        if (type == "Enkelt")
+            showOneTimeModal = true;
+
+        if (type == "Abonnement")
+            showSubscriptionModal = true;
     }
     
 }

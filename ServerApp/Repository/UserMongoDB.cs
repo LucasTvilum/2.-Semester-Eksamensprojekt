@@ -29,6 +29,7 @@ public class UserMongoDB : IUserRepository
             Console.WriteLine("Customer Address: " + customer.Address);
             Console.WriteLine("Customer Region: " + customer.Region);
             Console.WriteLine("Customer City: " + customer.City);
+            Console.WriteLine("Customer Id: " +  customer.Id);
         }
         else if (user is Worker worker)
         {
@@ -47,7 +48,8 @@ public class UserMongoDB : IUserRepository
 
     public void Delete(string id)
     {
-        _collection.DeleteOne(id);
+        var filter = Builders<User>.Filter.Eq(u => u.Id, id);
+        _collection.DeleteOne(filter);
     }
     public Task<List<Customer>> GetCustomers()
     {

@@ -55,6 +55,7 @@ else
             }
         </InputSelect>
     </div>
+    
     @if (booking.InsideJob == true){
         <div class="col-md-12 mb-3">
             <label for="IntervalInside">Uge interval for pudsning indenfor:</label>
@@ -67,21 +68,21 @@ else
         </div>
     }
 
+    <div class="col-md-12 mb-3">
+        <label for="daylist">Dag</label>
+        <InputSelect id="daylist" @bind-Value="booking.Day"> 
+            @foreach (var cat in daycategories)
+            {
+                <option value="@cat">@cat</option>
+            }
+        </InputSelect>
+    </div>
     
     <div class="col-md-12 mb-3">
         <label for="NotesCustomer">Noter</label>
         <InputText id="NotesCustomer" @bind-Value="booking.NotesCustomer" class="form-control" />
     </div>
-
-        <div class="col-md-12 mb-3">
-            <label for="daylist">Dato for abonnement pudsning</label>
-            <InputSelect id="daylist" @bind-Value="booking.Day"> 
-                @foreach (var cat in daycategories)
-                {
-                    <option value="@cat">@cat</option>
-                }
-            </InputSelect>
-        </div>
+    
     
     <div class="col-12 mb-3">
         <button type="submit" class="btn btn-primary" >Opret Booking</button>

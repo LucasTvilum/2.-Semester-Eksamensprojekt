@@ -1,59 +1,59 @@
 @using Core.Models
 
-<EditForm Model="Customer" OnValidSubmit="Submit" class="row p-3">
+<EditForm Model="customer" OnValidSubmit="Submit" class="row p-3">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
     <div class="col-12 mb-3">
         <label>Username</label>
-        <InputText class="form-control" @bind-Value="Customer.Username" />
+        <InputText class="form-control" @bind-Value="customer.Username" />
     </div>
 
     <div class="col-12 mb-3">
         <label>Password</label>
-        <InputText class="form-control" type="password" @bind-Value="Customer.Password" />
+        <InputText class="form-control" type="password" @bind-Value="customer.Password" />
     </div>
 
     <div class="col-12 mb-3">
         <label>Navn</label>
-        <InputText class="form-control" @bind-Value="Customer.Name" />
+        <InputText class="form-control" @bind-Value="customer.Name" />
     </div>
 
     <div class="col-12 mb-3">
         <label>Mail</label>
-        <InputText class="form-control" @bind-Value="Customer.Mail" />
+        <InputText class="form-control" @bind-Value="customer.Mail" />
     </div>
 
     <div class="col-12 mb-3">
         <label>Telefon</label>
-        <InputText class="form-control" @bind-Value="Customer.PhoneNumber" />
+        <InputText class="form-control" @bind-Value="customer.PhoneNumber" />
     </div>
 
     <div class="col-12 mb-3">
         <label>Adresse</label>
-        <InputText class="form-control" @bind-Value="Customer.Address" />
+        <InputText class="form-control" @bind-Value="customer.Address" />
     </div>
 
     <div class="col-6 mb-3">
         <label>Region</label>
-        <InputText class="form-control" @bind-Value="Customer.Region" />
+        <InputText class="form-control" @bind-Value="customer.Region" />
     </div>
 
     <div class="col-6 mb-3">
         <label>City</label>
-        <InputText class="form-control" @bind-Value="Customer.City" />
+        <InputText class="form-control" @bind-Value="customer.City" />
     </div>
 
     <button type="submit" class="btn btn-primary">@ButtonText</button>
 </EditForm>
 
 @code {
-    [Parameter] public Customer Customer { get; set; } = new();
+    [Parameter] public required Customer customer { get; set; }
     [Parameter] public string ButtonText { get; set; } = "Opret Kunde";
     [Parameter] public EventCallback<Customer> OnSubmit { get; set; }
 
     private async Task Submit()
     {
-        await OnSubmit.InvokeAsync(Customer);
+        await OnSubmit.InvokeAsync(customer);
     }
 }

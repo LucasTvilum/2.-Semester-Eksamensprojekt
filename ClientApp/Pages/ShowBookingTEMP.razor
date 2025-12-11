@@ -23,7 +23,7 @@
         <th>Price</th>
         <th>Status</th>
         <th>Vinduer</th>
-        <th>Bookingstatus</th>
+        <th>Bookingstatus</th> sh
     </tr>
     </thead>
 
@@ -204,6 +204,8 @@
 
     private async Task CloseModalBookingStatusUpdate()
     {
+        //showmodal=false i toppen så vinduet ik er blocked
+        showModalBooking = false;
         selectedBooking.Status = selectedstatus;
         await bookingService.UpdateBooking(selectedBooking);
         
@@ -224,10 +226,7 @@
         {
             selectedBooking.Status = "Inaktiv";
             Console.WriteLine("Attempt at adding subscription");
-            await workTaskService.AddSubscription(selectedBooking);
         }
-
-        showModalBooking = false;
     }
 
 

@@ -60,11 +60,6 @@
                         }
 
                         <div class="col-md-12 mb-3">
-                            <label>Noter</label>
-                            <InputText class="form-control" @bind-Value="booking.NotesCustomer"/>
-                        </div>
-
-                        <div class="col-md-12 mb-3">
                             <label>Dag:</label>
                             <InputSelect @bind-Value="booking.Day">
                                 @foreach (var d in daycategories)
@@ -73,6 +68,12 @@
                                 }
                             </InputSelect>
                         </div>
+                        
+                        <div class="col-md-12 mb-3">
+                            <label>Noter</label>
+                            <InputText class="form-control" @bind-Value="booking.NotesCustomer" />
+                        </div>
+                        
 
                         <button type="submit" class="btn btn-primary">Opret abonnement</button>
                     </EditForm>

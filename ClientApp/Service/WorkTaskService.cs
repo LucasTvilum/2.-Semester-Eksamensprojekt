@@ -22,6 +22,18 @@ public class WorkTaskService : IWorkTask
         return worktaskList;
     }
 
+    public async Task<WorkTask> GetByBookingId(string bookingid)
+    {
+        try
+        {
+            return await http.GetFromJsonAsync<WorkTask>($"{url}/api/worktask/bybooking/{bookingid}");
+        }
+        catch
+        {
+            return null; // NotFound or other error
+        }
+    }
+
     public async Task Add(WorkTask worktask)
     {
         Console.WriteLine("Add worktask service attempted");
@@ -41,76 +53,69 @@ public class WorkTaskService : IWorkTask
 
     public async Task AddSubscription(Booking booking)
     {
-        Console.WriteLine("Add subscription service attempted");
-        //Add a WorkTask for each interval outside and inside, starting on datetime.day.now using data from booking object
-// 1️⃣ Find the first task date (next weekday based on booking.Day)
-        DateTime firstDate = GetNextWeekday(booking.Day);
+    Console.WriteLine("Add subscription service attempted");
 
-        // 2️⃣ Generate next 12 months (you can adjust)
-        DateTime endDate = firstDate.AddMonths(24);
+    var existingTask = await GetByBookingId(booking.Id);
+    if (existingTask != null)
+    {
+        Console.WriteLine("Tasks already exist for this subscription — skipping creation.");
+        return;
+    }
 
-        List<WorkTask> tasksToCreate = new();
+    DateTime firstDate = GetNextWeekday(booking.Day);
+    DateTime endDate = firstDate.AddMonths(24);
 
-        // 3️⃣ OUTSIDE tasks
-        DateTime outsideDate = firstDate;
+    // Key = Date, Value = WorkTask
+    Dictionary<DateTime, WorkTask> tasks = new();
 
-        while (outsideDate <= endDate)
+    // ----- Generate outside jobs -----
+    DateTime outsideDate = firstDate;
+    while (outsideDate <= endDate)
+    {
+        if (!tasks.ContainsKey(outsideDate))
         {
-            tasksToCreate.Add(new WorkTask
+            tasks[outsideDate] = new WorkTask
             {
                 BookingId = booking.Id,
                 Date = outsideDate,
-                InsideJob = booking.InsideJob,                // outside
-                NotesForTask = booking.NotesWindowCleaner,
-                Worker = new Worker
-                {
-                    Username = "lucas",
-                    Password = "Lucas",
-                    Admin = true,
-                    Name = "lucas",
-                    PhoneNumber = "123123",
-                    Mail = "lucas@mail.com"
-                }
-                
-            });
-
-            outsideDate = outsideDate.AddDays(7 * booking.OutdoorInterval);
+                InsideJob = false, // outside only
+                Worker = new Worker { /* ... */ }
+            };
         }
 
-        // 4️⃣ INSIDE tasks (only if booking.InsideJob == true)
-        if (booking.InsideJob)
-        {
-            DateTime insideDate = firstDate;
+        outsideDate = outsideDate.AddDays(7 * booking.OutdoorInterval);
+    }
 
-            while (insideDate <= endDate)
+    // ----- Generate inside jobs (only if inside is enabled) -----
+    if (booking.InsideJob)
+    {
+        DateTime insideDate = firstDate;
+        while (insideDate <= endDate)
+        {
+            // If outside job already exists → merge by setting InsideJob = true
+            if (tasks.ContainsKey(insideDate))
             {
-                tasksToCreate.Add(new WorkTask
+                tasks[insideDate].InsideJob = true;
+            }
+            else
+            {
+                // Should never happen since outside always exists,
+                // but safe fallback:
+                tasks[insideDate] = new WorkTask
                 {
                     BookingId = booking.Id,
                     Date = insideDate,
-                    InsideJob = true,              // inside
-                    NotesForTask = booking.NotesWindowCleaner,
-                    Worker = new Worker
-                    {
-                        Username = "lucas",
-                        Password = "Lucas",
-                        Admin = true,
-                        Name = "lucas",
-                        PhoneNumber = "123123",
-                        Mail = "lucas@mail.com"
-                    }
-                });
-
-                insideDate = insideDate.AddDays(7 * booking.InsideInterval);
+                    InsideJob = true,
+                    Worker = new Worker { /* ... */ }
+                };
             }
 
-         
+            insideDate = insideDate.AddDays(7 * booking.InsideInterval);
         }
+    }
 
-        if (tasksToCreate.Count != 0)
-        {
-            await http.PostAsJsonAsync($"{url}/api/worktask/subscription", tasksToCreate);
-        }
+    var taskList = tasks.Values.ToList();
+    await http.PostAsJsonAsync($"{url}/api/worktask/subscription", taskList);
     }
     private DateTime GetNextWeekday(string weekday)
     {
@@ -137,12 +142,18 @@ public class WorkTaskService : IWorkTask
     {
         Console.WriteLine("Add worktask booking service attempted");
         
+        var existingTask = await GetByBookingId(booking.Id);
+        if (existingTask != null)
+        {
+            Console.WriteLine("Tasks already exist for this booking — skipping creation.");
+            return;
+        }
+        
         WorkTask worktask = new WorkTask
             {
                 BookingId = booking.Id,
-                Date = booking.Date, //
-                InsideJob = booking.InsideJob,                // outside
-                NotesForTask = booking.NotesWindowCleaner,
+                Date = booking.Date, 
+                InsideJob = booking.InsideJob,                
                 Worker = new Worker
                 {
                     Username = "lucas",
@@ -168,5 +179,9 @@ public class WorkTaskService : IWorkTask
     {
         await http.PutAsJsonAsync<WorkTask>($"{url}/api/worktask/{worktask.Id}", worktask);
     }
-    
+
+    public async Task DeleteAllWorkTaskFromBookingId(string bookingid)
+    {
+        await http.DeleteAsync($"{url}/api/worktask/deletetasks/{bookingid}");
+    }
 }
