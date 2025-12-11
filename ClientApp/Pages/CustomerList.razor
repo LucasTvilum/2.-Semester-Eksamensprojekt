@@ -243,7 +243,8 @@ else
 
     private List<WindowType> windowtypecategories = new();
     private List<WindowLocation> windowlocationcategories = new();
-
+    private Window[] windowArray;
+    private List<Window> windowlist = new();
     private string searchText = "";
     private Booking selectedBooking;
     private string selectedstatus = "";
@@ -265,11 +266,11 @@ else
     {
         customers = await userService.GetCustomers();
 
-       
         windowtypecategories = await windowService.GetAllWindowTypes();
         windowlocationcategories = await windowService.GetAllWindowLocations();
         
         bookings = (await bookingService.GetAll()).ToList();
+        
     }
 
    
