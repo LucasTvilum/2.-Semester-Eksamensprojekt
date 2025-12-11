@@ -121,7 +121,7 @@
     private bool showSubscriptionModal = false;
     private List<int> intervalcategories = new() { 2, 4, 8, 12, 24 };
     private List<string> daycategories = new() { "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag" };
-    private DateTime? selectedDate = new DateTime();
+    private DateTime selectedDate = new DateTime();
 
 
     private async Task HandleSubscriptionSubmit()
@@ -149,9 +149,11 @@
 
         booking.TypeBooking = Booking.BookingType.EnkeltBooking;
         booking.Status = "afventer";
-     
-        booking.Date = selectedDate.HasValue ? selectedDate.Value : DateTime.Today;
-
+        
+       
+        booking.Date = DateTime.SpecifyKind(booking.Date, DateTimeKind.Utc);
+        
+        Console.WriteLine(booking.Date);
 
         await bookingService.Add(booking);
 
