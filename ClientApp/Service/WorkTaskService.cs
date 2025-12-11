@@ -62,7 +62,7 @@ public class WorkTaskService : IWorkTask
         return;
     }
 
-    DateTime firstDate = GetNextWeekday(booking.Day);
+    DateTime firstDate = GetNextWeekday(booking.Day).Date;
     DateTime endDate = firstDate.AddMonths(24);
 
     // Key = Date, Value = WorkTask
@@ -72,41 +72,35 @@ public class WorkTaskService : IWorkTask
     DateTime outsideDate = firstDate;
     while (outsideDate <= endDate)
     {
-        if (!tasks.ContainsKey(outsideDate))
+        tasks[outsideDate] = new WorkTask
         {
-            tasks[outsideDate] = new WorkTask
-            {
-                BookingId = booking.Id,
-                Date = outsideDate,
-                InsideJob = false, // outside only
-                Worker = new Worker { /* ... */ }
-            };
-        }
+            BookingId = booking.Id,
+            Date = DateTime.SpecifyKind(outsideDate, DateTimeKind.Utc),
+            InsideJob = false,
+            Worker = new Worker()
+        };
 
         outsideDate = outsideDate.AddDays(7 * booking.OutdoorInterval);
     }
-
+    
     // ----- Generate inside jobs (only if inside is enabled) -----
-    if (booking.InsideJob)
+    if (booking.InsideInterval != 0)
     {
         DateTime insideDate = firstDate;
         while (insideDate <= endDate)
         {
-            // If outside job already exists → merge by setting InsideJob = true
-            if (tasks.ContainsKey(insideDate))
+            if (tasks.TryGetValue(insideDate, out var existing))
             {
-                tasks[insideDate].InsideJob = true;
+                existing.InsideJob = true;   // merge
             }
             else
             {
-                // Should never happen since outside always exists,
-                // but safe fallback:
                 tasks[insideDate] = new WorkTask
                 {
                     BookingId = booking.Id,
                     Date = insideDate,
                     InsideJob = true,
-                    Worker = new Worker { /* ... */ }
+                    Worker = new Worker()
                 };
             }
 
@@ -116,26 +110,6 @@ public class WorkTaskService : IWorkTask
 
     var taskList = tasks.Values.ToList();
     await http.PostAsJsonAsync($"{url}/api/worktask/subscription", taskList);
-    }
-    private DateTime GetNextWeekday(string weekday)
-    {
-        var today = DateTime.Today;
-        var target = weekday switch
-        {
-            "Mandag" => DayOfWeek.Monday,
-            "Tirsdag" => DayOfWeek.Tuesday,
-            "Onsdag" => DayOfWeek.Wednesday,
-            "Torsdag" => DayOfWeek.Thursday,
-            "Fredag" => DayOfWeek.Friday,
-            "Lørdag" => DayOfWeek.Saturday,
-            "Søndag" => DayOfWeek.Sunday,
-            _ => DayOfWeek.Monday
-        };
-
-        int daysToAdd = ((int)target - (int)today.DayOfWeek + 7) % 7;
-        if (daysToAdd == 0) daysToAdd = 7;
-
-        return today.AddDays(daysToAdd);
     }
 
     public async Task AddSingleBooking(Booking booking)
@@ -168,6 +142,28 @@ public class WorkTaskService : IWorkTask
         await http.PostAsJsonAsync($"{url}/api/worktask/singlebooking", worktask);
         
     }
+    
+    private DateTime GetNextWeekday(string weekday)
+    {
+        var today = DateTime.Today;
+        var target = weekday switch
+        {
+            "Mandag" => DayOfWeek.Monday,
+            "Tirsdag" => DayOfWeek.Tuesday,
+            "Onsdag" => DayOfWeek.Wednesday,
+            "Torsdag" => DayOfWeek.Thursday,
+            "Fredag" => DayOfWeek.Friday,
+            "Lørdag" => DayOfWeek.Saturday,
+            "Søndag" => DayOfWeek.Sunday,
+            _ => DayOfWeek.Monday
+        };
+
+        int daysToAdd = ((int)target - (int)today.DayOfWeek + 7) % 7;
+        if (daysToAdd == 0) daysToAdd = 7;
+
+        return today.AddDays(daysToAdd);
+    }
+
 
     public async Task Delete(string id)
     {

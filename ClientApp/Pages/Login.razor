@@ -40,30 +40,8 @@
 @if (LoadedUser != null)
 {
     <h3>Logget ind med følgende:</h3>
-    <h3>@LoadedUser.Username</h3>
-    <h3>@LoadedUser.Password</h3>
+    <h3>Brugernavn: @LoadedUser.Username</h3>
     <h2>Type: @User.GetLabel(LoadedUser.Usertype)</h2>
-}
-
-@if (AllCustomers != null)
-{
-    foreach (var customer in AllCustomers)
-    {
-        <h3>Kunder:</h3>
-        <h3>@customer.Username Type: @User.GetLabel(customer.Usertype)</h3>
-    }
- 
-}
-
-
-@if (AllWorkers != null)
-{
-    foreach (var worker in AllWorkers)
-    {
-        <h3>Worker:</h3>
-        <h3>@worker.Username Type: @User.GetLabel(worker.Usertype)</h3>
-    }
- 
 }
 
 @code {
