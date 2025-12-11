@@ -52,6 +52,13 @@
     [Parameter]
     public List<int> EventDays { get; set; } = new();
     
+    [Parameter]
+    public DateTime? SelectedDateFromParent { get; set; }
+
+    [Parameter]
+    public EventCallback<DateTime?> SelectedDateFromParentChanged { get; set; }
+
+    
     protected override void OnInitialized()
     {
         LoadCalendar();
@@ -84,8 +91,10 @@
         LoadCalendar();
     }
 
-    private void dayCell(DateTime Day)
+    private async void dayCell(DateTime Day)
     {
-        SelectedDate = Day; 
+        SelectedDate = Day;
+        await SelectedDateFromParentChanged.InvokeAsync(Day);
     }
+
 }
