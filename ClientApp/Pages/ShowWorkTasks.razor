@@ -372,7 +372,7 @@
         var booking = bookinglist.FirstOrDefault(b => b.Id == task.BookingId);
         editBookingNotes = booking?.NotesWindowCleaner;
 
-        editStatus = task.Status; // assuming WorkTask.Status is string
+        editStatus = task.Status;
 
         showEditModal = true;
     }
@@ -389,7 +389,7 @@
         selectedTask.Status = editStatus;
         await workTaskService.UpdateWorkTask(selectedTask);
 
-        // save booking notes
+        // save booking notes by finding first matching booking and updating with new note
         var booking = bookinglist.FirstOrDefault(b => b.Id == selectedTask.BookingId);
         if (booking != null)
         {
