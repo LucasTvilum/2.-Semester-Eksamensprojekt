@@ -54,10 +54,10 @@
         @if (showMenu)
         {
             <div class="main-menu">
-                <p @onclick="GoToHome">Home</p>
+                <p @onclick="GoToHome">Hjem</p>
                 <p @onclick="GoToCalculator">Beregn pris</p>
-                <p>Kalender</p>
-                <p>Kontakt</p>
+                <p @onclick="GoToMyBookings">Mine bookinger</p>
+                <p @onclick="GoToContact">Kontakt</p>
             </div>
         }
     
@@ -96,6 +96,7 @@
     
     void GoToHome()
     {
+        showMenu = false;  
         navigationManager.NavigateTo("/Home");
     }
 
@@ -104,6 +105,17 @@
     {
         navigationManager.NavigateTo("/register");
     }
+    
+    void GoToContact()
+    {
+        navigationManager.NavigateTo("/Contact");
+    }
+    
+    void GoToMyBookings()
+    {
+        navigationManager.NavigateTo("/mybookings");
+    }
+    
 
     void GoToLogin()
     {
