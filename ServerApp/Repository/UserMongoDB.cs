@@ -9,13 +9,12 @@ public class UserMongoDB : IUserRepository
     //
     private readonly IMongoDatabase _db;
     //for inheritance
-    public UserMongoDB()
+    public UserMongoDB(DatabaseSettings settings)
     {
-        var client = new MongoClient("mongodb://localhost:27017");
-        _db = client.GetDatabase("Vinduespudsning");
+        var client = new MongoClient(settings.ConnectionString);
+        _db = client.GetDatabase(settings.DatabaseName);
         _collection = _db.GetCollection<User>("Users");
     }
-
     public List<User> GetAll()
     {
         return _collection.Find(_ => true).ToList();

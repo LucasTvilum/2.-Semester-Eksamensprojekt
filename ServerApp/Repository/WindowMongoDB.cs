@@ -6,13 +6,13 @@ namespace ServerApp.Repository;
 public class WindowMongoDB : IWindowRepository
 {
     private readonly IMongoCollection<Window> _collection;
-
-    public WindowMongoDB()
-    {
-        var client = new MongoClient("mongodb://localhost:27017");
-        var database = client.GetDatabase("Vinduespudsning");
-        _collection = database.GetCollection<Window>("Windows");
-    }
+    
+   public WindowMongoDB(DatabaseSettings settings)
+   {
+       var client = new MongoClient(settings.ConnectionString);
+       var database = client.GetDatabase(settings.DatabaseName);
+       _collection = database.GetCollection<Window>("Windows");
+   }
 
     public List<Window> GetAll()
     {
