@@ -329,6 +329,11 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (userState.CurrentUser?.Usertype != User.UserType.Worker)
+        {
+            nav.NavigateTo("/notallowed", true);
+        }
+        
         customerlist = (await userService.GetCustomers()).ToList();
         bookinglist = (await bookingService.GetAll()).ToList();
         taskList = (await workTaskService.GetAll()).ToList();
