@@ -52,7 +52,7 @@ namespace ServerApp.Controllers
         {
             return element.TryGetProperty(propertyName, out var prop) ? prop.GetString() : null;
         }
-
+        
         User newUser = userType switch
         {
             Core.Models.User.UserType.Customer => new Customer
