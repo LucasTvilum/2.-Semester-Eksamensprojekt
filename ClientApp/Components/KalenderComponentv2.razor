@@ -56,7 +56,7 @@
 @if (SelectedDate != null)
 {
     <div>
-        @SelectedDate?.ToString("dddd d. MMMM yyyy", CultureInfo.GetCultureInfo("da-DK"))
+        @SelectedDate.ToString("dddd d. MMMM yyyy", CultureInfo.GetCultureInfo("da-DK"))
     </div>
 }
 
@@ -64,7 +64,7 @@
 
     [Parameter] public string SelectedDay { get; set; }
     [Parameter] public EventCallback<string> SelectedDayChanged { get; set; }
-    [Parameter] public DateTime? SelectedDate { get; set; }
+    [Parameter] public DateTime SelectedDate { get; set; }
     [Parameter] public EventCallback<DateTime> SelectedDateChanged { get; set; }
 
     private DateTime CurrentDate = DateTime.Today;
@@ -75,6 +75,9 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (SelectedDate == default)
+            SelectedDate = DateTime.Today;
+        
         LoadCalendar();
         await LoadBookingsForMonth();
     }
@@ -130,9 +133,12 @@
 
         SelectedDate = day;
         SelectedDay = day.ToString("dddd");
+        Console.WriteLine("Daycell date: " + SelectedDate);
+        
+        Console.WriteLine("Daycell date: " + SelectedDay);
         await Task.WhenAll(
             SelectedDayChanged.InvokeAsync(SelectedDay),
-            SelectedDateChanged.InvokeAsync((DateTime)SelectedDate)
+            SelectedDateChanged.InvokeAsync(SelectedDate)
         );
     }
 }
