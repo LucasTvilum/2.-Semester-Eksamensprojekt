@@ -10,8 +10,8 @@
     <!-- TOP BAR -->
     <div class="topbar">
 
-        <!-- Burger menu (3 streger) -->
-        <div class="burger-menu" @onclick="ToggleMenu">
+        <!-- Bruger menu (3 streger) -->
+        <div class="bruger-menu" @onclick="ToggleMenu">
             <div></div>
             <div></div>
             <div></div>
@@ -49,10 +49,18 @@
                     }
                 </div>
             }
-
         </div>
-    </div>   
-
+    </div>  
+        @if (showMenu)
+        {
+            <div class="main-menu">
+                <p @onclick="GoToHome">Hjem</p>
+                <p @onclick="GoToCalculator">Beregn pris</p>
+                <p @onclick="GoToMyBookings">Mine bookinger</p>
+                <p @onclick="GoToContact">Kontakt</p>
+            </div>
+        }
+    
 
         <!-- Background image -->
     <div class="hero">
@@ -74,20 +82,40 @@
         showProfileMenu = !showProfileMenu;
     }
 
+    private bool showMenu = false;
+
     void ToggleMenu()
     {
-        // TODO: open sidebar (kan laves senere)
+        showMenu = !showMenu;
     }
 
     void GoToCalculator()
     {
         navigationManager.NavigateTo("/PriceCalculator");
     }
+    
+    void GoToHome()
+    {
+        showMenu = false;  
+        navigationManager.NavigateTo("/Home");
+    }
+
 
     void GoToRegister()
     {
         navigationManager.NavigateTo("/register");
     }
+    
+    void GoToContact()
+    {
+        navigationManager.NavigateTo("/Contact");
+    }
+    
+    void GoToMyBookings()
+    {
+        navigationManager.NavigateTo("/mybookings");
+    }
+    
 
     void GoToLogin()
     {

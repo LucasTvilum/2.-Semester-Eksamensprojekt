@@ -235,4 +235,40 @@ code {
     margin-bottom: 0;
 }
 
+.bruger-menu {
+    width: 30px;
+    height: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.bruger-menu div {
+    height: 3px;
+    background-color: black;
+    border-radius: 2px;
+}
+
+.main-menu {
+    position: absolute;
+    top: 73px;               /* lige under topbaren */
+    left: 0;
+    width: 250px;
+    height: 100vh;           /* fyld hele venstre side */
+    background-color: #e0e0e0;  /* grå som før */
+    padding: 20px;
+    z-index: 9999;          /* LIGGER OVENPÅ ALT */
+    box-shadow: 2px 0 6px rgba(0,0,0,0.2);
+}
+
+.main-menu p {
+    font-size: 1.4rem;
+    margin: 20px 0;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+
+
 
