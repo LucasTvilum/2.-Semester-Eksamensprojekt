@@ -105,4 +105,53 @@ public class WindowService : IWindow
 
         return windowlocations;
     }
+    // -------- UPDATE METHODS --------
+
+    public async Task UpdateType(WindowType type)
+    {
+        var response = await http.PutAsJsonAsync($"{url}/api/window/type/{type.Id}", type);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Failed to update type: {error}");
+        }
+    }
+
+    public async Task UpdateLocation(WindowLocation location)
+    {
+        var response = await http.PutAsJsonAsync($"{url}/api/window/location/{location.Id}", location);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Failed to update location: {error}");
+        }
+    }
+
+
+// -------- DELETE METHODS --------
+
+    public async Task DeleteType(string id)
+    {
+        var response = await http.DeleteAsync($"{url}/api/window/type/{id}");
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Failed to delete type: {error}");
+        }
+    }
+
+    public async Task DeleteLocation(string id)
+    {
+        var response = await http.DeleteAsync($"{url}/api/window/location/{id}");
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Failed to delete location: {error}");
+        }
+    }
+
 }

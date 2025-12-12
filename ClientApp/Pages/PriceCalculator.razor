@@ -5,8 +5,13 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject IBooking bookingService
 @inject NavigationManager nav
+@inject IWindow windowService
+@inject UserState userState
+
 
 <h3>Pris Beregner</h3>
+
+
 
 <WindowPriceCalculator Booking="@booking" OnSelectBookingType="HandleBookingType"/>
 @if (showSubscriptionModal)
@@ -114,6 +119,169 @@
         </div>
     </div>
 }
+@if (userState.IsWorker)
+{
+    <button class="btn btn-warning mb-3" @onclick="OpenAdminModal">
+        Admin: Rediger vinduer & priser
+    </button>
+}
+@if (showAdminModal)
+{
+    <div class="modal d-block" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4>Administrer Vinduer & Priser</h4>
+                    <button class="btn-close" @onclick="CloseAdminModal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <h5>➕ Tilføj Vindues Type</h5>
+
+                    <EditForm Model="@adminWindowType" OnValidSubmit="@HandleAdminTypeSubmit">
+                        <DataAnnotationsValidator/>
+                        <ValidationSummary/>
+
+                        <div class="mb-3">
+                            <label>Navn</label>
+                            <InputText class="form-control" @bind-Value="adminWindowType.Name"/>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Basis pris</label>
+                            <InputNumber class="form-control" @bind-Value="adminWindowType.BasePrice"/>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Billede sti</label>
+                            <select class="form-select" @bind="adminWindowType.ImagePath">
+                                <option value="">Vælg billede...</option>
+                                @foreach (var img in demoImages)
+                                {
+                                    <option value="@img">@img</option>
+                                }
+                            </select>
+                            @if (!string.IsNullOrWhiteSpace(adminWindowType.ImagePath))
+                            {
+                                <img src="@adminWindowType.ImagePath" style="max-width:150px; margin-top:10px;" />
+                            }
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Tilføj</button>
+                    </EditForm>
+
+                    <hr/>
+
+                    <h5>➕ Tilføj Vindues Lokation</h5>
+
+                    <EditForm Model="@adminWindowLocation" OnValidSubmit="@HandleAdminLocationSubmit">
+                        <DataAnnotationsValidator/>
+                        <ValidationSummary/>
+
+                        <div class="mb-3">
+                            <label>Navn</label>
+                            <InputText class="form-control" @bind-Value="adminWindowLocation.Name"/>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Ekstra pris</label>
+                            <InputNumber class="form-control" @bind-Value="adminWindowLocation.ExtraPrice"/>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Tilføj</button>
+                    </EditForm>
+
+                    <hr/>
+
+                    <h5>Vindues Lokationer</h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Navn</th>
+                                <th>Ekstra Pris</th>
+                                <th>Aktiv?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var l in adminLocations)
+                        {
+                            <tr>
+                                @if (l == editingLocation)
+                                {
+                                    <td><InputText class="form-control" @bind-Value="editingLocation.Name" /></td>
+                                    <td><InputNumber class="form-control" @bind-Value="editingLocation.ExtraPrice" /></td>
+                                    <td>@editingLocation.IsActive</td>
+                                    <td>
+                                        <button class="btn btn-success btn-sm" @onclick="() => SaveLocationEdit(l)">Gem</button>
+                                        <button class="btn btn-secondary btn-sm" @onclick="CancelEdit">Annuller</button>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>@l.Name</td>
+                                    <td>@l.ExtraPrice</td>
+                                    <td>@l.IsActive</td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm" @onclick="() => EditLocation(l)">Rediger</button>
+                                        <button class="btn btn-danger btn-sm" @onclick="() => DeleteLocation(l)">Slet</button>
+                                    </td>
+                                }
+                            </tr>
+                        }
+
+                        </tbody>
+                    </table>
+
+                    <h5>Vindues Typer</h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Navn</th>
+                                <th>Basis Pris</th>
+                                <th>Aktiv?</th>
+                                <th>Image Path</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var t in adminTypes)
+                        {
+                            <tr>
+                                @if (t == editingType)
+                                {
+                                    <td><InputText class="form-control" @bind-Value="editingType.Name" /></td>
+                                    <td><InputNumber class="form-control" @bind-Value="editingType.BasePrice" /></td>
+                                    <td>@editingType.IsActive</td>
+                                    <td><InputText class="form-control" @bind-Value="editingType.ImagePath" /></td>
+                                    <td>
+                                        <button class="btn btn-success btn-sm" @onclick="() => SaveTypeEdit(t)">Gem</button>
+                                        <button class="btn btn-secondary btn-sm" @onclick="CancelEdit">Annuller</button>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>@t.Name</td>
+                                    <td>@t.BasePrice</td>
+                                    <td>@t.IsActive</td>
+                                    <td>@t.ImagePath</td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm" @onclick="() => EditType(t)">Rediger</button>
+                                        <button class="btn btn-danger btn-sm" @onclick="() => DeleteType(t)">Slet</button>
+                                    </td>
+                                }
+                            </tr>
+                        }
+
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
 
 @code {
     private Booking booking = new();
@@ -122,6 +290,27 @@
     private List<int> intervalcategories = new() { 2, 4, 8, 12, 24 };
     private List<string> daycategories = new() { "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag" };
     private DateTime selectedDate = new DateTime();
+    bool showAdminModal = false;
+    private WindowLocation editingLocation;
+    private WindowType editingType;
+
+
+    private WindowType adminWindowType = new();
+    private WindowLocation adminWindowLocation = new();
+
+    private List<WindowLocation> adminLocations = new();
+    private List<WindowType> adminTypes = new();
+
+    private List<string> demoImages = new()
+    {
+        "image/windows/bondehus.png",
+        "image/windows/dannebrog.png",
+        "image/windows/matteret.png",
+        "image/windows/palae.png",
+        "image/windows/sidehaengt.png",
+        "image/windows/standard.png",
+        "image/windows/stort.png"
+    };
 
 
     private async Task HandleSubscriptionSubmit()
@@ -209,6 +398,77 @@
 
         if (type == "Abonnement")
             showSubscriptionModal = true;
+    }
+    
+    private async Task OpenAdminModal()
+    {
+        adminLocations = await windowService.GetAllWindowLocations();
+        adminTypes = await windowService.GetAllWindowTypes();
+        showAdminModal = true;
+    }
+
+    private void CloseAdminModal()
+    {
+        showAdminModal = false;
+    }
+
+    private async Task HandleAdminTypeSubmit()
+    {
+        adminWindowType.IsActive = true;
+
+        await windowService.AddType(adminWindowType);
+        adminTypes.Add(adminWindowType);
+
+        adminWindowType = new WindowType();
+    }
+
+    private async Task HandleAdminLocationSubmit()
+    {
+        adminWindowLocation.IsActive = true;
+
+        await windowService.AddLocation(adminWindowLocation);
+        adminLocations.Add(adminWindowLocation);
+
+        adminWindowLocation = new WindowLocation();
+    }
+    private void EditLocation(WindowLocation loc)
+    {
+        editingType = null;
+        editingLocation = loc;
+    }
+
+    private void EditType(WindowType type)
+    {
+        editingLocation = null;
+        editingType = type;
+    }
+
+    private void CancelEdit()
+    {
+        editingLocation = null;
+        editingType = null;
+    }
+    private async Task SaveLocationEdit(WindowLocation loc)
+    {
+        await windowService.UpdateLocation(loc);
+        editingLocation = null;
+    }
+
+    private async Task SaveTypeEdit(WindowType type)
+    {
+        await windowService.UpdateType(type);
+        editingType = null;
+    }
+    private async Task DeleteLocation(WindowLocation loc)
+    {
+        await windowService.DeleteLocation(loc.Id);
+        adminLocations.Remove(loc);
+    }
+
+    private async Task DeleteType(WindowType type)
+    {
+        await windowService.DeleteType(type.Id);
+        adminTypes.Remove(type);
     }
 
 }

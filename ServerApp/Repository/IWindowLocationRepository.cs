@@ -10,4 +10,6 @@ public interface IWindowLocationRepository
     WindowLocation Update(WindowLocation windowLocation);
     
     void Delete(string id);
+    
+    
 }

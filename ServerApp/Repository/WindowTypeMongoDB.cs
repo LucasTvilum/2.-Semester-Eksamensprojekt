@@ -34,7 +34,9 @@ public class WindowTypeMongoDB : IWindowTypeRepository
 
     public void Delete(string id)
     {
-        _collection.DeleteOne(id);
+        var filter = Builders<WindowType>.Filter.Eq("_id", id);
+        _collection.DeleteOne(filter);
     }
+
 
 }

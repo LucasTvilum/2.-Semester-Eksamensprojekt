@@ -18,4 +18,10 @@ public interface IWindow
     Task UpdateWindow(Window window);
 
     Task Delete(string windowid);
+    
+    Task UpdateType(WindowType type);
+    Task UpdateLocation(WindowLocation location);
+
+    Task DeleteType(string id);
+    Task DeleteLocation(string id);
 }
