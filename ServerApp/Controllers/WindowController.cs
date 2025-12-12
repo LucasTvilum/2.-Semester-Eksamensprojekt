@@ -74,6 +74,44 @@ namespace ServerApp.Controllers
             windowRepo.Delete(id);
             return Ok();
         }
+        [HttpPut("type/{id}")]
+        public ActionResult<WindowType> UpdateType(string id, [FromBody] WindowType type)
+        {
+            type.Id = id;
+            var updated = windowTypeRepo.Update(type);
+
+            if (updated == null)
+                return NotFound();
+
+            return Ok(updated);
+        }
+        [HttpPut("location/{id}")]
+        public ActionResult<WindowLocation> UpdateLocation(string id, [FromBody] WindowLocation location)
+        {
+            location.Id = id;
+            var updated = windowLocationRepo.Update(location);
+
+            if (updated == null)
+                return NotFound();
+
+            return Ok(updated);
+        }
+
+        [HttpDelete("type/{id}")]
+        public IActionResult DeleteType(string id)
+        {
+            windowTypeRepo.Delete(id);
+            return NoContent(); // always success
+        }
+
+        [HttpDelete("location/{id}")]
+        public IActionResult DeleteLocation(string id)
+        {
+            windowLocationRepo.Delete(id);
+            return NoContent(); // always success
+        }
+
+
     }
     
 }

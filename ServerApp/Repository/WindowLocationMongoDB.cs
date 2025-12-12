@@ -34,7 +34,9 @@ public class WindowLocationMongoDB : IWindowLocationRepository
 
     public void Delete(string id)
     {
-        _collection.DeleteOne(id);
+        var filter = Builders<WindowLocation>.Filter.Eq("_id", id);
+        _collection.DeleteOne(filter);
     }
+
 
 }
