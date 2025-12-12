@@ -1,17 +1,20 @@
 using System.Net.Http.Json;
 using Core.Models;
 
+
 namespace ClientApp.Service;
 
 public class WorkTaskService : IWorkTask
 {
+    private readonly UserState _userState;
     private HttpClient http;
 
     private string url = "http://localhost:5107";
 
-    public WorkTaskService(HttpClient http)
+    public WorkTaskService(HttpClient http, UserState userState)
     {
         this.http = http;
+        _userState = userState;
     }
 
     public async Task<WorkTask[]> GetAll()
@@ -62,6 +65,16 @@ public class WorkTaskService : IWorkTask
         return;
     }
 
+    Worker worker = new Worker();
+
+    var currentUser = _userState.CurrentUser;
+
+    //Inheritance casting currentUser to worker object
+    if (currentUser is Worker w)
+    {
+        worker = w;   
+    }
+
     DateTime firstDate = GetNextWeekday(booking.Day).Date;
     DateTime endDate = firstDate.AddMonths(24);
 
@@ -77,7 +90,7 @@ public class WorkTaskService : IWorkTask
             BookingId = booking.Id,
             Date = DateTime.SpecifyKind(outsideDate, DateTimeKind.Utc),
             InsideJob = false,
-            Worker = new Worker()
+            Worker = worker
         };
 
         outsideDate = outsideDate.AddDays(7 * booking.OutdoorInterval);
@@ -100,7 +113,7 @@ public class WorkTaskService : IWorkTask
                     BookingId = booking.Id,
                     Date = insideDate,
                     InsideJob = true,
-                    Worker = new Worker()
+                    Worker = worker
                 };
             }
 
@@ -123,20 +136,22 @@ public class WorkTaskService : IWorkTask
             return;
         }
         
+        Worker worker = new Worker();
+
+        var currentUser = _userState.CurrentUser;
+
+        //Inheritance casting currentUser to worker object
+        if (currentUser is Worker w)
+        {
+            worker = w;   
+        }
+        
         WorkTask worktask = new WorkTask
             {
                 BookingId = booking.Id,
                 Date = booking.Date, 
                 InsideJob = booking.InsideJob,                
-                Worker = new Worker
-                {
-                    Username = "lucas",
-                    Password = "Lucas",
-                    Admin = true,
-                    Name = "lucas",
-                    PhoneNumber = "123123",
-                    Mail = "lucas@mail.com"
-                }
+                Worker = worker
             };
        
         await http.PostAsJsonAsync($"{url}/api/worktask/singlebooking", worktask);

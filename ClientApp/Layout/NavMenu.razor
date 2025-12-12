@@ -1,6 +1,12 @@
-﻿@inject Blazored.LocalStorage.ILocalStorageService localStore
+﻿@using ClientApp.Service
+@using Core.Models
+@inject Blazored.LocalStorage.ILocalStorageService localStore
+@inject UserState userState
 
-
+@if (userState.CurrentUser is null)
+{
+    <text></text>   <!-- show nothing until loaded -->
+}
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -14,14 +20,11 @@
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="nav flex-column">
+        
+        <!-- -------------------- All Usertypes -------------------- -->
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="Home" Match="NavLinkMatch.All">
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Hjem
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="ShowBookingTEMP">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Vis bookinger
             </NavLink>
         </div>
         <div class="nav-item px-3">
@@ -39,21 +42,9 @@
                 <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Pris Beregner
             </NavLink>
         </div>
-        
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="Kalender">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Kalender
-            </NavLink>
-        </div>
-      
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="AdminAddBooking">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Admin tilføj booking      
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="mybookings">
-            <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Mine bookinger 
+            <NavLink class="nav-link" href="contact">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Kontakt
             </NavLink>
         </div>
         <div class="nav-item px-3">
@@ -61,27 +52,44 @@
                 <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Register
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="ChangeWindowsAndPricing">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Ændrer vinduer 
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="ShowWorkTasks">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Vis arbejdsopgaver 
-            </NavLink>
-        </div>
+        <!-- -------------------- Customer only -------------------- -->
+        @if (userState.CurrentUser is not null && 
+             userState.CurrentUser.Usertype == User.UserType.Customer)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="mybookings">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Mine bookinger
+                </NavLink>
+            </div>
+        }
+
+
+        <!-- -------------------- Worker only -------------------- -->
+        
+        @if (userState.CurrentUser is not null && userState.CurrentUser.Usertype == User.UserType.Worker)
+        {
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="CustomerList">
                 <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Kunde Liste
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="contact">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Kontakt
+            <NavLink class="nav-link" href="ShowWorkTasks">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Vis arbejdsopgaver
             </NavLink>
         </div>
-          
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="AdminAddBooking">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Admin tilføj booking
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="ShowBookingTEMP">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Vis bookinger
+            </NavLink>
+        </div>
+        }
+
     </nav>
 </div>
 </ul>
