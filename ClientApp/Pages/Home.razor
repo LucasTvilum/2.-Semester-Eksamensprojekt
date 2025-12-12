@@ -1,4 +1,5 @@
-﻿@page "/Home"
+﻿@page "/"
+@page "/Home"
 @using ClientApp.Service
 @inject NavigationManager navigationManager
 @inject UserState userState
@@ -88,32 +89,32 @@
     {
         showMenu = !showMenu;
     }
-
-    void GoToCalculator()
-    {
-        navigationManager.NavigateTo("/PriceCalculator");
-    }
+    
     
     void GoToHome()
     {
         showMenu = false;  
         navigationManager.NavigateTo("/Home");
     }
-
-
-    void GoToRegister()
-    {
-        navigationManager.NavigateTo("/register");
-    }
     
-    void GoToContact()
+    void GoToCalculator()
     {
-        navigationManager.NavigateTo("/Contact");
+        navigationManager.NavigateTo("/PriceCalculator");
     }
     
     void GoToMyBookings()
     {
         navigationManager.NavigateTo("/mybookings");
+    }
+
+    void GoToContact()
+    {
+        navigationManager.NavigateTo("/Contact");
+    }
+    
+    void GoToRegister()
+    {
+        navigationManager.NavigateTo("/register");
     }
     
 

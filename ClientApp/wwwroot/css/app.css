@@ -269,6 +269,37 @@ code {
     font-weight: bold;
 }
 
+.confirmation-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70vh;
+    text-align: center;
+    padding: 20px;
+}
+
+.confirmation-title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.confirmation-body {
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+}
+
+.confirmation-bookings-btn {
+    font-size: 1.3rem;
+    padding: 15px 35px;
+    border-radius: 10px;
+    border: none;
+    background: #e0dfdf;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+
 
 
 

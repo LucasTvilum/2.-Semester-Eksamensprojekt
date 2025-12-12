@@ -13,8 +13,8 @@
     position: relative;
 }
 
-/* Burger icon */
-.burger-menu {
+/* Bruger icon */
+.bruger-menu {
     width: 28px;
     cursor: pointer;
     display: flex;
@@ -23,7 +23,7 @@
     height: 18px;
 }
 
-.burger-menu div {
+.bruger-menu div {
     width: 100%;
     height: 3px;
     background: black;
