@@ -388,7 +388,9 @@ else
         {
            
             selectedBooking.Status = "Aktiv";
+            await bookingService.UpdateBooking(selectedBooking);
             await workTaskService.AddSubscription(selectedBooking);
+
         }
         else if (selectedstatus == "Godkendt" &&
                  selectedBooking.TypeBooking == Booking.BookingType.EnkeltBooking)
