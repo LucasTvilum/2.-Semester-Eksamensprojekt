@@ -156,7 +156,17 @@
 
                         <div class="mb-3">
                             <label>Billede sti</label>
-                            <InputText class="form-control" @bind-Value="adminWindowType.ImagePath"/>
+                            <select class="form-select" @bind="adminWindowType.ImagePath">
+                                <option value="">Vælg billede...</option>
+                                @foreach (var img in demoImages)
+                                {
+                                    <option value="@img">@img</option>
+                                }
+                            </select>
+                            @if (!string.IsNullOrWhiteSpace(adminWindowType.ImagePath))
+                            {
+                                <img src="@adminWindowType.ImagePath" style="max-width:150px; margin-top:10px;" />
+                            }
                         </div>
 
                         <button type="submit" class="btn btn-primary">Tilføj</button>
@@ -291,6 +301,16 @@
     private List<WindowLocation> adminLocations = new();
     private List<WindowType> adminTypes = new();
 
+    private List<string> demoImages = new()
+    {
+        "image/windows/bondehus.png",
+        "image/windows/dannebrog.png",
+        "image/windows/matteret.png",
+        "image/windows/palae.png",
+        "image/windows/sidehaengt.png",
+        "image/windows/standard.png",
+        "image/windows/stort.png"
+    };
 
 
     private async Task HandleSubscriptionSubmit()
