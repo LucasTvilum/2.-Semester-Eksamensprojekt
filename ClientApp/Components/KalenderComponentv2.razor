@@ -25,31 +25,31 @@
         @foreach (var day in Days)
         {
             var classes = "day-celll";
+            bool isDisabled = false;
+
             if (day.Month != CurrentDate.Month)
                 classes += " inactivee";
 
-            bool isAvailable = false;
+            if (day.DayOfWeek == DayOfWeek.Saturday || day.DayOfWeek == DayOfWeek.Sunday)
+                isDisabled = true;
 
-            if (BookingsPerDay.TryGetValue(day.Date, out int count))
-            {
-                if (count < 10 && day.DayOfWeek != DayOfWeek.Saturday && day.DayOfWeek != DayOfWeek.Sunday)
-                {
-                    isAvailable = true;
-                }
-            }
+            if (BookingsPerDay.TryGetValue(day.Date, out int count) && count >= 10)
+                isDisabled = true;
 
-
+            if (isDisabled)
+                classes += " disabledd";
 
             <div class="@classes"
-                 @onclick="() => dayCell(day)">
+                 @onclick="isDisabled ? null : (() => dayCell(day))">
                 <span class="day-numberr">@day.Day</span>
-                
-                @if (isAvailable)
+
+                @if (!isDisabled && count < 10)
                 {
-                    <div class="dot"></div>  
+                    <div class="dot"></div>
                 }
             </div>
         }
+
     </div>
 </div>
 
@@ -128,17 +128,20 @@
 
     private async Task dayCell(DateTime day)
     {
-        if (BookingsPerDay[day.Date] >= 10)
-            return; // Bloker valg af dato der er fuldt booket
+        if (day.DayOfWeek == DayOfWeek.Saturday || day.DayOfWeek == DayOfWeek.Sunday)
+            return;
+
+        if (BookingsPerDay.TryGetValue(day.Date, out int count) && count >= 10)
+            return;
 
         SelectedDate = day;
-        SelectedDay = day.ToString("dddd");
-        Console.WriteLine("Daycell date: " + SelectedDate);
-        
-        Console.WriteLine("Daycell date: " + SelectedDay);
+        SelectedDay = day.ToString("dddd", CultureInfo.GetCultureInfo("da-DK"));
+
         await Task.WhenAll(
             SelectedDayChanged.InvokeAsync(SelectedDay),
             SelectedDateChanged.InvokeAsync(SelectedDate)
         );
+    }
+
     }
 }
