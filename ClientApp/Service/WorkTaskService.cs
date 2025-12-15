@@ -90,7 +90,7 @@ public class WorkTaskService : IWorkTask
             BookingId = booking.Id,
             Date = DateTime.SpecifyKind(outsideDate, DateTimeKind.Utc),
             InsideJob = false,
-            Worker = worker
+            WorkerId = worker.Id
         };
 
         outsideDate = outsideDate.AddDays(7 * booking.OutdoorInterval);
@@ -113,7 +113,7 @@ public class WorkTaskService : IWorkTask
                     BookingId = booking.Id,
                     Date = insideDate,
                     InsideJob = true,
-                    Worker = worker
+                    WorkerId = worker.Id
                 };
             }
 
@@ -151,7 +151,7 @@ public class WorkTaskService : IWorkTask
                 BookingId = booking.Id,
                 Date = booking.Date, 
                 InsideJob = booking.InsideJob,                
-                Worker = worker
+                WorkerId = worker.Id
             };
        
         await http.PostAsJsonAsync($"{url}/api/worktask/singlebooking", worktask);

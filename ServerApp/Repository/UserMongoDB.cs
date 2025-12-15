@@ -56,9 +56,19 @@ public class UserMongoDB : IUserRepository
         return col.Find(_ => true).ToListAsync();
     }
 
-    public Task<List<Worker>> GetWorkers()
+    public async Task<List<Worker>> GetWorkers()
     {
         var col = _db.GetCollection<Worker>("Users");
-        return col.Find(_ => true).ToListAsync();
+
+        var workers = await col.Find(_ => true).ToListAsync();
+
+        foreach (var worker in workers)
+        {
+            Console.WriteLine($"WorkerId: {worker.Id}");
+            // or whatever your ID property is called:
+            // Console.WriteLine(worker.WorkerId);
+        }
+
+        return workers;
     }
 }
