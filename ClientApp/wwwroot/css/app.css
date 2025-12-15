@@ -1,150 +1,133 @@
-/* ============================= */
-/* GOOGLE FONT */
-/* ============================= */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+/* ================================================= */
+/* FONT */
+/* ================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* ============================= */
+/* ================================================= */
 /* RESET & BASE */
-/* ============================= */
+/* ================================================= */
 html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    font-family: 'Poppins', system-ui, sans-serif;
-    background: #f4f7fb;
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #f6f7f8;
     color: #1f2937;
 }
 
-/* ============================= */
-/* COLOR VARIABLES */
-/* ============================= */
+/* ================================================= */
+/* DESIGN TOKENS (GENBRUGBAR FARVEPALETTE) */
+/* ================================================= */
 :root {
-    --primary: #2563eb;
-    --primary-dark: #1e40af;
-    --nav-bg: linear-gradient(180deg, #2563eb, #1e40af);
+    --primary: #6dd391;
+    --primary-dark: #499366;
+
+    --sidebar-bg: linear-gradient(180deg, #16a34a, #166534);
+
     --surface: #ffffff;
     --border: #e5e7eb;
     --muted: #6b7280;
 }
 
-/* ============================= */
-/* MAIN LAYOUT */
-/* ============================= */
+/* ================================================= */
+/* APP LAYOUT */
+/* ================================================= */
 .app-layout {
     display: flex;
     min-height: 100vh;
     width: 100%;
 }
 
-/* ============================= */
-/* SIDEBAR / NAV MENU */
-/* ============================= */
+/* ================================================= */
+/* SIDEBAR / NAVIGATION */
+/* ================================================= */
 .navmenu-root {
     position: fixed;
-    top: 70px;
+    top: 0;
     left: 0;
-    height: calc(100vh - 70px);
     width: 250px;
-    background: var(--nav-bg);
+    height: 100vh;
+    background: var(--sidebar-bg);
     color: white;
-    padding: 1.2rem 0;
+    padding-top: 70px; /* plads til topbar */
     transform: translateX(-100%);
     transition: transform 0.25s ease;
     z-index: 1000;
-    
+    box-shadow: 4px 0 20px rgba(0,0,0,0.15);
 }
 
 .navmenu-root.open {
     transform: translateX(0);
 }
 
-.navmenu-root.closed {
-    transform: translateX(-100%);
-}
-
-/* Brand / Logo */
-.top-row.navbar {
-    background: transparent;
-    border: none;
+/* Sidebar logo */
+.nav-header {
     padding: 0 1.5rem 1rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
 }
 
-.navbar-brand {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: white !important;
-}
-
-/* Nav list */
-.nav.flex-column {
-    padding: 0;
+.nav-logo {
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #14532d;
 }
 
 /* Nav links */
+.nav {
+    padding: 0;
+}
+
 .nav-link {
     margin: 6px 1rem;
-    padding: 0.75rem 1rem;
-    border-radius: 10px;
+    padding: 0.7rem 1rem;
+    border-radius: 12px;
     font-size: 0.95rem;
     font-weight: 500;
-    color: #e0e7ff !important;
+    color: #dcfce7 !important;
     transition: background 0.15s ease, transform 0.1s ease;
 }
 
-/* Hover */
 .nav-link:hover {
     background: rgba(255,255,255,0.15);
     transform: translateX(4px);
-    color: white !important;
 }
 
-/* Active */
 .nav-link.active {
     background: rgba(255,255,255,0.25);
     color: white !important;
     font-weight: 600;
 }
 
-/* Icons */
-.bi {
-    font-size: 1.1rem;
-    margin-right: 0.6rem;
-}
-/* Sidebar header / logo */
-.nav-header {
-    padding: 0 1.5rem 1.5rem;
-    margin-bottom: 0.5rem;
-    border-bottom: 1px solid rgba(255,255,255,0.15);
-}
-
-.nav-logo {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: white;
-    letter-spacing: 0.5px;
-}
-
-
-/* ---------- TOP BAR ---------- */
+/* ================================================= */
+/* TOP BAR */
+/* ================================================= */
 .topbar {
     height: 70px;
-    background: white;
-    border-bottom: 1px solid #e5e7eb;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 1.5rem;
-    position: relative;
+    position: sticky;
+    top: 0;
     z-index: 1100;
 }
 
-/* LEFT */
-.topbar-left {
-    display: flex;
-    align-items: center;
+/* Hamburger */
+.menu-button {
+    font-size: 2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--primary);
 }
 
-/* CENTER */
+/* Center logo */
 .topbar-center {
     position: absolute;
     left: 50%;
@@ -152,31 +135,16 @@ html, body {
 }
 
 .topbar-logo {
-    font-size: 1.35rem;
+    font-size: 1.25rem;
     font-weight: 600;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    color: #1f2937;
+    color: #14532d;
 }
 
-/* HAMBURGER */
-.menu-button {
-    font-size: 2rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #2563eb;
-    padding: 0;
-}
-
-/* RIGHT */
-.topbar-right {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-/* PROFILE BUTTON */
+/* ================================================= */
+/* PROFILE MENU */
+/* ================================================= */
 .profile-button {
     display: flex;
     align-items: center;
@@ -203,12 +171,6 @@ html, body {
     font-weight: 500;
 }
 
-.profile-arrow {
-    font-size: 0.8rem;
-    opacity: 0.7;
-}
-
-/* DROPDOWN */
 .profile-dropdown {
     position: absolute;
     top: 60px;
@@ -218,7 +180,6 @@ html, body {
     box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     padding: 0.4rem;
     min-width: 180px;
-    z-index: 1200;
     display: flex;
     flex-direction: column;
 }
@@ -226,75 +187,79 @@ html, body {
 .profile-dropdown button {
     background: none;
     border: none;
-    text-align: left;
     padding: 0.6rem 0.8rem;
     border-radius: 8px;
+    text-align: left;
     cursor: pointer;
-    font-size: 0.9rem;
 }
 
 .profile-dropdown button:hover {
     background: #f3f4f6;
 }
 
-/* ============================= */
+/* ================================================= */
 /* MAIN CONTENT */
-/* ============================= */
+/* ================================================= */
 .main-area {
     flex: 1;
     display: flex;
     flex-direction: column;
     min-width: 0;
-    transition: margin-left 0.25s ease; /* 👈 vigtigt */
+    transition: margin-left 0.25s ease;
+}
+
+/* Skub content når sidebar er åben */
+.navmenu-root.open ~ .main-area {
+    margin-left: 250px;
 }
 
 .content {
     flex: 1;
     padding: 2.5rem;
+    padding-top: 70px;
 }
 
-/* ============================= */
-/* CARDS / PANELS */
-/* ============================= */
+/* ================================================= */
+/* CARDS / BOXES */
+/* ================================================= */
 .card,
-.box,
-.panel {
+.panel,
+.box {
     background: var(--surface);
     border-radius: 16px;
     padding: 1.5rem;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
 }
 
-/* ============================= */
+/* ================================================= */
 /* BUTTONS */
-/* ============================= */
-button,
-.btn {
-    font-family: 'Poppins', sans-serif;
+/* ================================================= */
+.btn,
+button {
+    font-family: 'Inter', sans-serif;
 }
 
 .btn-primary,
 .cta-button {
-    background: linear-gradient(135deg, #2563eb, #1e40af);
+    background: linear-gradient(135deg, #22c55e, #15803d);
     border: none;
     color: white;
-    padding: 0.75rem 1.5rem;
+    padding: 0.8rem 1.6rem;
     border-radius: 999px;
     font-weight: 600;
-    font-size: 1rem;
     cursor: pointer;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .btn-primary:hover,
 .cta-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(37,99,235,0.35);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(34,197,94,0.35);
 }
 
-/* ============================= */
+/* ================================================= */
 /* STATUS BADGES */
-/* ============================= */
+/* ================================================= */
 .status-badge {
     padding: 6px 12px;
     border-radius: 999px;
@@ -317,71 +282,146 @@ button,
     color: #7f1d1d;
 }
 
-/* Push content when sidebar is open */
-.navmenu-root.open ~ .main-area {
-    margin-left: 250px;
+/* ============================= */
+/* BOOKING ACTION BUTTONS */
+/* ============================= */
+
+.booking-actions {
+    display: flex;
+    gap: 16px;
+    margin-top: 24px;
 }
 
-    text-align: center;
-    white-space: nowrap;      /* 👈 gør at “Opret bruger” står på én linje */
+.booking-actions .cta-button {
+    flex: 1;
+    padding: 1rem;
+    font-size: 1rem;
 }
 
-.profile-menu-btn:hover {
-    background: #e9e9e9;
-    margin-bottom: 0;
+/* Hvis de ligger ovenpå hinanden (fallback) */
+.cta-button + .cta-button {
+    margin-top: 16px;
 }
 
-.confirmation-overlay {
-    position: fixed;
-    inset: 0;
-    background: white;
-    display: grid;
-    place-items: center;
-    z-index: 9999;
+/* ============================= */
+/* MODAL FIX – OVER TOPBAR */
+/* ============================= */
+
+.modal {
+    z-index: 2000 !important;
 }
 
-.confirmation-card {
-    max-width: 520px;
-    width: calc(100% - 32px);
-    padding: 32px;
-    border-radius: 18px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
-    text-align: center;
-    position: relative;
+.modal-backdrop {
+    z-index: 1990 !important;
+}
+/* ================================================= */
+/* OVERRIDE BOOTSTRAP BUTTON COLORS */
+/* ================================================= */
+/* Secondary actions: Info / Edit */
+.btn-info,
+.btn-warning {
+    background: transparent !important;
+    color: var(--primary-dark) !important;
+    border: 1px solid var(--primary) !important;
 }
 
-.confirmation-title {
+/* Hover */
+.btn-info:hover,
+.btn-warning:hover {
+    background: #dcfce7 !important;
+}
+.btn-secondary {
+    background: #f3f4f6 !important;
+    color: #374151 !important;
+    border: 1px solid #e5e7eb !important;
+}
+
+.btn-secondary:hover {
+    background: #e5e7eb !important;
+}
+.btn-danger {
+    background: #ef4444 !important;
+    color: white !important;
+    border: none !important;
+}
+
+.btn-danger:hover {
+    background: #dc2626 !important;
+}
+
+/* ================================================= */
+/* CUSTOMER LIST – PAGE SCOPED */
+/* ================================================= */
+
+.customer-list-page h3 {
     font-size: 1.6rem;
     font-weight: 600;
-    margin-bottom: 16px;
+    margin-bottom: 1rem;
 }
 
-.confirmation-body {
-    font-size: 1rem;
-    margin-bottom: 24px;
+/* Search */
+.customer-list-page input[type="text"] {
+    max-width: 420px;
+    padding: 0.6rem 0.9rem;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
 }
 
-.confirmation-bookings-btn {
-    padding: 10px 18px;
-    border-radius: 8px;
-    border: none;
-    background: #1f3c88;
+.customer-list-page input[type="text"]:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(34,197,94,0.15);
+}
+
+/* Table */
+.customer-list-page .table {
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.customer-list-page thead {
+    background: #f9fafb;
+}
+
+.customer-list-page th {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.85rem;
+}
+
+.customer-list-page td {
+    font-size: 0.9rem;
+    padding: 0.75rem 0.85rem;
+    vertical-align: middle;
+}
+
+.customer-list-page tbody tr:hover {
+    background: #ecfdf5;
+}
+
+/* Buttons */
+.customer-list-page .btn-info {
+    background: transparent;
+    border: 1px solid var(--primary);
+    color: var(--primary-dark);
+}
+
+.customer-list-page .btn-info:hover {
+    background: #dcfce7;
+}
+
+.customer-list-page .btn-danger {
+    background: #ef4444;
     color: white;
-    cursor: pointer;
-}
-
-.confirmation-close {
-    position: absolute;
-    top: 12px;
-    right: 14px;
-    background: none;
     border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
 }
 
-
-
-
-
-
+.customer-list-page .btn-danger:hover {
+    background: #dc2626;
+}

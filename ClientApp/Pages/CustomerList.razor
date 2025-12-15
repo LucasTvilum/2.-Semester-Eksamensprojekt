@@ -7,6 +7,8 @@
 @inject IWorkTask workTaskService
 @inject UserState userState
 
+
+<div class="customer-list-page">
 <h3>Kundeliste</h3>
 
 @if (!userState.IsWorker)
@@ -62,7 +64,7 @@ else
         </tbody>
     </table>
 }
-
+</div>
 <!-- MAIN BOOKING MODAL -->
 @if (showBookingModal)
 {

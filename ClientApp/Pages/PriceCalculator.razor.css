@@ -1,0 +1,10 @@
+/* ---------- PRICE CALCULATOR TITLE ---------- */
+
+.price-title {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    color: #166534; /* dark green */
+}

@@ -45,8 +45,6 @@
                 </div>
             }
         </div>
-        
-        <h3>@selectedLocation.Name </h3>
 
         <div class="window-buttons">
             @foreach (var wc in windowCounts.Where(x => x.Location == selectedLocation))
@@ -68,8 +66,10 @@
             Total: @TotalPrice kr
         </div>
         
-        <button class="btn btn-primary" @onclick="SelectEnkelt">Enkeltbooking</button>
-        <button class="btn btn-primary" @onclick="SelectAbonnement">Abonnement</button>
+        <div class="booking-actions">
+            <button class="btn btn-primary" @onclick="SelectEnkelt">Enkeltbooking</button>
+            <button class="btn btn-primary" @onclick="SelectAbonnement">Abonnement</button>
+        </div>
     }
 </div>
 

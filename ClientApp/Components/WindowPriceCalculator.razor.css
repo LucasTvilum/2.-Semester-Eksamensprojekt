@@ -1,98 +1,180 @@
+/* ================================================= */
+/* WINDOW PRICE CALCULATOR – PRODUCT STYLE */
+/* ================================================= */
+
+/* ---------- LOCATIONS ---------- */
+
 .locations-container {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 18px;
     width: 100%;
 }
 
 .location-box {
-    background: #f2f2f2;
-    border-radius: 6px;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
     overflow: hidden;
-    border: 1px solid #dcdcdc;
 }
 
+/* Clickable header */
 .location-header {
-    background: #d9d9d9;
-    padding: 10px 12px;
-    font-weight: bold;
+    background: #f0fdf4;
+    padding: 14px 18px;
+    font-weight: 600;
+    font-size: 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
+    user-select: none;
 }
 
 .location-header:hover {
-    background: #cfcfcf;
+    background: #dcfce7;
 }
+
+/* ---------- LOCATION CONTENT ---------- */
 
 .location-content {
-    padding: 12px 15px;
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
+    padding: 18px;
 }
 
-.window-summary img {
-    width: 50px;
-    height: auto;
-}
-
-.empty-info {
-    color: #777;
-    font-style: italic;
-}
+/* ---------- WINDOW GRID ---------- */
 
 .window-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 25px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 18px;
 }
+
+
+/* ---------- WINDOW SUMMARY (INSIDE LOCATION DROPDOWN) ---------- */
+
+/* ---------- WINDOW SUMMARY (INSIDE LOCATION DROPDOWN) ---------- */
+
+.window-summary {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 0;
+}
+
+/* Image */
+.window-summary img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+/* Window name (if present) */
+.window-summary .name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    flex: 1;
+}
+
+/* Count */
+.window-summary .count {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #166534;
+    min-width: 28px;
+    text-align: right;
+}
+/* ---------- WINDOW CARD ---------- */
 
 .window-type-block {
-    text-align: center;
-    width: 120px;
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 16px 12px;
+    border: 1px solid #e5e7eb;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+
+    min-height: 170px;
+
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.window-type-block img {
-    width: 80px;
-    height: auto;
+.window-type-block:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 }
+
+/* Window image – locked size */
+.window-type-block img {
+    width: 48px !important;
+    height: 48px !important;
+    max-width: 48px !important;
+    max-height: 48px !important;
+
+    object-fit: contain;
+    display: block;
+    margin-top: 4px;
+}
+
+/* Window name */
+.window-type-block p {
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: center;
+    margin: 0;
+}
+
+/* ---------- COUNTER ---------- */
 
 .counter {
-    margin-top: 8px;
+    margin-top: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
 }
-.total-box {
-    margin-top: 20px;
-    padding: 12px 20px;
-    border: 2px solid #ccc;
-    border-radius: 6px;
-    font-size: 22px;
-    font-weight: bold;
-    background: #f7f7f7;
-    display: inline-block;
+
+.counter button {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid #22c55e;
+    background: white;
+    color: #166534;
+    font-weight: 600;
+    cursor: pointer;
 }
-h3 {
-    margin-top: 25px;
-    font-size: 28px;
+
+.counter button:hover {
+    background: #dcfce7;
+}
+
+.counter span {
+    min-width: 18px;
+    text-align: center;
     font-weight: 600;
 }
 
-.window-type-block {
-    text-align: center;
-    width: 140px;
-    padding: 12px;
-    border-radius: 8px;
-    background: #f1f1f1;      /* let grå baggrund */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+/* ---------- EMPTY INFO ---------- */
+
+.empty-info {
+    color: #6b7280;
+    font-style: italic;
 }
 
-.window-type-block img {
-    width: 80px;
-    height: auto;
-    margin-bottom: 5px;
-    background: white;          /* hvid baggrund */
-    padding: 5px;
-    border-radius: 4px;
-    border: 1px solid #ddd;
+/* ---------- TOTAL PRICE ---------- */
+
+.total-box {
+    margin-top: 28px;
+    padding: 18px 22px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #22c55e, #15803d);
+    color: white;
+    font-size: 1.4rem;
+    font-weight: 600;
+    display: inline-block;
 }
+
