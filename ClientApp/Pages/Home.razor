@@ -8,66 +8,9 @@
 
 <div class="home-container">
 
-    <!-- TOP BAR -->
-    <div class="topbar">
-
-        <!-- Bruger menu (3 streger) -->
-        <div class="bruger-menu" @onclick="ToggleMenu">
-            <div></div>
-            <div></div>
-            <div></div>
-        </div>
-
-        <!-- Logo (Tvilum) -->
-        <div class="logo">Tvilum</div>
-
-        
-        <!-- Profile icon + dropdown -->
-        <div class="d-flex flex-column align-items-end me-3">
-
-            <img src="image/Logo/ProfileLogo.png"
-                 style="width:50px; height:50px; cursor:pointer;"
-                 @onclick="ToggleProfile" />
-
-            @if (userState.IsLoggedIn)
-            {
-                <span class="fw-bold mt-1" style="font-size: 0.95rem;">
-                    Velkommen, @userState.CurrentUser.Name
-                </span>
-            }
-
-            @if (showProfileMenu)
-            {
-                <div class="profile-menu">
-                    @if (userState.IsLoggedIn)
-                    {
-                        <button class="profile-menu-btn" @onclick="Logout">Log ud</button>
-                    }
-                    else
-                    {
-                        <button class="profile-menu-btn" @onclick="GoToRegister">Opret bruger</button>
-                        <button class="profile-menu-btn" @onclick="GoToLogin">Log ind</button>
-                    }
-                </div>
-            }
-        </div>
-    </div>  
-        @if (showMenu)
-        {
-            <div class="main-menu">
-                <p @onclick="GoToHome">Hjem</p>
-                <p @onclick="GoToCalculator">Beregn pris</p>
-                <p @onclick="GoToMyBookings">Mine bookinger</p>
-                <p @onclick="GoToContact">Kontakt</p>
-            </div>
-        }
-    
-
-        <!-- Background image -->
     <div class="hero">
         <img src="image/Logo/HomeBillede.png" class="hero-img" />
 
-        <!-- CTA Button -->
         <button class="cta-button" @onclick="GoToCalculator">
             BEREGN PRIS
         </button>
@@ -76,65 +19,8 @@
 </div>
 
 @code {
-    private bool showProfileMenu = false;
-
-    void ToggleProfile()
-    {
-        showProfileMenu = !showProfileMenu;
-    }
-
-    private bool showMenu = false;
-
-    void ToggleMenu()
-    {
-        showMenu = !showMenu;
-    }
-    
-    
-    void GoToHome()
-    {
-        showMenu = false;  
-        navigationManager.NavigateTo("/Home");
-    }
-    
     void GoToCalculator()
     {
         navigationManager.NavigateTo("/PriceCalculator");
-    }
-    
-    void GoToMyBookings()
-    {
-        navigationManager.NavigateTo("/mybookings");
-    }
-
-    void GoToContact()
-    {
-        navigationManager.NavigateTo("/Contact");
-    }
-    
-    void GoToRegister()
-    {
-        navigationManager.NavigateTo("/register");
-    }
-    
-
-    void GoToLogin()
-    {
-        navigationManager.NavigateTo("/Login");
-    }
-    
-    private async Task Logout()
-    {
-        // Fjern bruger i localStorage
-        await localStorage.RemoveItemAsync("currentUser");
-
-        // Nulstil userState
-        userState.CurrentUser = null;
-
-        // Luk menu
-        showProfileMenu = false;
-
-        // Naviger til Home (eller "/")
-        navigationManager.NavigateTo("/Home", true);
     }
 }
