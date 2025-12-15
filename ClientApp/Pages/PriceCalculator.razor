@@ -7,6 +7,7 @@
 @inject NavigationManager nav
 @inject IWindow windowService
 @inject UserState userState
+@inject NavigationManager navigationManager
 
 
 <h3>Pris Beregner</h3>
@@ -283,6 +284,27 @@
     </div>
 }
 
+@if (showSuccessOverlay)
+{
+    <div class="confirmation-overlay">
+        <div class="confirmation-card">
+            <button class="confirmation-close" @onclick="GoToHome">✕</button>
+
+            <p class="confirmation-title">Tak for din booking!</p>
+
+            <p class="confirmation-body">
+                Din anmodning er modtaget, og du får en bekræftelse inden for 1–2 hverdage.
+                Har du spørgsmål i mellemtiden, er du velkommen til at kontakte mig.
+            </p>
+
+            <button class="confirmation-bookings-btn" @onclick="GoToMyBookings">
+                Se mine bookinger
+            </button>
+        </div>
+    </div>
+}
+
+
 @code {
     private Booking booking = new();
     private bool showOneTimeModal = false;
@@ -325,6 +347,9 @@
         // await så kaldet fuldføres før vi lukker modal / nulstiller
         await bookingService.Add(booking);
 
+        //vis bekræftelsesbesked
+        showSuccessOverlay = true;
+        
         // ryd pending og luk modal
         await localStorage.RemoveItemAsync("pendingBooking");
         showSubscriptionModal = false;
@@ -346,6 +371,9 @@
 
         await bookingService.Add(booking);
 
+        //vis bekræftelsesbesked
+        showSuccessOverlay = true;
+        
         await localStorage.RemoveItemAsync("pendingBooking");
         showOneTimeModal = false;
         booking = new Booking();
@@ -470,7 +498,12 @@
         await windowService.DeleteType(type.Id);
         adminTypes.Remove(type);
     }
+    
+    private bool showSuccessOverlay = false;
+
+    void GoToHome() => navigationManager.NavigateTo("/Home");
+    void GoToMyBookings() => navigationManager.NavigateTo("/mybookings");
+
 
 }
 
-}

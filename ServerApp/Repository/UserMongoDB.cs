@@ -50,15 +50,34 @@ public class UserMongoDB : IUserRepository
         var filter = Builders<User>.Filter.Eq(u => u.Id, id);
         _collection.DeleteOne(filter);
     }
-    public Task<List<Customer>> GetCustomers()
+    public async Task<List<Customer>> GetCustomers()
     {
         var col = _db.GetCollection<Customer>("Users");
-        return col.Find(_ => true).ToListAsync();
+
+        var filter = Builders<Customer>.Filter.AnyEq("_t", "Customer"); // _t contains "Worker"
+        var customers = await col.Find(filter).ToListAsync();
+
+
+        foreach (var customer in customers)
+        {
+            Console.WriteLine($"CustomerId: {customer.Id}");
+        }
+    
+        return customers;
     }
 
-    public Task<List<Worker>> GetWorkers()
+    public async Task<List<Worker>> GetWorkers()
     {
         var col = _db.GetCollection<Worker>("Users");
-        return col.Find(_ => true).ToListAsync();
+
+        var filter = Builders<Worker>.Filter.AnyEq("_t", "Worker"); // _t contains "Worker"
+        var workers = await col.Find(filter).ToListAsync();
+
+        foreach (var worker in workers)
+        {
+            Console.WriteLine($"WorkerId: {worker.Id}");
+        }
+
+        return workers;
     }
 }

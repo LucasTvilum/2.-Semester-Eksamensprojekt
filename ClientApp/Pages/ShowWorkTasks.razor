@@ -42,9 +42,9 @@
                 <tr>
                     <td>@t.Date.ToShortDateString()</td>
                     <td>@(t.InsideJob ? "Ja" : "Nej")</td>
-                    <td>@bookinglist.First(b => b.Id == t.BookingId).Windows.Count</td>
-                    <td>@bookinglist.FirstOrDefault(b => b.Id == t.BookingId).NotesWindowCleaner</td>
-                    <td>@t.Worker.Name</td>
+                    <td>@(bookinglist.FirstOrDefault(b => b.Id == t.BookingId)?.Windows?.Count ?? 0)</td>
+                    <td>@(bookinglist.FirstOrDefault(b => b.Id == t.BookingId)?.NotesWindowCleaner ?? "—")</td>
+                    <td>@(workerlist.FirstOrDefault(w => w.Id == t.WorkerId)?.Name ?? "Ukendt medarbejder")</td>
                     <td>@t.Status</td>
                     <td>
                         <button class="btn btn-sm btn-primary"
@@ -86,16 +86,16 @@
     </tr>
     </thead>
     <tbody>
-    @if (taskList != null)
+    @if (taskList != null && bookinglist != null && workerlist != null)
     {
         @foreach (var t in taskList)
         {
             <tr>
                 <td>@t.Date.ToShortDateString()</td>
                 <td>@(t.InsideJob ? "Ja" : "Nej")</td>
-                <td>@bookinglist.First(b => b.Id == t.BookingId).Windows.Count</td>
-                <td>@bookinglist.FirstOrDefault(b => b.Id == t.BookingId).NotesWindowCleaner</td>
-                <td>@t.Worker.Name</td>
+                <td>@(bookinglist.FirstOrDefault(b => b.Id == t.BookingId)?.Windows?.Count ?? 0)</td>
+                <td>@(bookinglist.FirstOrDefault(b => b.Id == t.BookingId)?.NotesWindowCleaner ?? "—")</td>
+                <td>@(workerlist.FirstOrDefault(w => w.Id == t.WorkerId)?.Name ?? "Ukendt medarbejder")</td>
                 <td>@t.Status</td>
                 <td>
                     <button class="btn btn-sm btn-primary"
@@ -287,6 +287,7 @@
     private List<WorkTask> taskList = new();
     private List<Customer> customerlist = new();
     private List<Booking> bookinglist = new();
+    private List<Worker> workerlist = new();
 
     private Booking selectedBooking;
     private WorkTask selectedTask;
@@ -334,7 +335,8 @@
         {
             nav.NavigateTo("/notallowed", true);
         }
-        
+
+        workerlist = (await userService.GetWorkers());
         customerlist = (await userService.GetCustomers()).ToList();
         bookinglist = (await bookingService.GetAll()).ToList();
         taskList = (await workTaskService.GetAll()).ToList();
