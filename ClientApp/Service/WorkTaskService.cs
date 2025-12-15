@@ -65,14 +65,16 @@ public class WorkTaskService : IWorkTask
         return;
     }
 
-    Worker worker = new Worker();
+    string workerid = "";
 
     var currentUser = _userState.CurrentUser;
 
+    Console.WriteLine(currentUser.Usertype + currentUser.Id);
+
     //Inheritance casting currentUser to worker object
-    if (currentUser is Worker w)
+    if (currentUser.Usertype == User.UserType.Worker)
     {
-        worker = w;   
+        workerid = currentUser.Id;   
     }
 
     DateTime firstDate = GetNextWeekday(booking.Day).Date;
@@ -90,7 +92,7 @@ public class WorkTaskService : IWorkTask
             BookingId = booking.Id,
             Date = DateTime.SpecifyKind(outsideDate, DateTimeKind.Utc),
             InsideJob = false,
-            WorkerId = worker.Id
+            WorkerId = workerid
         };
 
         outsideDate = outsideDate.AddDays(7 * booking.OutdoorInterval);
@@ -113,7 +115,7 @@ public class WorkTaskService : IWorkTask
                     BookingId = booking.Id,
                     Date = insideDate,
                     InsideJob = true,
-                    WorkerId = worker.Id
+                    WorkerId = workerid
                 };
             }
 
@@ -135,15 +137,17 @@ public class WorkTaskService : IWorkTask
             Console.WriteLine("Tasks already exist for this booking — skipping creation.");
             return;
         }
-        
-        Worker worker = new Worker();
+
+        string workerid = "";
 
         var currentUser = _userState.CurrentUser;
 
+        Console.WriteLine(currentUser.Usertype + currentUser.Id);
+
         //Inheritance casting currentUser to worker object
-        if (currentUser is Worker w)
+        if (currentUser.Usertype == User.UserType.Worker)
         {
-            worker = w;   
+            workerid = currentUser.Id;   
         }
         
         WorkTask worktask = new WorkTask
@@ -151,7 +155,7 @@ public class WorkTaskService : IWorkTask
                 BookingId = booking.Id,
                 Date = booking.Date, 
                 InsideJob = booking.InsideJob,                
-                WorkerId = worker.Id
+                WorkerId = workerid
             };
        
         await http.PostAsJsonAsync($"{url}/api/worktask/singlebooking", worktask);
