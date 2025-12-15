@@ -3,6 +3,7 @@
 @using ClientApp.Service
 @using ClientApp.Components
 @inject IUser userService
+@inject UserState userState
 @inject NavigationManager nav
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
@@ -12,24 +13,31 @@
 
 @code {
     private Customer customer = new();
+    
+    [Parameter] 
+    [SupplyParameterFromQuery]
+    public string returnUrl { get; set; }
 
-    private async Task RegisterCustomer(Customer c)
+    private async Task RegisterCustomer(Customer customer)
     {
-        c.Usertype = User.UserType.Customer;
-        
-        await userService.Add(c);
+        customer.Usertype = User.UserType.Customer;
+        await userService.Add(customer);
 
-        // sæt brugeren som logget ind
-        await localStorage.SetItemAsync("currentUser", (User)c);
+        userState.CurrentUser = customer;
 
-        // læs returnType (men fjern den IKKE endnu)
-        var returnType = await localStorage.GetItemAsync<string>("returnType");
-        Console.WriteLine("DEBUG returnType: " + returnType);
+        // Set the user as logged in
+        await localStorage.SetItemAsync("currentUser", customer);
 
-        // send altid tilbage til PriceCalculator.
-        // PriceCalculator vil selv checke returnType og åbne korrekt modal.
-        nav.NavigateTo("/PriceCalculator");
-        
+        if (!string.IsNullOrEmpty(returnUrl))
+        {
+            // Navigate to the page that originally sent the user
+            nav.NavigateTo("/" + returnUrl);
+        }
+        else
+        {
+            // Default fallback
+            nav.NavigateTo("/");
+        }
     }
 
 }

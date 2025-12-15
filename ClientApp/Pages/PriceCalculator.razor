@@ -417,7 +417,7 @@
             await localStorage.SetItemAsync("pendingBooking", booking);
             await localStorage.SetItemAsync("returnType", type);
 
-            nav.NavigateTo("/Register");
+            nav.NavigateTo("/Register?returnUrl=PriceCalculator");
             return;
         }
 
