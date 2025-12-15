@@ -349,7 +349,7 @@
 
         //vis bekræftelsesbesked
         showSuccessOverlay = true;
-        
+
         // ryd pending og luk modal
         await localStorage.RemoveItemAsync("pendingBooking");
         showSubscriptionModal = false;
@@ -363,22 +363,22 @@
 
         booking.TypeBooking = Booking.BookingType.EnkeltBooking;
         booking.Status = "afventer";
-        
-       
+
+
         booking.Date = DateTime.SpecifyKind(booking.Date, DateTimeKind.Utc);
-        
+
         Console.WriteLine(booking.Date);
 
         await bookingService.Add(booking);
 
         //vis bekræftelsesbesked
         showSuccessOverlay = true;
-        
+
         await localStorage.RemoveItemAsync("pendingBooking");
         showOneTimeModal = false;
         booking = new Booking();
     }
-
+    
     protected override async Task OnInitializedAsync()
     {
         // indlæs eventuel pending booking
@@ -427,7 +427,7 @@
         if (type == "Abonnement")
             showSubscriptionModal = true;
     }
-    
+
     private async Task OpenAdminModal()
     {
         adminLocations = await windowService.GetAllWindowLocations();
@@ -459,6 +459,7 @@
 
         adminWindowLocation = new WindowLocation();
     }
+
     private void EditLocation(WindowLocation loc)
     {
         editingType = null;
@@ -476,6 +477,7 @@
         editingLocation = null;
         editingType = null;
     }
+
     private async Task SaveLocationEdit(WindowLocation loc)
     {
         await windowService.UpdateLocation(loc);
@@ -487,6 +489,7 @@
         await windowService.UpdateType(type);
         editingType = null;
     }
+
     private async Task DeleteLocation(WindowLocation loc)
     {
         await windowService.DeleteLocation(loc.Id);
@@ -498,12 +501,11 @@
         await windowService.DeleteType(type.Id);
         adminTypes.Remove(type);
     }
-    
+
     private bool showSuccessOverlay = false;
 
     void GoToHome() => navigationManager.NavigateTo("/Home");
     void GoToMyBookings() => navigationManager.NavigateTo("/mybookings");
-
 
 }
 

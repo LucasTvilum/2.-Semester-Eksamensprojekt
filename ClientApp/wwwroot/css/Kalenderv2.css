@@ -97,3 +97,15 @@
     left: 50%;
     transform: translateX(-50%);
 }
+
+
+.disabledd {
+    background-color: white;
+    color: black;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.disabledd:hover {
+    background-color: white;
+}
