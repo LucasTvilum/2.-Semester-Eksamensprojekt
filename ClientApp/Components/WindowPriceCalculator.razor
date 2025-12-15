@@ -78,6 +78,7 @@
     [Parameter] public EventCallback<string> OnSelectBookingType { get; set; }
     private WindowLocation selectedLocation;
     
+    //hvad søren er et hashset
     private HashSet<WindowLocation> openLocations = new();
 
     private List<WindowCount> windowCounts = new();
@@ -86,20 +87,6 @@
 
     private List<WindowType> windowTypes = new();
     private List<WindowLocation> locations = new();
-
-    private void GoToOneTimeBooking()
-    {
-        booking.TypeBooking = Booking.BookingType.EnkeltBooking;
-        localStorageService.SetItemAsync<Booking>("booking", booking);
-        nav.NavigateTo("/OneTimeBooking");
-    }
-    
-    private void GoToOpretAbonnement()
-    {
-        booking.TypeBooking = Booking.BookingType.Abonnement;
-        localStorageService.SetItemAsync<Booking>("booking", booking);
-        nav.NavigateTo("/SubscriptionBooking");
-    }
 
     protected override async Task OnInitializedAsync()
     {
