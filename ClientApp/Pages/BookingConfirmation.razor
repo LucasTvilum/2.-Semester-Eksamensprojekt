@@ -1,36 +1,11 @@
 @page "/BookingConfirmation"
 @inject NavigationManager navigationManager
 
-<div class="home-container">
-
-    <!-- TOP BAR -->
-    <div class="topbar">
-
-        <!-- Bruger menu (3 streger) -->
-        <div class="bruger-menu" @onclick="ToggleMenu">
-            <div></div>
-            <div></div>
-            <div></div>
-        </div>
-
-        <!-- Logo (Tvilum) -->
-        <div class="logo">Tvilum</div>
-
-        @if (showMenu)
-        {
-            <div class="main-menu">
-                <p @onclick="GoToHome">Hjem</p>
-                <p @onclick="GoToCalculator">Beregn pris</p>
-                <p @onclick="GoToMyBookings">Mine bookinger</p>
-                <p @onclick="GoToContact">Kontakt</p>
-            </div>
-        }
-
         <!-- Tak-for-booking indholdet -->
-        <div class="confirmation-wrapper">
+        <div class="confirmation-overlay">
+            <div class="confirmation-card">
             <button class="confirmation-close" @onclick="GoToHome">X</button>
-
-            <div class="confirmation-text">
+            
                 <p class="confirmation-title">
                     Tak for din booking!
                 </p>
@@ -38,44 +13,24 @@
                     Din anmodning er modtaget, og du får en bekræftelse inden for 1–2 hverdage.
                     Har du spørgsmål i mellemtiden, er du velkommen til at kontakte mig.
                 </p>
-            </div>
 
             <button class="confirmation-bookings-btn" @onclick="GoToMyBookings">
                 Se mine bookinger
             </button>
         </div>
     </div>
-</div>
-
+        
 
 @code {
-
-    private bool showMenu = false;
-
-    void ToggleMenu()
-    {
-        showMenu = !showMenu;
-    }
-
+    
     void GoToHome()
     {
-        showMenu = false;
         navigationManager.NavigateTo("/Home");
-    }
-
-    void GoToCalculator()
-    {
-        navigationManager.NavigateTo("/PriceCalculator");
     }
 
     void GoToMyBookings()
     {
         navigationManager.NavigateTo("/mybookings");
     }
-
-    void GoToContact()
-    {
-        navigationManager.NavigateTo("/Contact");
-    }
-
+    
 }
