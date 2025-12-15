@@ -10,11 +10,14 @@
 @inject NavigationManager navigationManager
 
 
-<h3>Pris Beregner</h3>
+<h3 class="price-title">Pris beregner</h3>
 
 
 
-<WindowPriceCalculator Booking="@booking" OnSelectBookingType="HandleBookingType"/>
+<div class="price-calculator-wrapper">
+    <WindowPriceCalculator Booking="@booking"
+                           OnSelectBookingType="HandleBookingType" />
+</div>
 @if (showSubscriptionModal)
 {
     <div class="modal d-block" style="background-color: rgba(0,0,0,0.5);">
@@ -122,9 +125,11 @@
 }
 @if (userState.IsWorker)
 {
-    <button class="btn btn-warning mb-3" @onclick="OpenAdminModal">
-        Admin: Rediger vinduer & priser
-    </button>
+    <div class="admin-action">
+        <button class="btn btn-secondary" @onclick="OpenAdminModal">
+            Admin: Rediger vinduer & priser
+        </button>
+    </div>
 }
 @if (showAdminModal)
 {

@@ -32,6 +32,16 @@
                 Kontakt
             </NavLink>
         </li>
+        
+        @if (userState.CurrentUser == null)
+        {
+            <li class="nav-item">
+                <NavLink class="nav-link" href="Register">
+                    <span class="bi bi-person-plus"></span>
+                    Opret bruger
+                </NavLink>
+            </li>
+        }
 
         @if (userState.CurrentUser?.Usertype == User.UserType.Customer)
         {
