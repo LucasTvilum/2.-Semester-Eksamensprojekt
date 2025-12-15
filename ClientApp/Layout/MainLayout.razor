@@ -1,13 +1,22 @@
 ﻿@inherits LayoutComponentBase
 
 <div class="app-layout">
-    <NavMenu />
+    <NavMenu IsOpen="@isNavOpen" />
 
     <div class="main-area">
-        <TopBar />
+        <TopBar OnToggleMenu="ToggleMenu" />
 
         <main class="content">
             @Body
         </main>
     </div>
 </div>
+
+@code {
+    private bool isNavOpen = false;
+
+    void ToggleMenu()
+    {
+        isNavOpen = !isNavOpen;
+    }
+}

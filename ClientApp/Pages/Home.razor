@@ -7,15 +7,18 @@
 
 
 <div class="home-container">
-
-    <div class="hero">
+    <section class="hero">
         <img src="image/Logo/HomeBillede.png" class="hero-img" />
 
-        <button class="cta-button" @onclick="GoToCalculator">
-            BEREGN PRIS
-        </button>
-    </div>
+        <div class="hero-content">
+            <h1>Tvilum Vinduespudsning</h1>
+            <p>Professionel vinduespudsning – nemt og hurtigt</p>
 
+            <button class="cta-button" @onclick="GoToCalculator">
+                Beregn pris
+            </button>
+        </div>
+    </section>
 </div>
 
 @code {

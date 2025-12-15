@@ -5,33 +5,49 @@
 
 <div class="topbar">
 
-    <div class="logo">Tvilum</div>
+    <!-- LEFT: HAMBURGER -->
+    <div class="topbar-left">
+        <button class="menu-button" @onclick="OnToggleMenu">
+            ☰
+        </button>
+    </div>
 
-    <div class="d-flex flex-column align-items-end me-3">
+    <!-- CENTER: LOGO -->
+    <div class="topbar-center">
+        <span class="topbar-logo">Tvilum</span>
+    </div>
 
-        <img src="image/Logo/ProfileLogo.png"
-             style="width:50px; height:50px; cursor:pointer;"
-             @onclick="ToggleProfile" />
+    <!-- RIGHT: PROFILE -->
+    <div class="topbar-right">
 
-        @if (userState.IsLoggedIn)
-        {
-            <span class="fw-bold mt-1" style="font-size: 0.95rem;">
-                Velkommen, @userState.CurrentUser.Name
-            </span>
-        }
+        <button class="profile-button" @onclick="ToggleProfile">
+            <img src="image/Logo/ProfileLogo.png" alt="Profil"
+                 class="profile-avatar" />
+
+            @if (userState.IsLoggedIn)
+            {
+                <span class="profile-name">
+                    @userState.CurrentUser.Name
+                </span>
+            }
+
+            <span class="profile-arrow">▾</span>
+        </button>
 
         @if (showProfileMenu)
         {
-            <div class="profile-menu">
+            <div class="profile-dropdown">
+
                 @if (userState.IsLoggedIn)
                 {
-                    <button class="profile-menu-btn" @onclick="Logout">Log ud</button>
+                    <button @onclick="Logout">Log ud</button>
                 }
                 else
                 {
-                    <button class="profile-menu-btn" @onclick="GoToRegister">Opret bruger</button>
-                    <button class="profile-menu-btn" @onclick="GoToLogin">Log ind</button>
+                    <button @onclick="GoToRegister">Opret bruger</button>
+                    <button @onclick="GoToLogin">Log ind</button>
                 }
+
             </div>
         }
     </div>
@@ -39,6 +55,9 @@
 
 @code {
     private bool showProfileMenu = false;
+
+    [Parameter]
+    public EventCallback OnToggleMenu { get; set; }
 
     void ToggleProfile()
     {
