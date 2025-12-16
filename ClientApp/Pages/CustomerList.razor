@@ -27,46 +27,50 @@
 }
 else
 {
-    <input type="text" @bind="searchText" placeholder="Søg efter kunde..." class="form-control" />
+    <div class="data-card">
 
-    <br />
+        <input type="text"
+               @bind="searchText"
+               placeholder="Søg efter kunde (navn, email, telefon…) "
+               class="customer-search" />
 
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>Navn</th>
-            <th>Email</th>
-            <th>Telefon</th>
-            <th>Adresse</th>
-            <th>Information</th>
-            <th>Slet</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var c in FilteredCustomers)
-        {
+        <table class="table table-striped align-middle">
+            <thead>
             <tr>
-                <td>@c.Name</td>
-                <td>@c.Mail</td>
-                <td>@c.PhoneNumber</td>
-                <td>@c.Address</td>
-
-                <td>
-                    <!-- NOTE: OpenBookingModal is async now -->
-                    <button class="btn btn-info btn-sm" @onclick="() => OpenBookingModalAsync(c)">
-                        Information
-                    </button>
-                </td>
-
-                <td>
-                    <button class="btn btn-danger btn-sm" @onclick="() => DeleteCustomer(c.Id)">
-                        Slet
-                    </button>
-                </td>
+                <th>Navn</th>
+                <th>Email</th>
+                <th>Telefon</th>
+                <th>Adresse</th>
+                <th>Information</th>
+                <th>Slet</th>
             </tr>
-        }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            @foreach (var c in FilteredCustomers)
+            {
+                <tr>
+                    <td>@c.Name</td>
+                    <td>@c.Mail</td>
+                    <td>@c.PhoneNumber</td>
+                    <td>@c.Address</td>
+
+                    <td>
+                        <!-- NOTE: OpenBookingModal is async now -->
+                        <button class="btn btn-info btn-sm" @onclick="() => OpenBookingModalAsync(c)">
+                            Information
+                        </button>
+                    </td>
+
+                    <td>
+                        <button class="btn btn-danger btn-sm" @onclick="() => DeleteCustomer(c.Id)">
+                            Slet
+                        </button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
 }
 </div>
 <!-- MAIN BOOKING MODAL -->
