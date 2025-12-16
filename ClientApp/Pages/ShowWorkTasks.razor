@@ -9,21 +9,34 @@
 @inject IUser userService
 @inject NavigationManager nav
 
+<div class="page-wrapper worktasks-page">
 
-<ShowTaskKalenderKomponent
-    TaskDates="taskDates"
-    OnDateSelected="HandleDateSelected"/>
+<div class="page-header">
+    <h1 class="page-title">Arbejdsopgaver</h1>
+    <p class="page-subtitle">
+        Vælg en dato i kalenderen for at se opgaver – eller få overblik over kommende arbejde
+    </p>
+</div>
 
 
-<h3>Arbejdssopgaver for valgte dato</h3>
+<div class="calendar-card">
+    <ShowTaskKalenderKomponent
+        TaskDates="taskDates"
+        OnDateSelected="HandleDateSelected" />
+</div>
+
+
 
 @if (!userState.IsWorker)
 {
     <p>Kun for medarbejdere</p>
 }
 
-<table class="table table-striped table-bordered align-middle">
-    <thead class="table-light">
+<div class="section-card">
+    <h2 class="section-title">Opgaver for valgt dato</h2>
+
+    <table class="table table-striped table-bordered align-middle">
+        <thead class="table-light">
         <tr>
             <th>Dato</th>
             <th>Inside Job</th>
@@ -33,8 +46,8 @@
             <th>Status</th>
             <th>Actions</th>
         </tr>
-    </thead>
-    <tbody>
+        </thead>
+        <tbody>
         @if (FilteredTasks.Any())
         {
             @foreach (var t in FilteredTasks)
@@ -50,44 +63,39 @@
                         <button class="btn btn-sm btn-primary"
                                 @onclick="() => OpenTaskWindows(t)">Vis Vinduer</button>
                         <button class="btn btn-sm btn-warning"
-                                @onclick="() => OpenEditTask(t)">
-                            Rediger
-                        </button>
-                        
+                                @onclick="() => OpenEditTask(t)">Rediger</button>
                         <button class="btn btn-sm btn-info"
-                                @onclick="() => ShowCustomerForTask(t)">
-                            Kundeinfo
-                        </button>
+                                @onclick="() => ShowCustomerForTask(t)">Kundeinfo</button>
                     </td>
                 </tr>
             }
         }
         else
         {
-        <tr>
-            <td colspan="6">Ingen opgaver for denne dato</td>
-        </tr>
+            <tr>
+                <td colspan="7">Ingen opgaver for denne dato</td>
+            </tr>
         }
-    </tbody>
-</table>
+        </tbody>
+    </table>
+</div>
 
-<h3>Alle arbejdsopgaver fremtidige arbejdsopgaver</h3>
+<div class="section-card">
+    <h2 class="section-title">Kommende arbejdsopgaver</h2>
 
-<table class="table table-striped table-bordered align-middle">
-    <thead class="table-light">
-    <tr>
-        <th>Dato</th>
-        <th>Inside Job</th>
-        <th>Vinduer</th>
-        <th>Notes</th>
-        <th>Worker</th>
-        <th>Status</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    @if (taskList != null && bookinglist != null && workerlist != null)
-    {
+    <table class="table table-striped table-bordered align-middle">
+        <thead class="table-light">
+        <tr>
+            <th>Dato</th>
+            <th>Inside Job</th>
+            <th>Vinduer</th>
+            <th>Notes</th>
+            <th>Worker</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
         @foreach (var t in taskList)
         {
             <tr>
@@ -99,21 +107,17 @@
                 <td>@t.Status</td>
                 <td>
                     <button class="btn btn-sm btn-primary"
-                            @onclick="() => OpenTaskWindows(t)">Vis Vinduer
-                    </button>
+                            @onclick="() => OpenTaskWindows(t)">Vis Vinduer</button>
                     <button class="btn btn-sm btn-warning"
                             @onclick="() => OpenEditTask(t)">Rediger</button>
                     <button class="btn btn-sm btn-info"
-                            @onclick="() => ShowCustomerForTask(t)">
-                        Kundeinfo
-                    </button>
+                            @onclick="() => ShowCustomerForTask(t)">Kundeinfo</button>
                 </td>
             </tr>
         }
-    }
-    </tbody>
-</table>
-
+        </tbody>
+    </table>
+</div>
 <!-- -------------------- WINDOWS MODAL -------------------- -->
 
 @if (showWindowsModal)
@@ -195,6 +199,7 @@
             </div>
         </div>
     </div>
+    
 }
 
 
@@ -463,3 +468,4 @@
     }
 
 }
+</div>

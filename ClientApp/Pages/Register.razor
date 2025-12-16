@@ -7,10 +7,27 @@
 @inject NavigationManager nav
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
-<h3>Opret bruger</h3>
+<div class="page-wrapper">
 
-<CustomerForm customer="customer" ButtonText="Opret Konto" OnSubmit="RegisterCustomer" />
+    <div class="page-header">
+        <h1 class="page-title">Opret bruger</h1>
+        <p class="page-subtitle">
+            Opret en konto for at kunne beregne pris og booke vinduespudsning
+        </p>
+    </div>
 
+    <div class="form-card">
+        <CustomerForm
+            customer="customer"
+            ButtonText="Opret Konto"
+            OnSubmit="RegisterCustomer" />
+    </div>
+    <div class="auth-alt">
+        <span>Allerede bruger?</span>
+        <a href="/Login">Log ind</a>
+    </div>
+
+</div>
 @code {
     private Customer customer = new();
     

@@ -8,3 +8,12 @@
     margin-bottom: 2rem;
     color: #166534; /* dark green */
 }
+
+/* ---------- PRICE CALCULATOR SUBTITLE ---------- */
+
+.price-subtitle {
+    font-size: 0.95rem;
+    color: #6b7280;            /* afdæmpet grå */
+    line-height: 1.5;
+    margin-top: -1.2rem;       /* trækker den tættere på titlen */
+}
