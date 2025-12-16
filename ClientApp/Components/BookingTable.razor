@@ -4,7 +4,6 @@
 @inject IWorkTask workTaskService
 @inject IBooking bookingService
 @inject IWindow windowService
-<h3>Alle bookings</h3>
 
 @if (!userState.IsWorker)
 {
@@ -80,6 +79,7 @@
     </tbody>
 </table>
 
+<!-- WINDOWS MODAL -->
 @if (showModalWindows)
 {
     <div class="modal d-block" style="background-color: rgba(0,0,0,0.5);">
@@ -90,46 +90,7 @@
                     <button class="btn-close" @onclick="CloseModalWindows"></button>
                 </div>
                 <div class="modal-body">
-                    @if (selectedBooking.Windows != null)
-                    {
-                        <ul>
-                            @foreach (var window in selectedBooking.Windows.ToList())
-                            {
-                                <li>
-                                    @window.Type.Name - @window.Location.Name
-                                    <button class="btn btn-sm btn-danger ms-2" @onclick="() => DeleteWindow(window)">Slet</button>
-                                </li>
-                            }
-                        </ul>
-                    }
-
-                    <hr/>
-                    <h6>Tilføj nyt vindue</h6>
-                    <div class="mb-2">
-                        <label>Type</label>
-                        <InputSelect TValue="string" @bind-Value="newWindowTypeId" class="form-select">
-                            <option value="">Vælg type</option>
-                            @foreach (var type in windowtypecategories)
-                            {
-                                <option value="@type.Id">@type.Name</option>
-                            }
-                        </InputSelect>
-                    </div>
-                    <div class="mb-2">
-                        <label>Location</label>
-                        <InputSelect TValue="string" @bind-Value="newWindowLocationId" class="form-select">
-                            <option value="">Vælg lokation</option>
-                            @foreach (var loc in windowlocationcategories)
-                            {
-                                <option value="@loc.Id">@loc.Name</option>
-                            }
-                        </InputSelect>
-                    </div>
-                    <button class="btn btn-success" @onclick="AddWindow">Tilføj</button>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" @onclick="CloseModalWindows">Luk</button>
-                    <button class="btn btn-primary" @onclick="SaveWindows">Gem ændringer</button>
+                    <WindowSelector booking="selectedBooking" OnWindowsUpdated="CloseModalWindows" />
                 </div>
             </div>
         </div>
@@ -267,49 +228,12 @@
 
         windowArray = await windowService.GetAll();
         windowlist = windowArray.ToList();
-        bookingArray = await bookingService.GetAll();
-        bookinglist = bookingArray.ToList();
+       
         foreach (var VARIABLE in bookinglist)
         {
             Console.WriteLine(VARIABLE.Id);
         }
     }
-    private void AddWindow()
-    {
-        if (!string.IsNullOrWhiteSpace(newWindowTypeId) &&
-            !string.IsNullOrWhiteSpace(newWindowLocationId))
-        {
-            var type = windowtypecategories.FirstOrDefault(t => t.Id == newWindowTypeId);
-            var location = windowlocationcategories.FirstOrDefault(l => l.Id == newWindowLocationId);
-
-            if (type != null && location != null)
-            {
-                if (selectedBooking.Windows == null)
-                    selectedBooking.Windows = new List<Window>();
-
-                selectedBooking.Windows.Add(new Window
-                {
-                    Type = type,
-                    Location = location
-                });
-
-                newWindowTypeId = null;
-                newWindowLocationId = null;
-            }
-        }
-    }
-
-    private void DeleteWindow(Window window)
-    {
-        selectedBooking.Windows.Remove(window);
-    }
-
-    private async Task SaveWindows()
-    {
-        await bookingService.UpdateBooking(selectedBooking);
-        showModalWindows = false;
-    }
-
 }
 
 
