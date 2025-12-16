@@ -12,13 +12,15 @@
 @inject NavigationManager nav
 @page "/AdminAddBooking"
 
-<h3>Admin kunde og booking oprettelse</h3>
-<h2>Kundeoprettelse</h2>
+<div class="page-header">
+    <h1 class="page-title">Admin kunde og booking oprettelse</h1>
+    <p class="page-subtitle">Opret kunde og tilføj booking på samme tid</p>
+</div>
 <CustomerForm customer="customer" ButtonText="Opret Kunde" OnSubmit="HandleCustomerSubmit" />
 
 @if (customer != null)
 {
-    <h3>Nuværende kunde:</h3>
+    <p class="page-subtitle">Nuværende kunde:</p>
     <h3>@customer.Name</h3>
 }
 

@@ -8,7 +8,12 @@
 @inject UserState userState
 
 <div class="customer-list-page">
-<h3>Kundeliste</h3>
+    <div class="page-header">
+        <h1 class="page-title">Kundeliste</h1>
+        <p class="page-subtitle">
+            Oversigt over alle kunder og deres bookinger
+        </p>
+    </div>
 
 @if (!userState.IsWorker)
 {
