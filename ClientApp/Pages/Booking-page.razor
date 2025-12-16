@@ -1,0 +1,25 @@
+@page "/Booking-page"
+@using Core.Models
+@using ClientApp.Service
+@using ClientApp.Components
+@inject IBooking bookingService
+
+<h3>Alle bookings</h3>
+
+@if (bookings == null)
+{
+    <p>Loader...</p>
+}
+else
+{
+    <BookingTable bookinglist="bookings" />
+}
+
+@code {
+    private List<Booking>? bookings;
+
+    protected override async Task OnInitializedAsync()
+    {
+        bookings = (await bookingService.GetAll()).ToList();
+    }
+}

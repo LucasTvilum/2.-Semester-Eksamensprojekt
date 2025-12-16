@@ -150,8 +150,9 @@
 
         wc.Count--;
 
-        var toRemove = booking.Windows
-            .LastOrDefault(w => w.Type == wc.Type && w.Location == wc.Location);
+        var toRemove = booking.Windows.LastOrDefault(w =>
+            w.Type.Id == wc.Type.Id &&
+            w.Location.Id == wc.Location.Id);
 
         if (toRemove != null)
             booking.Windows.Remove(toRemove);
@@ -165,7 +166,12 @@
     }
     private async Task UpdateWindows()
     {
-        bookingService.UpdateBooking(booking);
+        
+        if (booking.Id != null){
+            Console.WriteLine("windowselector booking id: " + booking.Id);
+        }
+        
+        await bookingService.UpdateBooking(booking);
         
         //hasdelegate is to check for null value
         if (OnWindowsUpdated.HasDelegate)

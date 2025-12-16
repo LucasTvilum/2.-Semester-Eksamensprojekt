@@ -1,0 +1,156 @@
+@using Core.Models
+@inject IWindow windowService
+@using ClientApp.Service
+
+
+@if (Show)
+{
+    <div class="modal d-block" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4>Administrer Vinduer & Priser</h4>
+                    <button class="btn-close" @onclick="Close"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <h5>➕ Tilføj Vindues Type</h5>
+
+                    <EditForm Model="adminWindowType" OnValidSubmit="HandleTypeSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <InputText class="form-control mb-2" @bind-Value="adminWindowType.Name" placeholder="Navn" />
+                        <InputNumber class="form-control mb-2" @bind-Value="adminWindowType.BasePrice" placeholder="Basis pris" />
+
+                        <select class="form-select mb-2" @bind="adminWindowType.ImagePath">
+                            <option value="">Vælg billede...</option>
+                            @foreach (var img in demoImages)
+                            {
+                                <option value="@img">@img</option>
+                            }
+                        </select>
+
+                        <button class="btn btn-primary">Tilføj</button>
+                    </EditForm>
+
+                    <hr />
+
+                    <h5>➕ Tilføj Vindues Lokation</h5>
+
+                    <EditForm Model="adminWindowLocation" OnValidSubmit="HandleLocationSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <InputText class="form-control mb-2" @bind-Value="adminWindowLocation.Name" placeholder="Navn" />
+                        <InputNumber class="form-control mb-2" @bind-Value="adminWindowLocation.ExtraPrice" placeholder="Ekstra pris" />
+
+                        <button class="btn btn-primary">Tilføj</button>
+                    </EditForm>
+
+                    <hr />
+
+                    <h5>Vindues Lokationer</h5>
+                    <table class="table table-bordered">
+                        @foreach (var l in locations)
+                        {
+                            <tr>
+                                <td>@l.Name</td>
+                                <td>@l.ExtraPrice</td>
+                                <td>@l.IsActive</td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm" @onclick="() => DeleteLocation(l)">Slet</button>
+                                </td>
+                            </tr>
+                        }
+                    </table>
+
+                    <h5>Vindues Typer</h5>
+                    <table class="table table-bordered">
+                        @foreach (var t in types)
+                        {
+                            <tr>
+                                <td>@t.Name</td>
+                                <td>@t.BasePrice</td>
+                                <td>@t.IsActive</td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm" @onclick="() => DeleteType(t)">Slet</button>
+                                </td>
+                            </tr>
+                        }
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+@code {
+    [Parameter] public bool Show { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private List<WindowLocation> locations = new();
+    private List<WindowType> types = new();
+
+    private WindowType adminWindowType = new();
+    private WindowLocation adminWindowLocation = new();
+
+    private readonly List<string> demoImages = new()
+    {
+        "image/windows/bondehus.png",
+        "image/windows/dannebrog.png",
+        "image/windows/matteret.png",
+        "image/windows/palae.png",
+        "image/windows/sidehaengt.png",
+        "image/windows/standard.png",
+        "image/windows/stort.png"
+    };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Show)
+        {
+            locations = await windowService.GetAllWindowLocations();
+            types = await windowService.GetAllWindowTypes();
+        }
+    }
+
+    private async Task HandleTypeSubmit()
+    {
+        adminWindowType.IsActive = true;
+        await windowService.AddType(adminWindowType);
+        types.Add(adminWindowType);
+        adminWindowType = new();
+    }
+
+    private async Task HandleLocationSubmit()
+    {
+        adminWindowLocation.IsActive = true;
+        await windowService.AddLocation(adminWindowLocation);
+        locations.Add(adminWindowLocation);
+        adminWindowLocation = new();
+    }
+
+    private async Task DeleteType(WindowType type)
+    {
+        await windowService.DeleteType(type.Id);
+        types.Remove(type);
+    }
+
+    private async Task DeleteLocation(WindowLocation loc)
+    {
+        await windowService.DeleteLocation(loc.Id);
+        locations.Remove(loc);
+    }
+
+    private async Task Close()
+    {
+        await OnClose.InvokeAsync();
+    }
+
+}

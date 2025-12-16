@@ -138,182 +138,8 @@
 }
 @if (showAdminModal)
 {
-    <div class="modal d-block" style="background-color: rgba(0,0,0,0.5);">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-
-                <div class="modal-header">
-                    <h4>Administrer Vinduer & Priser</h4>
-                    <button class="btn-close" @onclick="CloseAdminModal"></button>
-                </div>
-
-                <div class="modal-body">
-
-                    <h5>➕ Tilføj Vindues Type</h5>
-
-                    <EditForm Model="@adminWindowType" OnValidSubmit="@HandleAdminTypeSubmit">
-                        <DataAnnotationsValidator/>
-                        <ValidationSummary/>
-
-                        <div class="mb-3">
-                            <label>Navn</label>
-                            <InputText class="form-control" @bind-Value="adminWindowType.Name"/>
-                        </div>
-
-                        <div class="mb-3">
-                            <label>Basis pris</label>
-                            <InputNumber class="form-control" @bind-Value="adminWindowType.BasePrice"/>
-                        </div>
-
-                        <div class="mb-3">
-                            <label>Billede sti</label>
-                            <select class="form-select" @bind="adminWindowType.ImagePath">
-                                <option value="">Vælg billede...</option>
-                                @foreach (var img in demoImages)
-                                {
-                                    <option value="@img">@img</option>
-                                }
-                            </select>
-                            @if (!string.IsNullOrWhiteSpace(adminWindowType.ImagePath))
-                            {
-                                <img src="@adminWindowType.ImagePath" style="max-width:150px; margin-top:10px;" />
-                            }
-                        </div>
-
-                        <button type="submit" class="btn btn-primary">Tilføj</button>
-                    </EditForm>
-
-                    <hr/>
-
-                    <h5>➕ Tilføj Vindues Lokation</h5>
-
-                    <EditForm Model="@adminWindowLocation" OnValidSubmit="@HandleAdminLocationSubmit">
-                        <DataAnnotationsValidator/>
-                        <ValidationSummary/>
-
-                        <div class="mb-3">
-                            <label>Navn</label>
-                            <InputText class="form-control" @bind-Value="adminWindowLocation.Name"/>
-                        </div>
-
-                        <div class="mb-3">
-                            <label>Ekstra pris</label>
-                            <InputNumber class="form-control" @bind-Value="adminWindowLocation.ExtraPrice"/>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary">Tilføj</button>
-                    </EditForm>
-
-                    <hr/>
-
-                    <h5>Vindues Lokationer</h5>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Navn</th>
-                                <th>Ekstra Pris</th>
-                                <th>Aktiv?</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @foreach (var l in adminLocations)
-                        {
-                            <tr>
-                                @if (l == editingLocation)
-                                {
-                                    <td><InputText class="form-control" @bind-Value="editingLocation.Name" /></td>
-                                    <td><InputNumber class="form-control" @bind-Value="editingLocation.ExtraPrice" /></td>
-                                    <td>@editingLocation.IsActive</td>
-                                    <td>
-                                        <button class="btn btn-success btn-sm" @onclick="() => SaveLocationEdit(l)">Gem</button>
-                                        <button class="btn btn-secondary btn-sm" @onclick="CancelEdit">Annuller</button>
-                                    </td>
-                                }
-                                else
-                                {
-                                    <td>@l.Name</td>
-                                    <td>@l.ExtraPrice</td>
-                                    <td>@l.IsActive</td>
-                                    <td>
-                                        <button class="btn btn-primary btn-sm" @onclick="() => EditLocation(l)">Rediger</button>
-                                        <button class="btn btn-danger btn-sm" @onclick="() => DeleteLocation(l)">Slet</button>
-                                    </td>
-                                }
-                            </tr>
-                        }
-
-                        </tbody>
-                    </table>
-
-                    <h5>Vindues Typer</h5>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Navn</th>
-                                <th>Basis Pris</th>
-                                <th>Aktiv?</th>
-                                <th>Image Path</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @foreach (var t in adminTypes)
-                        {
-                            <tr>
-                                @if (t == editingType)
-                                {
-                                    <td><InputText class="form-control" @bind-Value="editingType.Name" /></td>
-                                    <td><InputNumber class="form-control" @bind-Value="editingType.BasePrice" /></td>
-                                    <td>@editingType.IsActive</td>
-                                    <td><InputText class="form-control" @bind-Value="editingType.ImagePath" /></td>
-                                    <td>
-                                        <button class="btn btn-success btn-sm" @onclick="() => SaveTypeEdit(t)">Gem</button>
-                                        <button class="btn btn-secondary btn-sm" @onclick="CancelEdit">Annuller</button>
-                                    </td>
-                                }
-                                else
-                                {
-                                    <td>@t.Name</td>
-                                    <td>@t.BasePrice</td>
-                                    <td>@t.IsActive</td>
-                                    <td>@t.ImagePath</td>
-                                    <td>
-                                        <button class="btn btn-primary btn-sm" @onclick="() => EditType(t)">Rediger</button>
-                                        <button class="btn btn-danger btn-sm" @onclick="() => DeleteType(t)">Slet</button>
-                                    </td>
-                                }
-                            </tr>
-                        }
-
-                        </tbody>
-                    </table>
-
-                </div>
-
-            </div>
-        </div>
-    </div>
+    <AdminModal Show="showAdminModal" OnClose="@CloseAdminModal" />
 }
-
-@if (showSuccessOverlay)
-{
-    <div class="confirmation-overlay">
-        <div class="confirmation-card">
-            <button class="confirmation-close" @onclick="GoToHome">✕</button>
-
-            <p class="confirmation-title">Tak for din booking!</p>
-
-            <p class="confirmation-body">
-                Din anmodning er modtaget, og du får en bekræftelse inden for 1–2 hverdage.
-                Har du spørgsmål i mellemtiden, er du velkommen til at kontakte mig.
-            </p>
-
-            <button class="confirmation-bookings-btn" @onclick="GoToMyBookings">
-                Se mine bookinger
-            </button>
-        </div>
-    </div>
-}
-
 
 @code {
     private Booking booking = new();
@@ -323,28 +149,7 @@
     private List<string> daycategories = new() { "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag" };
     private DateTime selectedDate = new DateTime();
     bool showAdminModal = false;
-    private WindowLocation editingLocation;
-    private WindowType editingType;
-
-
-    private WindowType adminWindowType = new();
-    private WindowLocation adminWindowLocation = new();
-
-    private List<WindowLocation> adminLocations = new();
-    private List<WindowType> adminTypes = new();
-
-    private List<string> demoImages = new()
-    {
-        "image/windows/bondehus.png",
-        "image/windows/dannebrog.png",
-        "image/windows/matteret.png",
-        "image/windows/palae.png",
-        "image/windows/sidehaengt.png",
-        "image/windows/standard.png",
-        "image/windows/stort.png"
-    };
-
-
+    
     private async Task HandleSubscriptionSubmit()
     {
         // hent bruger OG sæt customer id FØR du sender til backend
@@ -353,15 +158,13 @@
 
         booking.TypeBooking = Booking.BookingType.Abonnement;
         booking.Status = "afventer";
-
-        // await så kaldet fuldføres før vi lukker modal / nulstiller
-        await bookingService.Add(booking);
-
-        //vis bekræftelsesbesked
-        showSuccessOverlay = true;
-
+        
+        //ikke await så vi ik bliver sendt videre før booking er gennemført
+        bookingService.Add(booking);
+        
         // ryd pending og luk modal
         await localStorage.RemoveItemAsync("pendingBooking");
+        navigationManager.NavigateTo("/BookingConfirmation");
         showSubscriptionModal = false;
         booking = new Booking();
     }
@@ -373,18 +176,16 @@
 
         booking.TypeBooking = Booking.BookingType.EnkeltBooking;
         booking.Status = "afventer";
-
-
+        
         booking.Date = DateTime.SpecifyKind(booking.Date, DateTimeKind.Utc);
 
         Console.WriteLine(booking.Date);
 
-        await bookingService.Add(booking);
-
-        //vis bekræftelsesbesked
-        showSuccessOverlay = true;
-
+        //ikke await så vi ik bliver sendt videre før booking er gennemført
+        bookingService.Add(booking);
+        
         await localStorage.RemoveItemAsync("pendingBooking");
+        navigationManager.NavigateTo("/BookingConfirmation");
         showOneTimeModal = false;
         booking = new Booking();
     }
@@ -438,10 +239,8 @@
             showSubscriptionModal = true;
     }
 
-    private async Task OpenAdminModal()
+    private void OpenAdminModal()
     {
-        adminLocations = await windowService.GetAllWindowLocations();
-        adminTypes = await windowService.GetAllWindowTypes();
         showAdminModal = true;
     }
 
@@ -449,69 +248,7 @@
     {
         showAdminModal = false;
     }
-
-    private async Task HandleAdminTypeSubmit()
-    {
-        adminWindowType.IsActive = true;
-
-        await windowService.AddType(adminWindowType);
-        adminTypes.Add(adminWindowType);
-
-        adminWindowType = new WindowType();
-    }
-
-    private async Task HandleAdminLocationSubmit()
-    {
-        adminWindowLocation.IsActive = true;
-
-        await windowService.AddLocation(adminWindowLocation);
-        adminLocations.Add(adminWindowLocation);
-
-        adminWindowLocation = new WindowLocation();
-    }
-
-    private void EditLocation(WindowLocation loc)
-    {
-        editingType = null;
-        editingLocation = loc;
-    }
-
-    private void EditType(WindowType type)
-    {
-        editingLocation = null;
-        editingType = type;
-    }
-
-    private void CancelEdit()
-    {
-        editingLocation = null;
-        editingType = null;
-    }
-
-    private async Task SaveLocationEdit(WindowLocation loc)
-    {
-        await windowService.UpdateLocation(loc);
-        editingLocation = null;
-    }
-
-    private async Task SaveTypeEdit(WindowType type)
-    {
-        await windowService.UpdateType(type);
-        editingType = null;
-    }
-
-    private async Task DeleteLocation(WindowLocation loc)
-    {
-        await windowService.DeleteLocation(loc.Id);
-        adminLocations.Remove(loc);
-    }
-
-    private async Task DeleteType(WindowType type)
-    {
-        await windowService.DeleteType(type.Id);
-        adminTypes.Remove(type);
-    }
-
+    
     private bool showSuccessOverlay = false;
 
     void GoToHome() => navigationManager.NavigateTo("/Home");
