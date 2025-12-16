@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.Extensions.Options;
 using ServerApp.Repository;
 using ServerApp;
 
@@ -11,8 +12,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 var dbSettingsSection = builder.Configuration.GetSection("DatabaseSettings");
-builder.Services.Configure<DatabaseSettings>(dbSettingsSection);
-builder.Services.AddSingleton(dbSettingsSection.Get<DatabaseSettings>());
+builder.Services.Configure<DatabaseSettings>(options =>
+{
+    options.ConnectionString = Environment.GetEnvironmentVariable("ConnectionString")
+                               ?? dbSettingsSection.GetValue<string>("ConnectionString");
+    options.DatabaseName = dbSettingsSection.GetValue<string>("DatabaseName");
+});
+
+// Register singleton using the configured settings
+builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<DatabaseSettings>>().Value);
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
