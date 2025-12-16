@@ -5,44 +5,56 @@
 @inject IUser userRepo
 @inject ILocalStorageService localStorage
 @inject UserState userState
-@inject NavigationManager nav 
+@inject NavigationManager nav
+
 <PageTitle>Log ind</PageTitle>
 
-<div class="login-page-background">
-    <div class="login-container">
-        
-        <h3>Log ind</h3>
-        
+<div class="auth-page">
+
+    <div class="auth-card">
+
+        <!-- PAGE TITLE -->
+        <h1 class="page-title">Log ind</h1>
+        <p class="page-subtitle">
+            Log ind for at se dine bookinger eller fortsætte din prisberegning
+        </p>
+
+        <!-- LOGIN FORM -->
         <EditForm Model="@user" OnValidSubmit="OnClickLogin">
-            <DataAnnotationsValidator/>
+            <DataAnnotationsValidator />
 
-            <div class="form-floating-group">
-                <InputText id="un" class="form-control" @bind-Value="user.Username" placeholder="Username"/>
-                <label for="un">Brugernavn</label>
+            <div class="form-group">
+                <label>Brugernavn</label>
+                <InputText class="form-control"
+                           @bind-Value="user.Username"
+                           placeholder="Indtast brugernavn" />
             </div>
 
-            <div class="form-floating-group">
-                <InputText id="un" class="form-control" @bind-Value="user.Password" placeholder="Password"/>
-                <label for="un">Adgangskode</label>
+            <div class="form-group">
+                <label>Adgangskode</label>
+                <InputText type="password"
+                           class="form-control"
+                           @bind-Value="user.Password"
+                           placeholder="Indtast adgangskode" />
             </div>
 
-            <div style="text-align: center">
-                <button type="submit" class="btn btn-primary">Log ind</button>
-            </div>
+            <button type="submit" class="btn btn-primary w-100">
+                Log ind
+            </button>
         </EditForm>
-        
-        <button class="btn btn-danger" @onclick="OnClickLogout">
-            Log ud
-        </button>
+
+        @if (userState.CurrentUser != null)
+        {
+            <div class="logout-section">
+                <button class="btn btn-outline-danger w-100"
+                        @onclick="OnClickLogout">
+                    Log ud
+                </button>
+            </div>
+        }
+
     </div>
 </div>
-
-@if (LoadedUser != null)
-{
-    <h3>Logget ind med følgende:</h3>
-    <h3>Brugernavn: @LoadedUser.Username</h3>
-    <h2>Type: @User.GetLabel(LoadedUser.Usertype)</h2>
-}
 
 @code {
     private User user = new();
@@ -114,11 +126,6 @@
             //Gendanner den loggede bruger i UserState (RAM=appens hukommelse mens den kører)
             userState.CurrentUser = loadedUser;
         }
-
-        AllCustomers = await userRepo.GetCustomers();
-
-        AllWorkers = await userRepo.GetWorkers();
-        
      
     }
 

@@ -3,6 +3,17 @@
 @using Core.Models
 @inject UserState userState
 
+
+<div class="page-wrapper mybookings-page">
+
+<div class="page-header">
+    <h1>Dine bookinger</h1>
+    <p class="page-subtitle">
+        Her kan du se, redigere og afmelde dine bookinger
+    </p>
+</div>
+
+<!-- RESTEN AF DIN KODE KOMMER HER -->
 @if (!userState.IsLoggedIn) // tjekker om bruger er logget ind
 {
     <p>Du skal være logget ind for at se dine bookinger</p>
@@ -12,7 +23,7 @@ else
     @* Hvis brugeren INGEN AKTIVE bookinger har (hverken abonnement eller enkeltbooking) *@
     @if (!subscriptionBookings.Any() && !singleBookings.Any())
     {
-        <h3>Dine bookinger</h3>
+        <h3>Bookinger:</h3>
         <p>Du har ingen bookinger tilgængelige endnu.</p>
     }
     else
@@ -20,11 +31,11 @@ else
         <div class="d-flex justify-content-between align-items-center mb-3">
         @if (showSubscription)
         {
-            <h3>Dine abonnementer</h3>
+            <h3>Abonnementer:</h3>
         }
         else
         {
-            <h3>Dine bookinger</h3>
+            <h3>Bookinger:</h3>
         }
         <button class="btn btn-info" @onclick="() => showContactInfo = true">
             Info
@@ -32,7 +43,7 @@ else
         </div>
 
         @*viser alle brugerens bookinger*@
-        <table class="table table-striped table-bordered align-middle">
+        <table class="table tvilum-table">
             <thead class="table-light">
             <tr>
                 @if (showSubscription)
@@ -172,7 +183,7 @@ else
 }
 else
 {
-    <table class="table table-striped table-bordered align-middle">
+    <table class="table tvilum-table">
         <thead class="table-light">
         <tr>
             <th>Dato</th>
@@ -593,3 +604,4 @@ else
     private bool showContactInfo = false;
 
 }
+</div>
