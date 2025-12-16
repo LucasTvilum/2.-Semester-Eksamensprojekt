@@ -7,8 +7,6 @@ public class WindowService : IWindow
 {
     private HttpClient http;
 
-    private string url = "http://localhost:5107";
-
     public WindowService(HttpClient http)
     {
         this.http = http;
@@ -17,14 +15,14 @@ public class WindowService : IWindow
     public async Task<Window[]> GetAll()
     {
         Console.WriteLine("GetAll from mock");
-        var windowArray = await http.GetFromJsonAsync<Window[]>($"{url}/api/window/");
+        var windowArray = await http.GetFromJsonAsync<Window[]>($"/api/window/");
 
         return windowArray;
     }
     public async Task Add(Window window)
     {
         Console.WriteLine("Add bookingservice attempted");
-        var response = await http.PostAsJsonAsync($"{url}/api/window", window);
+        var response = await http.PostAsJsonAsync("/api/window", window);
         if (!response.IsSuccessStatusCode)
         {
             // Read error body (this contains ModelState errors)
@@ -41,7 +39,7 @@ public class WindowService : IWindow
     public async Task AddLocation(WindowLocation windowlocation)
     {
         Console.WriteLine("Add bookingservice attempted");
-        var response = await http.PostAsJsonAsync($"{url}/api/window/location", windowlocation);
+        var response = await http.PostAsJsonAsync("/api/window/location", windowlocation);
         if (!response.IsSuccessStatusCode)
         {
             // Read error body (this contains ModelState errors)
@@ -59,7 +57,7 @@ public class WindowService : IWindow
     public async Task AddType(WindowType windowtype)
     {
         Console.WriteLine("Add bookingservice attempted");
-        var response = await http.PostAsJsonAsync($"{url}/api/window/type", windowtype);
+        var response = await http.PostAsJsonAsync("/api/window/type", windowtype);
         if (!response.IsSuccessStatusCode)
         {
             // Read error body (this contains ModelState errors)
@@ -76,32 +74,32 @@ public class WindowService : IWindow
 
     public async Task Delete(string id)
     {
-        await http.DeleteAsync($"{url}/api/window/{id}");
+        await http.DeleteAsync($"/api/window/{id}");
     }
     
 
     public async Task UpdateWindow(Window window)
     {
-        await http.PutAsJsonAsync<Window>($"{url}/api/window/{window.Id}", window);
+        await http.PutAsJsonAsync<Window>($"/api/window/{window.Id}", window);
     }
 
     public async Task<decimal> CalculatePrice(List<Window> windows)
     {
-        var response = await http.PostAsJsonAsync($"{url}/api/window/calculate", new { Windows = windows });
+        var response = await http.PostAsJsonAsync($"/api/window/calculate", new { Windows = windows });
         return await response.Content.ReadFromJsonAsync<decimal>();
     }
     
     public async Task<List<WindowType>> GetAllWindowTypes()
     {
         Console.WriteLine("GetAll windowtypes");
-        var windowtypes = await http.GetFromJsonAsync<List<WindowType>>($"{url}/api/window/type");
+        var windowtypes = await http.GetFromJsonAsync<List<WindowType>>($"/api/window/type");
 
         return windowtypes;
     }
     public async Task<List<WindowLocation>> GetAllWindowLocations()
     {
         Console.WriteLine("GetAll windowlocations");
-        var windowlocations = await http.GetFromJsonAsync<List<WindowLocation>>($"{url}/api/window/location");
+        var windowlocations = await http.GetFromJsonAsync<List<WindowLocation>>("/api/window/location");
 
         return windowlocations;
     }
@@ -109,7 +107,7 @@ public class WindowService : IWindow
 
     public async Task UpdateType(WindowType type)
     {
-        var response = await http.PutAsJsonAsync($"{url}/api/window/type/{type.Id}", type);
+        var response = await http.PutAsJsonAsync($"/api/window/type/{type.Id}", type);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -120,7 +118,7 @@ public class WindowService : IWindow
 
     public async Task UpdateLocation(WindowLocation location)
     {
-        var response = await http.PutAsJsonAsync($"{url}/api/window/location/{location.Id}", location);
+        var response = await http.PutAsJsonAsync($"/api/window/location/{location.Id}", location);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -134,7 +132,7 @@ public class WindowService : IWindow
 
     public async Task DeleteType(string id)
     {
-        var response = await http.DeleteAsync($"{url}/api/window/type/{id}");
+        var response = await http.DeleteAsync($"/api/window/type/{id}");
 
         if (!response.IsSuccessStatusCode)
         {
@@ -145,7 +143,7 @@ public class WindowService : IWindow
 
     public async Task DeleteLocation(string id)
     {
-        var response = await http.DeleteAsync($"{url}/api/window/location/{id}");
+        var response = await http.DeleteAsync($"/api/window/location/{id}");
 
         if (!response.IsSuccessStatusCode)
         {
