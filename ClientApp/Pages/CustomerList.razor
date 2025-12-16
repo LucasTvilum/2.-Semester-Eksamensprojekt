@@ -4,10 +4,8 @@
 @using Core.Models
 @inject IBooking bookingService
 @inject IUser userService
-@inject IWindow windowService
 @inject IWorkTask workTaskService
 @inject UserState userState
-
 
 <div class="customer-list-page">
 <h3>Kundeliste</h3>
@@ -118,7 +116,7 @@ else
 
 
 <!-- STATUS MODAL -->
-@if (showModalBooking)
+@if (showModalStatus)
 {
     <div class="modal d-block" style="background-color: rgba(0,0,0,0.5);">
         <div class="modal-dialog">
@@ -126,7 +124,7 @@ else
 
                 <div class="modal-header">
                     <h5>Status ændring</h5>
-                    <button class="btn-close" @onclick="CloseModalBooking"></button>
+                    <button class="btn-close" @onclick="CloseModalStatus"></button>
                 </div>
 
                 <div class="modal-body">
@@ -143,7 +141,7 @@ else
 
                 <div class="modal-footer">
                     <button class="btn btn-success" @onclick="CloseModalBookingStatusUpdate">Gem</button>
-                    <button class="btn btn-secondary" @onclick="CloseModalBooking">Luk</button>
+                    <button class="btn btn-secondary" @onclick="CloseModalStatus">Luk</button>
                 </div>
             </div>
         </div>
@@ -158,10 +156,7 @@ else
     private Customer? selectedCustomer;
     private List<Booking> selectedCustomerBookings = new();
 
-    private List<WindowType> windowtypecategories = new();
-    private List<WindowLocation> windowlocationcategories = new();
     private Window[] windowArray;
-    private List<Window> windowlist = new();
     private string searchText = "";
     private Booking selectedBooking;
     private string selectedstatus = "";
@@ -170,24 +165,17 @@ else
 
     private bool showBookingModal = false;
     private bool showModalWindows = false;
-    private bool showModalBooking = false;
+    private bool showModalStatus = false;
 
     private List<string> statuscategories = new()
     {
         "Godkendt", "Afventer", "Afvist", "Aktiv"
     };
-
-
     
     protected override async Task OnInitializedAsync()
     {
         customers = await userService.GetCustomers();
-
-        windowtypecategories = await windowService.GetAllWindowTypes();
-        windowlocationcategories = await windowService.GetAllWindowLocations();
-        
         bookings = (await bookingService.GetAll()).ToList();
-        
     }
 
    
@@ -226,74 +214,19 @@ else
         showBookingModal = false;
     }
     
-    private void OpenModalWindows(Booking booking)
-    {
-        selectedBooking = booking;
-        showModalWindows = true;
-    }
-
     private void CloseModalWindows()
     {
         showModalWindows = false;
     }
-
-    private void AddWindow()
-    {
-        if (string.IsNullOrWhiteSpace(newWindowTypeId) || string.IsNullOrWhiteSpace(newWindowLocationId))
-            return;
-
-        var type = windowtypecategories.FirstOrDefault(t => t.Id == newWindowTypeId);
-        var loc = windowlocationcategories.FirstOrDefault(l => l.Id == newWindowLocationId);
-
-        if (type == null || loc == null)
-            return;
-
-        if (selectedBooking.Windows == null)
-            selectedBooking.Windows = new List<Window>();
-
-        selectedBooking.Windows.Add(new Window
-        {
-            Type = type,
-            Location = loc
-        });
-
-        // clear selects
-        newWindowTypeId = null;
-        newWindowLocationId = null;
-    }
-
-    private void DeleteWindow(Window window)
-    {
-        selectedBooking.Windows?.Remove(window);
-    }
-
-    private async Task SaveWindows()
-    {
-        // update booking in DBs
-        await bookingService.UpdateBooking(selectedBooking);
-
-        // after saving, refresh server copy of bookings and the selected customer's bookings
-        await RefreshSelectedCustomerBookings();
-
-        showModalWindows = false;
-    }
-
     
-    private void OpenModalBooking(Booking booking)
+    private void CloseModalStatus()
     {
-        selectedBooking = booking;
-        selectedstatus = booking.Status;
-        showModalBooking = true;
-    }
-
-    private void CloseModalBooking()
-    {
-        showModalBooking = false;
+        showModalStatus = false;
     }
 
     private async Task CloseModalBookingStatusUpdate()
     {
-        showModalBooking = false;
+        showModalStatus = false;
 
         // 1) update booking status in DB
         selectedBooking.Status = selectedstatus;
