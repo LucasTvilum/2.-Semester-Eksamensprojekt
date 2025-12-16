@@ -5,12 +5,23 @@
 @inject IBooking bookingService
 @inject IWindow windowService
 
+
+<div class="page-wrapper mybookings-page">
+
+<div class="page-header">
+    <h1>Dine bookinger</h1>
+    <p class="page-subtitle">
+        Her kan du se, redigere og afmelde dine bookinger
+    </p>
+</div>
+
+<!-- RESTEN AF DIN KODE KOMMER HER -->
 @if (!userState.IsWorker)
 {
     <p>Kun for medarbejdere</p>
 }
 
-<table class="table table-striped table-bordered align-middle">
+<table class="table tvilum-table">
     <thead class="table-light">
     <tr>
         <th>Booking type</th>
@@ -58,7 +69,11 @@
                 <td>@booking.NotesCustomer</td>
                 <td>@booking.NotesWindowCleaner</td>
                 <td>@(booking.Windows?.Sum(w => w.Price) ?? 0)</td>
-                <td>@booking.Status</td>
+                <td>
+                    <span class="status-badge @GetStatusClass(booking.Status)">
+                        @booking.Status
+                    </span>
+                </td>
 
                 <td>
                     <button class="btn btn-sm btn-primary"
@@ -234,6 +249,19 @@
             Console.WriteLine(VARIABLE.Id);
         }
     }
+    private string GetStatusClass(string status)
+    {
+        return status switch
+        {
+            "Aktiv" => "status-active",
+            "Godkendt" => "status-approved",
+            "Afventer" => "status-pending",
+            "Afvist" => "status-denied",
+            "Inaktiv" => "status-cancelled",
+            "Afmeldt" => "status-cancelled",
+            _ => "status-default"
+        };
+    }
 }
-
+</div>
 
