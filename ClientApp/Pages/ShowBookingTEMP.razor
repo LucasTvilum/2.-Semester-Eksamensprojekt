@@ -14,13 +14,12 @@
     <thead class="table-light">
     <tr>
         <th>Booking type</th>
-        <th>Dag</th>
+        <th>Dag/Dato</th>
+        <th>Udenfor Interval</th>
         <th>Indenfor Interval</th>
-        <th>Indenfor Job</th>
         <th>Kunde Note</th>
         <th>Vinduespudser Note</th>
-        <th>Udenfor Interval</th>
-        <th>Pris</th>
+        <th>Samlet Pris</th>
         <th>Status</th>
         <th>Vinduer</th>
         <th>Bookingstatus</th>
@@ -34,13 +33,31 @@
         {
             <tr>
                 <td>@booking.TypeBooking</td>
-                <td>@booking.Day</td>
-                <td>@booking.InsideInterval</td>
-                <td>@booking.InsideJob</td>
+                @if (booking.TypeBooking == Booking.BookingType.Abonnement)
+                {
+                    <td>@booking.Day</td>
+                }
+                else
+                {
+                    <td>@booking.Date.ToString("dd.MM.yyyy")</td>
+                }
+                @if (booking.OutdoorInterval != 0){
+                    <td>@booking.OutdoorInterval</td>
+                }
+                else
+                {
+                    <td>-</td>
+                }
+                @if (booking.InsideJob == true){
+                    <td>@booking.InsideInterval</td>
+                }
+                else
+                {
+                    <td>-</td>
+                }
                 <td>@booking.NotesCustomer</td>
                 <td>@booking.NotesWindowCleaner</td>
-                <td>@booking.OutdoorInterval</td>
-                <td>@booking.Price</td>
+                <td>@(booking.Windows?.Sum(w => w.Price) ?? 0)</td>
                 <td>@booking.Status</td>
 
                 <td>
@@ -245,13 +262,6 @@
             await workTaskService.DeleteAllWorkTaskFromBookingId(selectedBooking.Id);
         }
     }
-
-    
-    private async Task UpdateBookingStatus()
-    {
-        await bookingService.UpdateBooking(selectedBooking);
-    }
-
 
     protected override async Task OnInitializedAsync()
     {

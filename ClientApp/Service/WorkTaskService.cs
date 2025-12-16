@@ -70,8 +70,7 @@ public class WorkTaskService : IWorkTask
     var currentUser = _userState.CurrentUser;
 
     Console.WriteLine(currentUser.Usertype + currentUser.Id);
-
-    //Inheritance casting currentUser to worker object
+    
     if (currentUser.Usertype == User.UserType.Worker)
     {
         workerid = currentUser.Id;   

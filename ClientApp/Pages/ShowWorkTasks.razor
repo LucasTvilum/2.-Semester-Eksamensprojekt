@@ -93,7 +93,7 @@
             <tr>
                 <td>@t.Date.ToShortDateString()</td>
                 <td>@(t.InsideJob ? "Ja" : "Nej")</td>
-                <td>@bookinglist.FirstOrDefault(b => b.Id == t.BookingId)?.Windows?.Count ?? 0</td>
+                <td>@(bookinglist.FirstOrDefault(b => b.Id == t.BookingId)?.Windows?.Count ?? 0)</td>
                 <td>@(bookinglist.FirstOrDefault(b => b.Id == t.BookingId)?.NotesWindowCleaner ?? "—")</td>
                 <td>@(workerlist.FirstOrDefault(w => w.Id == t.WorkerId)?.Name ?? "Ukendt medarbejder")</td>
                 <td>@t.Status</td>
@@ -128,70 +128,14 @@
                 </div>
 
                 <div class="modal-body">
-
-                    @if (selectedBooking?.Windows != null && selectedBooking.Windows.Any())
-                    {
-                        <ul>
-                            @foreach (var w in selectedBooking.Windows)
-                            {
-                                <li>
-                                    @w.Type.Name – @w.Location.Name
-                                    <button class="btn btn-sm btn-danger ms-2"
-                                            @onclick="() => DeleteWindow(w)">
-                                        Slet
-                                    </button>
-                                </li>
-                            }
-                        </ul>
-                    }
-                    else
-                    {
-                        <p>Ingen vinduer registreret.</p>
-                    }
-
-                    <hr/>
-                    <h6>Tilføj nyt vindue</h6>
-
-                    <div class="mb-2">
-                        <label>Type</label>
-                        <InputSelect TValue="string"
-                                     @bind-Value="newWindowTypeId"
-                                     class="form-select">
-                            <option value="">Vælg type</option>
-                            @foreach (var type in windowtypecategories)
-                            {
-                                <option value="@type.Id">@type.Name</option>
-                            }
-                        </InputSelect>
-                    </div>
-
-                    <div class="mb-2">
-                        <label>Location</label>
-                        <InputSelect TValue="string"
-                                     @bind-Value="newWindowLocationId"
-                                     class="form-select">
-                            <option value="">Vælg lokation</option>
-                            @foreach (var loc in windowlocationcategories)
-                            {
-                                <option value="@loc.Id">@loc.Name</option>
-                            }
-                        </InputSelect>
-                    </div>
-
-                    <button class="btn btn-success" @onclick="AddWindow">Tilføj</button>
-
+                    <WindowSelector booking="selectedBooking" OnWindowsUpdated="CloseTaskWindows"></WindowSelector>
                 </div>
 
                 <div class="modal-footer">
                     <button class="btn btn-secondary" @onclick="CloseTaskWindows">
                         Luk
                     </button>
-
-                    <button class="btn btn-primary" @onclick="SaveWindows">
-                        Gem ændringer
-                    </button>
                 </div>
-
             </div>
         </div>
     </div>
@@ -370,7 +314,10 @@
     {
         selectedTask = task;
         selectedBooking = bookinglist.FirstOrDefault(b => b.Id == task.BookingId);
-
+        
+        if (selectedBooking != null){
+        Console.WriteLine("worktask window modal booking id: " + selectedBooking.Id);
+        }
         if (selectedBooking == null)
             Console.WriteLine("Booking not found for windows modal.");
 

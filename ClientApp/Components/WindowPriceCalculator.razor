@@ -139,8 +139,9 @@
 
         wc.Count--;
 
-        var toRemove = booking.Windows
-            .LastOrDefault(w => w.Type == wc.Type && w.Location == wc.Location);
+        var toRemove = booking.Windows.LastOrDefault(w =>
+            w.Type.Id == wc.Type.Id &&
+            w.Location.Id == wc.Location.Id);
 
         if (toRemove != null)
             booking.Windows.Remove(toRemove);
