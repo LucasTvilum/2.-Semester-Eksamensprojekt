@@ -2,6 +2,7 @@
 @using ClientApp.Service
 @using Blazored.LocalStorage
 @inject ILocalStorageService localStorageService
+@inject IBooking bookingService
 @inject IWindow windowservice
 @inject NavigationManager nav
 
@@ -45,6 +46,8 @@
                 </div>
             }
         </div>
+        
+        <h3>@selectedLocation.Name </h3>
 
         <div class="window-buttons">
             @foreach (var wc in windowCounts.Where(x => x.Location == selectedLocation))
@@ -66,16 +69,14 @@
             Total: @TotalPrice kr
         </div>
         
-        <div class="booking-actions">
-            <button class="btn btn-primary" @onclick="SelectEnkelt">Enkeltbooking</button>
-            <button class="btn btn-primary" @onclick="SelectAbonnement">Abonnement</button>
-        </div>
+        <button class="btn btn-primary" @onclick="UpdateWindows">Opdater</button>
     }
 </div>
 
     @code {
     [Parameter] public Booking booking { get; set; } = new();
-    [Parameter] public EventCallback<string> OnSelectBookingType { get; set; }
+    [Parameter]
+    public EventCallback OnWindowsUpdated { get; set; } // parent callback
     private WindowLocation selectedLocation;
     
     //hvad søren er et hashset
@@ -87,12 +88,13 @@
 
     private List<WindowType> windowTypes = new();
     private List<WindowLocation> locations = new();
-
+    
     protected override async Task OnInitializedAsync()
     {
         // hent alle typer og lokationer fra databasen
         windowTypes = await windowservice.GetAllWindowTypes();
         locations = await windowservice.GetAllWindowLocations();
+        
 
         // initier selectedLocation til første location
         selectedLocation = locations.FirstOrDefault();
@@ -107,6 +109,15 @@
                 Location = loc,
                 Count = 0
             }).ToList();
+        
+        foreach (var w in booking.Windows)
+        {
+            var wc = windowCounts.FirstOrDefault(x => x.Type.Id == w.Type.Id && x.Location.Id == w.Location.Id);
+            if (wc != null)
+            {
+                wc.Count++;
+            }
+        }
     }
 
     private void SelectLocation(WindowLocation loc)
@@ -152,14 +163,15 @@
         public WindowLocation Location { get; set; }
         public int Count { get; set; }
     }
-    private Task SelectEnkelt()
+    private async Task UpdateWindows()
     {
-        return OnSelectBookingType.InvokeAsync("Enkelt");
-    }
-
-    private Task SelectAbonnement()
-    {
-        return OnSelectBookingType.InvokeAsync("Abonnement");
+        bookingService.UpdateBooking(booking);
+        
+        //hasdelegate is to check for null value
+        if (OnWindowsUpdated.HasDelegate)
+        {
+            await OnWindowsUpdated.InvokeAsync();
+        }
     }
 
     }

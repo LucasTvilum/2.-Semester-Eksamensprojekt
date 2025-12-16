@@ -1,0 +1,98 @@
+.locations-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.location-box {
+    background: #f2f2f2;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #dcdcdc;
+}
+
+.location-header {
+    background: #d9d9d9;
+    padding: 10px 12px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.location-header:hover {
+    background: #cfcfcf;
+}
+
+.location-content {
+    padding: 12px 15px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.window-summary img {
+    width: 50px;
+    height: auto;
+}
+
+.empty-info {
+    color: #777;
+    font-style: italic;
+}
+
+.window-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+}
+
+.window-type-block {
+    text-align: center;
+    width: 120px;
+}
+
+.window-type-block img {
+    width: 80px;
+    height: auto;
+}
+
+.counter {
+    margin-top: 8px;
+}
+.total-box {
+    margin-top: 20px;
+    padding: 12px 20px;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    font-size: 22px;
+    font-weight: bold;
+    background: #f7f7f7;
+    display: inline-block;
+}
+h3 {
+    margin-top: 25px;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.window-type-block {
+    text-align: center;
+    width: 140px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #f1f1f1;      /* let grå baggrund */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.window-type-block img {
+    width: 80px;
+    height: auto;
+    margin-bottom: 5px;
+    background: white;          /* hvid baggrund */
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
