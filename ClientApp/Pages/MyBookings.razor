@@ -6,13 +6,6 @@
 
 <div class="page-wrapper mybookings-page">
 
-<div class="page-header">
-    <h1>Dine bookinger</h1>
-    <p class="page-subtitle">
-        Her kan du se, redigere og afmelde dine bookinger
-    </p>
-</div>
-
 <!-- RESTEN AF DIN KODE KOMMER HER -->
 @if (!userState.IsLoggedIn) // tjekker om bruger er logget ind
 {
@@ -57,7 +50,6 @@ else
                 }
                 <th>Pris</th>
                 <th>Status</th>
-                <th>Indenfor</th>
                 @* Inside/Outdoor interval giver kun mening for abonnementer *@
                 @if (showSubscription)
                 {
@@ -189,7 +181,6 @@ else
             <th>Dato</th>
             <th>Pris</th>
             <th>Status</th>
-            <th>Indenfor Job</th>
             <th>Indenfor Interval</th>
             <th>Udenfor Interval</th>
             <th>Kunde kommentar</th>

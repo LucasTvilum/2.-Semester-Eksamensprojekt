@@ -1052,6 +1052,69 @@ button {
     opacity: 0.9;
 }
 
+/* =============================== */
+/* BOOKING CONFIRMATION OVERLAY */
+/* =============================== */
+
+.confirmation-overlay {
+    position: fixed;
+    inset: 0;
+    background: #ffffff;
+    display: grid;
+    place-items: center;
+    z-index: 20000; /* højere end modals */
+}
+
+/* Card/boks i midten */
+.confirmation-card {
+    max-width: 520px;
+    width: calc(100% - 32px);
+    padding: 32px;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    text-align: center;
+    position: relative;
+}
+
+/* Luk-knap (X) */
+.confirmation-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    cursor: pointer;
+}
+
+/* Titel */
+.confirmation-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+}
+
+/* Brødtekst */
+.confirmation-body {
+    font-size: 1.05rem;
+    margin-bottom: 32px;
+    line-height: 1.5;
+}
+
+/* Knap */
+.confirmation-bookings-btn {
+    font-size: 1.1rem;
+    padding: 14px 34px;
+    border-radius: 10px;
+    border: none;
+    background: #e0dfdf;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.confirmation-bookings-btn:hover {
+    background: #d6d6d6;
+}
 /* ============================= */
 /* MY BOOKINGS PAGE */
 /* ============================= */
@@ -1151,19 +1214,4 @@ button {
 .status-cancelled {
     background: #f3f4f6;
     color: #6b7280;
-}
-
-/* ---------- Buttons ---------- */
-
-.mybookings-page .btn {
-    border-radius: 999px;
-}
-
-.mybookings-page .btn-primary {
-    background: linear-gradient(135deg, #22c55e, #15803d);
-    border: none;
-}
-
-.mybookings-page .btn-primary:hover {
-    opacity: 0.9;
 }
