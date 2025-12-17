@@ -57,10 +57,10 @@
     private User user = new();
 
     private User LoadedUser = new();
-
-    private List<Customer> AllCustomers = new List<Customer>();
-
-    private List<Worker> AllWorkers = new List<Worker>();
+    
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string returnUrl { get; set; }
     
     private async Task OnClickLogin()
     {
@@ -92,7 +92,9 @@
             LoadedUser = userObject;
             Console.WriteLine("type: " + LoadedUser.Usertype);
             
-            nav.NavigateTo("/Home", true);
+          
+            nav.NavigateTo(string.IsNullOrEmpty(returnUrl) ? "/Home" : returnUrl);
+            
         }
     }
 
