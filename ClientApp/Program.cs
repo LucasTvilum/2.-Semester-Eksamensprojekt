@@ -13,20 +13,17 @@ public class Program
 
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");
-
-        var apiBaseUrl = Environment.GetEnvironmentVariable("ApiBaseUrl") 
-                         ?? builder.HostEnvironment.BaseAddress;
-
-        builder.Services.AddScoped(sp => new HttpClient
-        {
-            BaseAddress = new Uri(apiBaseUrl)
-        });
-
-        // Configure HttpClient with environment-specific API URL
-        builder.Services.AddScoped(sp => new HttpClient
-        {
-            BaseAddress = new Uri(apiBaseUrl)
-        });
+        
+        
+        //Compile-time C# switch, uses localhost if in debug mode (dev) and else uses HostEnvironment.BaseAddress
+        #if DEBUG
+        builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7255") });
+        Console.WriteLine("COMPILE MODE: DEBUG");
+        #else
+        builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://server-cygzc9budzcuhfcy.switzerlandnorth-01.azurewebsites.net") });
+        Console.WriteLine("COMPILE MODE: RELEASE");
+        #endif
+        
 
         // Register services
         builder.Services.AddBlazoredLocalStorage();

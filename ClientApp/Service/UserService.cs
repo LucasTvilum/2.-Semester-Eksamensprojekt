@@ -17,7 +17,7 @@ public class UserService : IUser
     public async Task<User[]> GetAll()
     {
         Console.WriteLine("GetAll from mock");
-        var BookingList = await http.GetFromJsonAsync<User[]>("/api/user/");
+        var BookingList = await http.GetFromJsonAsync<User[]>("/api/user");
 
         return BookingList;
     }
@@ -74,7 +74,7 @@ public class UserService : IUser
         Console.WriteLine("Validate user service");
         
         
-        var response = await http.PutAsJsonAsync<User>("/api/user/login/", user);
+        var response = await http.PutAsJsonAsync<User>("/api/user/login", user);
         
         if (response.IsSuccessStatusCode)
         {

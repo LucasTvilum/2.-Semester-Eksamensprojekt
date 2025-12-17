@@ -18,7 +18,7 @@ public class WorkTaskService : IWorkTask
     public async Task<WorkTask[]> GetAll()
     {
         Console.WriteLine("GetAll from mock");
-        var worktaskList = await http.GetFromJsonAsync<WorkTask[]>("/api/worktask/");
+        var worktaskList = await http.GetFromJsonAsync<WorkTask[]>("/api/worktask");
 
         return worktaskList;
     }

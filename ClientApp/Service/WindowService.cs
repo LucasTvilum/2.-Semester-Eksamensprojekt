@@ -15,7 +15,7 @@ public class WindowService : IWindow
     public async Task<Window[]> GetAll()
     {
         Console.WriteLine("GetAll from mock");
-        var windowArray = await http.GetFromJsonAsync<Window[]>($"/api/window/");
+        var windowArray = await http.GetFromJsonAsync<Window[]>($"/api/window");
 
         return windowArray;
     }

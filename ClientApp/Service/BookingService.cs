@@ -15,7 +15,7 @@ public class BookingService : IBooking
     public async Task<Booking[]> GetAll()
     {
         Console.WriteLine("GetAll from mock");
-        var BookingList = await http.GetFromJsonAsync<Booking[]>("/api/booking/");
+        var BookingList = await http.GetFromJsonAsync<Booking[]>("/api/booking");
 
         return BookingList;
     }
