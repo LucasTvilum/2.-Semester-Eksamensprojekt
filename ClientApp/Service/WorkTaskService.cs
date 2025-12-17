@@ -8,9 +8,7 @@ public class WorkTaskService : IWorkTask
 {
     private readonly UserState _userState;
     private HttpClient http;
-
-    private string url = "http://localhost:5107";
-
+    
     public WorkTaskService(HttpClient http, UserState userState)
     {
         this.http = http;
@@ -20,7 +18,7 @@ public class WorkTaskService : IWorkTask
     public async Task<WorkTask[]> GetAll()
     {
         Console.WriteLine("GetAll from mock");
-        var worktaskList = await http.GetFromJsonAsync<WorkTask[]>($"{url}/api/worktask/");
+        var worktaskList = await http.GetFromJsonAsync<WorkTask[]>("/api/worktask");
 
         return worktaskList;
     }
@@ -29,7 +27,7 @@ public class WorkTaskService : IWorkTask
     {
         try
         {
-            return await http.GetFromJsonAsync<WorkTask>($"{url}/api/worktask/bybooking/{bookingid}");
+            return await http.GetFromJsonAsync<WorkTask>($"/api/worktask/bybooking/{bookingid}");
         }
         catch
         {
@@ -40,7 +38,7 @@ public class WorkTaskService : IWorkTask
     public async Task Add(WorkTask worktask)
     {
         Console.WriteLine("Add worktask service attempted");
-        var response = await http.PostAsJsonAsync($"{url}/api/worktask", worktask);
+        var response = await http.PostAsJsonAsync("/api/worktask", worktask);
         if (!response.IsSuccessStatusCode)
         {
             // Read error body (this contains ModelState errors)
@@ -123,7 +121,7 @@ public class WorkTaskService : IWorkTask
     }
 
     var taskList = tasks.Values.ToList();
-    await http.PostAsJsonAsync($"{url}/api/worktask/subscription", taskList);
+    await http.PostAsJsonAsync("/api/worktask/subscription", taskList);
     }
 
     public async Task AddSingleBooking(Booking booking)
@@ -157,7 +155,7 @@ public class WorkTaskService : IWorkTask
                 WorkerId = workerid
             };
        
-        await http.PostAsJsonAsync($"{url}/api/worktask/singlebooking", worktask);
+        await http.PostAsJsonAsync("/api/worktask/singlebooking", worktask);
         
     }
     
@@ -185,17 +183,17 @@ public class WorkTaskService : IWorkTask
 
     public async Task Delete(string id)
     {
-        await http.DeleteAsync($"{url}/api/worktask/{id}");
+        await http.DeleteAsync($"/api/worktask/{id}");
     }
     
 
     public async Task UpdateWorkTask(WorkTask worktask)
     {
-        await http.PutAsJsonAsync<WorkTask>($"{url}/api/worktask/{worktask.Id}", worktask);
+        await http.PutAsJsonAsync<WorkTask>($"/api/worktask/{worktask.Id}", worktask);
     }
 
     public async Task DeleteAllWorkTaskFromBookingId(string bookingid)
     {
-        await http.DeleteAsync($"{url}/api/worktask/deletebookings/{bookingid}");
+        await http.DeleteAsync($"/api/worktask/deletebookings/{bookingid}");
     }
 }

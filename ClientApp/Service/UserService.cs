@@ -9,8 +9,6 @@ public class UserService : IUser
 {
     private HttpClient http;
 
-    private string url = "http://localhost:5107";
-
     public UserService(HttpClient http)
     {
         this.http = http;
@@ -19,7 +17,7 @@ public class UserService : IUser
     public async Task<User[]> GetAll()
     {
         Console.WriteLine("GetAll from mock");
-        var BookingList = await http.GetFromJsonAsync<User[]>($"{url}/api/user/");
+        var BookingList = await http.GetFromJsonAsync<User[]>("/api/user");
 
         return BookingList;
     }
@@ -27,7 +25,7 @@ public class UserService : IUser
     public async Task<User> Get(string userid)
     {
         Console.WriteLine("Get from userservice");
-        var user = await http.GetFromJsonAsync<User>($"{url}/api/user/{userid}");
+        var user = await http.GetFromJsonAsync<User>($"/api/user/{userid}");
 
         return user;
     }
@@ -54,7 +52,7 @@ public class UserService : IUser
             _ => user
         };
 
-        var response = await http.PostAsJsonAsync($"{url}/api/user", payload);
+        var response = await http.PostAsJsonAsync("/api/user", payload);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -68,7 +66,7 @@ public class UserService : IUser
     }
     public async Task Delete(string id)
     {
-        await http.DeleteAsync($"{url}/api/user/{id}");
+        await http.DeleteAsync($"/api/user/{id}");
     }
     
     public async Task<User> ValidateUser(User user)
@@ -76,7 +74,7 @@ public class UserService : IUser
         Console.WriteLine("Validate user service");
         
         
-        var response = await http.PutAsJsonAsync<User>($"{url}/api/user/login/", user);
+        var response = await http.PutAsJsonAsync<User>("/api/user/login", user);
         
         if (response.IsSuccessStatusCode)
         {
@@ -102,19 +100,19 @@ public class UserService : IUser
 
     public async Task<List<Worker>> GetWorkers()
     {
-        var WorkerList = await http.GetFromJsonAsync<List<Worker>>($"{url}/api/user/workers");
+        var WorkerList = await http.GetFromJsonAsync<List<Worker>>("/api/user/workers");
         return WorkerList;
     }
 
     public async Task<List<Customer>> GetCustomers()
     {
-        var CustomerList = await http.GetFromJsonAsync<List<Customer>>($"{url}/api/user/customers");
+        var CustomerList = await http.GetFromJsonAsync<List<Customer>>("/api/user/customers");
         return CustomerList;
     }
     
     public async Task<Customer> GetCustomerById(string customerid)
     {
-        var customer = await http.GetFromJsonAsync<Customer>($"{url}/api/user/customers/{customerid}");
+        var customer = await http.GetFromJsonAsync<Customer>($"/api/user/customers/{customerid}");
         return customer;
     }
 }

@@ -49,7 +49,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowBlazor");
 
+app.UseDefaultFiles();    // looks for index.html
+app.UseStaticFiles();     // serves wwwroot
+
 app.MapControllers();
+
+app.MapFallbackToFile("index.html");
 Console.WriteLine($"ENVIRONMENT: {app.Environment.EnvironmentName}");
 
 app.Run();

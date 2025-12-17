@@ -7,8 +7,6 @@ public class BookingService : IBooking
 {
     private HttpClient http;
 
-    private string url = "http://localhost:5107";
-
     public BookingService(HttpClient http)
     {
         this.http = http;
@@ -17,7 +15,7 @@ public class BookingService : IBooking
     public async Task<Booking[]> GetAll()
     {
         Console.WriteLine("GetAll from mock");
-        var BookingList = await http.GetFromJsonAsync<Booking[]>($"{url}/api/booking/");
+        var BookingList = await http.GetFromJsonAsync<Booking[]>("/api/booking");
 
         return BookingList;
     }
@@ -25,7 +23,7 @@ public class BookingService : IBooking
     public async Task<Booking> GetBookingById(string  bookingid)
     {
         Console.WriteLine("GetAll from mock");
-        var booking = await http.GetFromJsonAsync<Booking>($"{url}/api/booking/{bookingid}");
+        var booking = await http.GetFromJsonAsync<Booking>($"/api/booking/{bookingid}");
 
         return booking;
     }
@@ -33,7 +31,7 @@ public class BookingService : IBooking
     public async Task Add(Booking booking)
     {
         Console.WriteLine("Add bookingservice attempted" + booking.CustomerId);
-        var response = await http.PostAsJsonAsync($"{url}/api/booking", booking);
+        var response = await http.PostAsJsonAsync("/api/booking", booking);
         if (!response.IsSuccessStatusCode)
         {
             var errorText = await response.Content.ReadAsStringAsync();
@@ -47,13 +45,13 @@ public class BookingService : IBooking
 
     public async Task Delete(string id)
     {
-        await http.DeleteAsync($"{url}/api/booking/{id}");
+        await http.DeleteAsync($"/api/booking/{id}");
     }
     
 
     public async Task UpdateBooking(Booking booking)
     {
-        await http.PutAsJsonAsync<Booking>($"{url}/api/booking/{booking.Id}", booking);
+        await http.PutAsJsonAsync<Booking>($"/api/booking/{booking.Id}", booking);
     }
     
 }
