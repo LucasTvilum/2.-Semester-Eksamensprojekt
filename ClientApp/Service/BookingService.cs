@@ -31,6 +31,7 @@ public class BookingService : IBooking
     public async Task Add(Booking booking)
     {
         Console.WriteLine("Add bookingservice attempted" + booking.CustomerId);
+        Console.WriteLine("Add bookingservice date" + booking.Date);
         var response = await http.PostAsJsonAsync("/api/booking", booking);
         if (!response.IsSuccessStatusCode)
         {
