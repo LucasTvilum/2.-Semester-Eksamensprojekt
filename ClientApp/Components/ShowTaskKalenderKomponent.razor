@@ -21,16 +21,10 @@
         @foreach (var day in Days)
         {
             <div class="day-cellv3 
-    @(day.Month != CurrentDate.Month ? "inactivev3" : "") 
-    @(TaskDates.Any(d => d.Date == day.Date) ? "event-dayv3" : "")"
+                @(day.Month != CurrentDate.Month ? "inactivev3" : "") 
+                 @(TaskDates.Any(d => d.Date == day.Date) ? "event-dayv3" : "")"
                  @onclick="() => DayClicked(day)">
-
-
                 <div class="day-numberv3 ">@day.Day</div>
-
-                @if (TaskDates != null && TaskDates.Any(d => d.Date == day.Date))
-                {
-                }
             </div>
         }
     </div>

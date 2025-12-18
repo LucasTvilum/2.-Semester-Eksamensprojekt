@@ -5,7 +5,6 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject IBooking bookingService
 @inject NavigationManager nav
-@inject IWindow windowService
 @inject UserState userState
 @inject NavigationManager navigationManager
 
@@ -250,9 +249,6 @@
     }
     
     private bool showSuccessOverlay = false;
-
-    void GoToHome() => navigationManager.NavigateTo("/Home");
-    void GoToMyBookings() => navigationManager.NavigateTo("/mybookings");
-
+    
 }
 
