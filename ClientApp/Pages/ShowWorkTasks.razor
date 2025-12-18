@@ -252,8 +252,6 @@
 
     private string newWindowTypeId;
     private string newWindowLocationId;
-    private List<WindowType> windowtypecategories = new List<WindowType>();
-    private List<WindowLocation> windowlocationcategories = new List<WindowLocation>();
 
     private void ShowCustomerForTask(WorkTask task)
     {
@@ -290,8 +288,6 @@
         bookinglist = (await bookingService.GetAll()).ToList();
         taskList = (await workTaskService.GetAll()).ToList();
         taskDates = taskList.Select(t => t.Date).ToList();
-        windowlocationcategories = (await windowService.GetAllWindowLocations());
-        windowtypecategories = (await windowService.GetAllWindowTypes());
     }
     
     private void FilterTasksByDate(DateTime? date)
@@ -367,46 +363,6 @@
         }
 
         showEditModal = false;
-    }
-
-
-    private void AddWindow()
-    {
-        if (!string.IsNullOrWhiteSpace(newWindowTypeId) &&
-            !string.IsNullOrWhiteSpace(newWindowLocationId))
-        {
-            var type = windowtypecategories.FirstOrDefault(t => t.Id == newWindowTypeId);
-            var location = windowlocationcategories.FirstOrDefault(l => l.Id == newWindowLocationId);
-
-            if (type != null && location != null)
-            {
-                var booking = bookinglist.FirstOrDefault(b => b.Id == selectedTask.BookingId);
-                if (booking != null)
-                {
-                    if (booking.Windows == null) booking.Windows = new List<Window>();
-                    booking.Windows.Add(new Window { Type = type, Location = location });
-                }
-
-                newWindowTypeId = null;
-                newWindowLocationId = null;
-            }
-        }
-    }
-
-    private void DeleteWindow(Window window)
-    {
-        var booking = bookinglist.FirstOrDefault(b => b.Id == selectedTask.BookingId);
-        booking?.Windows?.Remove(window);
-    }
-
-    private async Task SaveWindows()
-    {
-        var booking = bookinglist.FirstOrDefault(b => b.Id == selectedTask.BookingId);
-        if (booking != null)
-        {
-            await bookingService.UpdateBooking(booking);
-            showWindowsModal = false;
-        }
     }
 
     private void CloseCustomerModal()

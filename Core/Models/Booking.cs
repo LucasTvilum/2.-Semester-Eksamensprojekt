@@ -7,7 +7,7 @@ public class Booking
     public string Status { get; set; } = "";
     public decimal Price { get; set; }
     
-    public DateTime Date { get; set; } = DateTime.Now.Date; //hvis enkeltbooking så skal den bruges
+    public DateTime Date { get; set; } = DateTime.Now.Date; 
     public string Day { get; set; } = DateTime.Now.ToString("dddd");
 
     public List<Window> Windows { get; set; } = new List<Window>();
