@@ -159,11 +159,11 @@
 
     private async Task HandleOneTimeSubmit()
     {
-        var user = await localStorage.GetItemAsync<User>("currentUser");
-        booking.CustomerId = user?.Id;
-
         booking.TypeBooking = Booking.BookingType.EnkeltBooking;
         booking.Status = "afventer";
+        
+        var user = await localStorage.GetItemAsync<User>("currentUser");
+        booking.CustomerId = user?.Id;
         
         booking.Date = DateTime.SpecifyKind(booking.Date, DateTimeKind.Utc);
 
