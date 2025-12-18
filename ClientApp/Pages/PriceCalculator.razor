@@ -5,7 +5,6 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject IBooking bookingService
 @inject NavigationManager nav
-@inject IWindow windowService
 @inject UserState userState
 @inject NavigationManager navigationManager
 
@@ -50,14 +49,14 @@
                             </InputSelect>
                         </div>
                         
-                            <div class="col-md-12 mb-3">
-                                <label>Uge interval indenfor:</label>
-                                <InputSelect @bind-Value="booking.InsideInterval">
-                                    @foreach (var cat in intervalcategories)
-                                    {
-                                        <option value="@cat">@cat</option>
-                                    }
-                                </InputSelect>
+                        <div class="col-md-12 mb-3">
+                            <label>Uge interval indenfor:</label>
+                            <InputSelect @bind-Value="booking.InsideInterval">
+                                @foreach (var cat in intervalcategories)
+                                {
+                                    <option value="@cat">@cat</option>
+                                }
+                            </InputSelect>
                             </div>
 
                         <div class="col-md-12 mb-3">
@@ -238,6 +237,6 @@
     }
     
     private bool showSuccessOverlay = false;
-
+    
 }
 

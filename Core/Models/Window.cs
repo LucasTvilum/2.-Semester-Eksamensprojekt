@@ -6,7 +6,7 @@ public class Window
     public WindowType Type { get; set; }
     public WindowLocation Location { get; set; }
 
-    public decimal Price { get; set; } // beregnet ud fra type x location
+    public decimal Price { get; set; } // beregnet ud fra type.baseprice x location.extraprice
 
   
 

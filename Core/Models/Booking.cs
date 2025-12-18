@@ -8,7 +8,7 @@ public class Booking
     public decimal Price { get; set; }
     
     public BookingType TypeBooking { get; set; } = BookingType.EnkeltBooking;
-    public DateTime Date { get; set; } = DateTime.Now.Date; //hvis enkeltbooking så skal den bruges
+    public DateTime Date { get; set; } = DateTime.Now.Date;
     public string Day { get; set; } = DateTime.Now.ToString("dddd");
     public string NotesCustomer { get; set; } = "";
     public bool InsideJob { get; set; }

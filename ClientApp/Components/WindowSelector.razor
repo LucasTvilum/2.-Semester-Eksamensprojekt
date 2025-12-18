@@ -1,10 +1,8 @@
 @using Core.Models
 @using ClientApp.Service
-@using Blazored.LocalStorage
-@inject ILocalStorageService localStorageService
 @inject IBooking bookingService
 @inject IWindow windowservice
-@inject NavigationManager nav
+
 
 <div class="row p-3">
     @if (locations == null || windowTypes == null || !locations.Any() || !windowTypes.Any())
@@ -73,7 +71,7 @@
     }
 </div>
 
-    @code {
+@code {
     [Parameter] public Booking booking { get; set; } = new();
     [Parameter]
     public EventCallback OnWindowsUpdated { get; set; } // parent callback
@@ -180,5 +178,5 @@
         }
     }
 
-    }
+}
     

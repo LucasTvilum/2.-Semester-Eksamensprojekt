@@ -56,7 +56,7 @@ else
                     <th>Indenfor Interval</th>
                     <th>Udenfor Interval</th>
                 }
-                <th>Kunde kommentar</th>
+                <th>Dine noter</th>
                 <th>Vinduer</th>
                 @if (showSubscription)
                 {
@@ -85,8 +85,7 @@ else
                                 @booking.Status
                             </span>
                         </td>
-
-                        <td>@booking.InsideJob</td>
+                        
 
                         @if (showSubscription)
                         {
@@ -100,7 +99,7 @@ else
                                 Vis Vinduer
                             </button>
                         </td>
-                        @* Kun mulighed for at redgere hvis det er et abonnementet *@
+                        @* Kun mulighed for at redigere hvis det er et abonnementet *@
                         @if (showSubscription)
                         {
                             <td>
@@ -140,7 +139,6 @@ else
                                 @booking.Status
                             </span>
                         </td>
-                        <td>@booking.InsideJob</td>
                         <td>@booking.NotesCustomer</td>
                         <td>
                             <button class="btn btn-sm btn-primary"
@@ -199,7 +197,6 @@ else
                                 @booking.Status
                             </span>
                 </td>
-                <td>@booking.InsideJob</td>
                 <td>@booking.InsideInterval</td>
                 <td>@booking.OutdoorInterval</td>
                 <td>@booking.NotesCustomer</td>
