@@ -9,13 +9,12 @@
     }
     else
     {
-    
         <div class="locations-container">
             @foreach (var loc in locations)
             {
                 <div class="location-box">
 
-                  
+
                     <div class="location-header" @onclick="() => SelectLocation(loc)">
                         <span>@loc.Name</span>
                         <span class="arrow">@(openLocations.Contains(loc) ? "▲" : "▼")</span>
@@ -29,9 +28,9 @@
                                 <div class="window-summary">
                                     <img src="@wc.Type.ImagePath"/>
                                     <div class="count">@wc.Count</div>
-                                </div>  
+                                </div>
                             }
-                            
+
                             @if (!windowCounts.Any(x => x.Location == loc && x.Count > 0))
                             {
                                 <div class="empty-info">Ingen vinduer tilføjet</div>
@@ -58,11 +57,11 @@
                 </div>
             }
         </div>
-        
+
         <div class="total-box">
             Total: @TotalPrice kr
         </div>
-        
+
         <div class="booking-actions">
             <button class="btn btn-primary" @onclick="SelectEnkelt">Enkeltbooking</button>
             <button class="btn btn-primary" @onclick="SelectAbonnement">Abonnement</button>
@@ -70,11 +69,12 @@
     }
 </div>
 
-    @code {
+
+@code {
     [Parameter] public Booking booking { get; set; } = new();
     [Parameter] public EventCallback<string> OnSelectBookingType { get; set; }
     private WindowLocation selectedLocation;
-    
+
     //hvad søren er et hashset
     private HashSet<WindowLocation> openLocations = new();
 
@@ -115,7 +115,7 @@
 
         selectedLocation = loc;
     }
-    
+
     private void Increase(WindowCount wc)
     {
         wc.Count++;
@@ -150,6 +150,7 @@
         public WindowLocation Location { get; set; }
         public int Count { get; set; }
     }
+
     private Task SelectEnkelt()
     {
         return OnSelectBookingType.InvokeAsync("Enkelt");
@@ -160,5 +161,5 @@
         return OnSelectBookingType.InvokeAsync("Abonnement");
     }
 
-    }
+}
     

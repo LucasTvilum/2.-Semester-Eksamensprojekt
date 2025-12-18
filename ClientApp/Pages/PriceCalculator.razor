@@ -138,12 +138,13 @@
     
     private async Task HandleSubscriptionSubmit()
     {
+        booking.TypeBooking = Booking.BookingType.Abonnement;
+        booking.Status = "afventer";
+
+        
         // hent bruger OG sæt customer id FØR du sender til backend
         var user = await localStorage.GetItemAsync<User>("currentUser");
         booking.CustomerId = user?.Id;
-
-        booking.TypeBooking = Booking.BookingType.Abonnement;
-        booking.Status = "afventer";
         
         //ikke await så vi ik bliver sendt videre før booking er gennemført
         bookingService.Add(booking);
@@ -157,11 +158,11 @@
 
     private async Task HandleOneTimeSubmit()
     {
-        var user = await localStorage.GetItemAsync<User>("currentUser");
-        booking.CustomerId = user?.Id;
-
         booking.TypeBooking = Booking.BookingType.EnkeltBooking;
         booking.Status = "afventer";
+        
+        var user = await localStorage.GetItemAsync<User>("currentUser");
+        booking.CustomerId = user?.Id;
         
         booking.Date = DateTime.SpecifyKind(booking.Date, DateTimeKind.Utc);
 
