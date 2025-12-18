@@ -115,7 +115,9 @@
 
                 <div class="modal-body">
 
-                    <KalenderComponentv2 />
+                    <KalenderComponentv2 
+                        @bind-SelectedDay="booking.Day" 
+                        @bind-SelectedDate="booking.Date" />
 
                     <EditForm Model="@booking" OnValidSubmit="@HandleOneTimeSubmit" class="mt-3">
                         <DataAnnotationsValidator />
@@ -172,6 +174,10 @@
 
         booking.TypeBooking = Booking.BookingType.EnkeltBooking;
         booking.Status = "afventer";
+        
+        booking.Date = DateTime.SpecifyKind(booking.Date, DateTimeKind.Utc);
+
+        Console.WriteLine(booking.Date);
 
         await bookingService.Add(booking);
         
