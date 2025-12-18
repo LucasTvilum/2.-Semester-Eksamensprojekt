@@ -180,7 +180,7 @@
     
     protected override async Task OnInitializedAsync()
     {
-        // indlæs eventuel pending booking
+        // indlæs eventuel pending bookings
         var saved = await localStorage.GetItemAsync<Booking>("pendingBooking");
         if (saved != null)
             booking = saved;
