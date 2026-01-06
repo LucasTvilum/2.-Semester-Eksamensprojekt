@@ -3,6 +3,7 @@
 @inject IWindow windowservice
 
 <div class="row p-3">
+    @* Tjekker om data er indlæst, før vi prøver at vise det (for at undgå NullReferenceException) *@
     @if (locations == null || windowTypes == null || !locations.Any() || !windowTypes.Any())
     {
         <p>Loader...</p>
@@ -13,16 +14,18 @@
             @foreach (var loc in locations)
             {
                 <div class="location-box">
-
-
+                    @* Klik-event der åbner/lukker lokationen og sætter den som aktiv *@
                     <div class="location-header" @onclick="() => SelectLocation(loc)">
                         <span>@loc.Name</span>
+                        @* Viser pil op/ned baseret på om lokationen er "åben" i vores HashSet *@
                         <span class="arrow">@(openLocations.Contains(loc) ? "▲" : "▼")</span>
                     </div>
-                    <!--vises kun hvis location er valgt-->
+
+                    @* Betinget rendering: Viser kun indholdet hvis lokationen er i openLocations *@
                     @if (openLocations.Contains(loc))
                     {
                         <div class="location-content">
+                            @* Viser et resumé af valgte vinduer for denne specifikke lokation *@
                             @foreach (var wc in windowCounts.Where(x => x.Location == loc && x.Count > 0))
                             {
                                 <div class="window-summary">
@@ -37,11 +40,11 @@
                             }
                         </div>
                     }
-
                 </div>
             }
         </div>
 
+        @* Knapper til at øge/mindske antallet af vinduer for den valgte lokation *@
         <div class="window-buttons">
             @foreach (var wc in windowCounts.Where(x => x.Location == selectedLocation))
             {
@@ -58,6 +61,7 @@
             }
         </div>
 
+        @* Beregnet totalpris der opdateres automatisk *@
         <div class="total-box">
             Total: @TotalPrice kr
         </div>
@@ -69,17 +73,23 @@
     }
 </div>
 
-
 @code {
     [Parameter] public Booking booking { get; set; } = new();
     [Parameter] public EventCallback<string> OnSelectBookingType { get; set; }
+    
     private WindowLocation selectedLocation;
 
-    //hvad søren er et hashset
+    @* 
+       Et HashSet er en samling af unikke elementer. 
+       Vi bruger det her til at holde styr på, hvilke lokationer der er "foldet ud" i UI.
+       Det er hurtigere end en Liste til at tjekke om et element findes (.Contains).
+    *@
     private HashSet<WindowLocation> openLocations = new();
 
+    @* Hjælpe-liste til at styre optællingen i UI *@
     private List<WindowCount> windowCounts = new();
 
+    @* En Expression-bodied property der summerer prisen på alle vinduer i bookingen *@
     private decimal TotalPrice => booking.Windows.Sum(w => w.Price);
 
     private List<WindowType> windowTypes = new();
@@ -87,14 +97,14 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // hent alle typer og lokationer fra databasen
+        // Henter stamdata fra databasen via servicen
         windowTypes = await windowservice.GetAllWindowTypes();
         locations = await windowservice.GetAllWindowLocations();
 
-        // initier selectedLocation til første location
         selectedLocation = locations.FirstOrDefault();
 
-        // opbyg windowCounts ud fra DB-data
+        // LINQ: Kombinerer alle typer med alle lokationer (Cross Join)
+        // så vi har en tæller klar til hver eneste kombination.
         windowCounts = (
             from type in windowTypes
             from loc in locations
@@ -108,6 +118,7 @@
 
     private void SelectLocation(WindowLocation loc)
     {
+        // Toggle-logik: Hvis den findes, fjern den (luk). Hvis ikke, tilføj den (åben).
         if (openLocations.Contains(loc))
             openLocations.Remove(loc);
         else
@@ -120,6 +131,7 @@
     {
         wc.Count++;
 
+        // Opretter et nyt Window-objekt og beregner prisen med det samme
         var w = new Window
         {
             Type = wc.Type,
@@ -136,6 +148,7 @@
 
         wc.Count--;
 
+        // Finder det sidste vindue af denne type i bookingen og fjerner det
         var toRemove = booking.Windows.LastOrDefault(w =>
             w.Type.Id == wc.Type.Id &&
             w.Location.Id == wc.Location.Id);
@@ -144,6 +157,7 @@
             booking.Windows.Remove(toRemove);
     }
 
+    @* Intern klasse til at holde styr på UI-tællere *@
     public class WindowCount
     {
         public WindowType Type { get; set; }
@@ -151,15 +165,7 @@
         public int Count { get; set; }
     }
 
-    private Task SelectEnkelt()
-    {
-        return OnSelectBookingType.InvokeAsync("Enkelt");
-    }
-
-    private Task SelectAbonnement()
-    {
-        return OnSelectBookingType.InvokeAsync("Abonnement");
-    }
-
+    @* Sender besked tilbage til forældre-komponenten om valg af booking-type *@
+    private Task SelectEnkelt() => OnSelectBookingType.InvokeAsync("Enkelt");
+    private Task SelectAbonnement() => OnSelectBookingType.InvokeAsync("Abonnement");
 }
-    

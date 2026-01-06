@@ -7,41 +7,50 @@
 <div class="calendar-wrapperr">
 
     <div class="calendar-headerr">
+        @* Viser måned og år på dansk vha. CultureInfo *@
         <h2>@CurrentDate.ToString("MMMM yyyy", CultureInfo.GetCultureInfo("da-DK"))</h2>
 
         <div class="nav-buttonss">
+            @* Knapper til at navigere frem og tilbage i måneder *@
             <span class="nav-arroww" @onclick="PreviousMonth">‹</span>
             <span class="nav-arroww" @onclick="NextMonth">›</span>
         </div>
     </div>
 
     <div class="calendar-gridd">
+        @* Tegner ugedagenes navne (Ma, Tir, osv.) *@
         @foreach (var dayName in DayNames)
         {
             <div class="day-namee">@dayName</div>
         }
 
+        @* Gennemgår alle 42 dage der genereres til kalender-visningen *@
         @foreach (var day in Days)
         {
             var classes = "day-celll";
             bool isDisabled = false;
 
+            @* 1. Markér dage der ikke tilhører den nuværende måned som inaktive *@
             if (day.Month != CurrentDate.Month)
                 classes += " inactivee";
 
+            @* 2. Forretningsregel: Man kan ikke booke i weekender *@
             if (day.DayOfWeek == DayOfWeek.Saturday || day.DayOfWeek == DayOfWeek.Sunday)
                 isDisabled = true;
 
+            @* 3. Kapacitetsstyring: Hvis der er 10 eller flere opgaver, er dagen fuldt booket *@
             if (BookingsPerDay.TryGetValue(day.Date, out int count) && count >= 10)
                 isDisabled = true;
 
             if (isDisabled)
                 classes += " disabledd";
 
+            @* Render selve dagen. Hvis den er disabled, fjernes klik-eventet *@
             <div class="@classes"
                  @onclick="isDisabled ? null : (() => dayCell(day))">
                 <span class="day-numberr">@day.Day</span>
 
+                @* Viser en lille prik hvis dagen er ledig *@
                 @if (!isDisabled && count < 10)
                 {
                     <div class="dot"></div>
@@ -52,6 +61,7 @@
     </div>
 </div>
 
+@* Viser den valgte dato under kalenderen, hvis man har klikket på en dag *@
 @if (SelectedDate != null)
 {
     <div>
@@ -60,16 +70,17 @@
 }
 
 @code {
-
+    // Tovejs-binding parametre: Gør det muligt for forældre-komponenten (fx bookingpage) at læse valget
     [Parameter] public string SelectedDay { get; set; }
     [Parameter] public EventCallback<string> SelectedDayChanged { get; set; }
     [Parameter] public DateTime SelectedDate { get; set; }
     [Parameter] public EventCallback<DateTime> SelectedDateChanged { get; set; }
 
-    private DateTime CurrentDate = DateTime.Today;
-    private List<DateTime> Days = new();
+    private DateTime CurrentDate = DateTime.Today; // Den måned vi kigger på nu
+    private List<DateTime> Days = new(); // Liste over alle dage der skal tegnes i griddet
     private string[] DayNames = new[] { "Ma", "Tir", "Ons", "Tor", "Fr", "Lør", "Søn" };
 
+    // Dictionary til at gemme antallet af bookinger pr. dato for hurtig opslag
     private Dictionary<DateTime, int> BookingsPerDay = new();
 
     protected override async Task OnInitializedAsync()
@@ -77,25 +88,30 @@
         if (SelectedDate == default)
             SelectedDate = DateTime.Today;
         
-        LoadCalendar();
-        await LoadBookingsForMonth();
+        LoadCalendar(); // Generer dagene til kalenderen
+        await LoadBookingsForMonth(); // Hent data fra API'en til at vise ledighed
     }
 
+    // Logik til at generere de 42 celler i en kalender (inkl. dage fra forrige/næste måned)
     private void LoadCalendar()
     {
         Days.Clear();
 
         var firstDay = new DateTime(CurrentDate.Year, CurrentDate.Month, 1);
+        
+        // Beregn offset så mandag altid er den første kolonne
         int offset = ((int)firstDay.DayOfWeek + 6) % 7;
 
         var startDate = firstDay.AddDays(-offset);
 
+        // Vi fylder altid 6 rækker (6 * 7 = 42 dage) for at sikre et pænt grid
         for (int i = 0; i < 42; i++)
         {
             Days.Add(startDate.AddDays(i));
         }
     }
 
+    // Henter alle arbejdsopgaver og tæller hvor mange der er pr. dag
     private async Task LoadBookingsForMonth()
     {
         BookingsPerDay.Clear();
@@ -104,12 +120,11 @@
 
         foreach (var day in Days)
         {
+            // LINQ: Tæller opgaver der matcher den specifikke dato
             int count = workTasks.Count(x => x.Date.Date == day.Date);
-
             BookingsPerDay[day.Date] = count;
         }
     }
-
 
     private async Task PreviousMonth()
     {
@@ -125,8 +140,10 @@
         await LoadBookingsForMonth();
     }
 
+    // Håndterer valg af en specifik dag
     private async Task dayCell(DateTime day)
     {
+        // Ekstra sikkerheds-tjek før vi vælger datoen
         if (day.DayOfWeek == DayOfWeek.Saturday || day.DayOfWeek == DayOfWeek.Sunday)
             return;
 
@@ -136,6 +153,7 @@
         SelectedDate = day;
         SelectedDay = day.ToString("dddd", CultureInfo.GetCultureInfo("da-DK"));
 
+        // Sender de valgte værdier op til forældre-komponenten asynkront
         await Task.WhenAll(
             SelectedDayChanged.InvokeAsync(SelectedDay),
             SelectedDateChanged.InvokeAsync(SelectedDate)

@@ -2,7 +2,7 @@
 @inject IWindow windowService
 @using ClientApp.Service
 
-
+@* Hvis 'Show' er true, vises modal-vinduet *@
 @if (Show)
 {
     <div class="modal d-block" style="background-color: rgba(0,0,0,0.5);">
@@ -11,6 +11,7 @@
 
                 <div class="modal-header">
                     <h4>Administrer Vinduer & Priser</h4>
+                    @* Kalder Close-metoden når der klikkes på krydset *@
                     <button class="btn-close" @onclick="Close"></button>
                 </div>
 
@@ -18,10 +19,12 @@
 
                     <h5>➕ Tilføj Vindues Type</h5>
 
+                    @* EditForm håndterer validering og indsendelse af data *@
                     <EditForm Model="adminWindowType" OnValidSubmit="HandleTypeSubmit">
                         <DataAnnotationsValidator />
                         <ValidationSummary />
 
+                        @* @bind-Value opretter en to-vejs databinding til objektets properties *@
                         <InputText class="form-control mb-2" @bind-Value="adminWindowType.Name" placeholder="Navn" />
                         <InputNumber class="form-control mb-2" @bind-Value="adminWindowType.BasePrice" placeholder="Basis pris" />
 
@@ -52,6 +55,7 @@
 
                     <hr />
 
+                    @* Tabeller der viser den nuværende liste af lokationer og typer fra databasen *@
                     <h5>Vindues Lokationer</h5>
                     <table class="table table-bordered">
                         @foreach (var l in locations)
@@ -61,6 +65,7 @@
                                 <td>@l.ExtraPrice</td>
                                 <td>@l.IsActive</td>
                                 <td>
+                                    @* Lambda-udtryk bruges her til at sende det specifikke objekt med til slet-metoden *@
                                     <button class="btn btn-danger btn-sm" @onclick="() => DeleteLocation(l)">Slet</button>
                                 </td>
                             </tr>
@@ -88,18 +93,20 @@
     </div>
 }
 
-
-
 @code {
+    // Parametre der gør det muligt for forældre-komponenten at styre modalen
     [Parameter] public bool Show { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
 
+    // Lokale lister til at gemme data hentet fra servicen
     private List<WindowLocation> locations = new();
     private List<WindowType> types = new();
 
+    // Midlertidige objekter brugt til EditForms
     private WindowType adminWindowType = new();
     private WindowLocation adminWindowLocation = new();
 
+    // Liste over billedstier til dropdown
     private readonly List<string> demoImages = new()
     {
         "image/windows/bondehus.png",
@@ -111,23 +118,27 @@
         "image/windows/stort.png"
     };
 
+    // OnParametersSetAsync kører hver gang komponenten modtager nye parametre (f.eks. når Show ændres)
     protected override async Task OnParametersSetAsync()
     {
         if (Show)
         {
+            // Henter data via asynkrone kald til vindues-servicen
             locations = await windowService.GetAllWindowLocations();
             types = await windowService.GetAllWindowTypes();
         }
     }
 
+    // Metode til at gemme en ny vinduestype via servicen
     private async Task HandleTypeSubmit()
     {
         adminWindowType.IsActive = true;
         await windowService.AddType(adminWindowType);
-        types.Add(adminWindowType);
-        adminWindowType = new();
+        types.Add(adminWindowType); // Opdaterer listen lokalt så UI følger med med det samme
+        adminWindowType = new(); // Nulstiller formen
     }
 
+    // Metode til at gemme en ny lokation via servicen
     private async Task HandleLocationSubmit()
     {
         adminWindowLocation.IsActive = true;
@@ -136,21 +147,23 @@
         adminWindowLocation = new();
     }
 
+    // Sletter en type baseret på dens ID
     private async Task DeleteType(WindowType type)
     {
         await windowService.DeleteType(type.Id);
         types.Remove(type);
     }
 
+    // Sletter en lokation baseret på dens ID
     private async Task DeleteLocation(WindowLocation loc)
     {
         await windowService.DeleteLocation(loc.Id);
         locations.Remove(loc);
     }
 
+    // Kalder EventCallback'en så forældre-komponenten ved at modalen skal lukkes
     private async Task Close()
     {
         await OnClose.InvokeAsync();
     }
-
 }
