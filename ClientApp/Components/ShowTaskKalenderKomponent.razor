@@ -3,9 +3,11 @@
 <div class="calendar-wrapperv3">
 
     <div class="calendar-headerv3">
+        @* Viser måned og år på dansk vha. CultureInfo *@
         <h2>@CurrentDate.ToString("MMMM yyyy", CultureInfo.GetCultureInfo("da-DK"))</h2>
 
         <div class="nav-buttonsv3">
+            @* Navigationspile til at skifte måned *@
             <span class="nav-arrowv3" @onclick="PreviousMonth">‹</span>
             <span class="nav-arrowv3" @onclick="NextMonth">›</span>
         </div>
@@ -13,13 +15,18 @@
 
     <div class="calendar-gridv3">
 
+        @* Overskrifter for ugedage (Ma, Tir, osv.) *@
         @foreach (var dayName in DayNames)
         {
             <div class="day-namev3">@dayName</div>
         }
 
+        @* Loop der genererer selve dagene i kalenderen *@
         @foreach (var day in Days)
         {
+            @* Dynamisk CSS: 
+               1. "inactivev3" hvis dagen ikke tilhører den valgte måned.
+               2. "event-dayv3" hvis der findes opgaver (TaskDates) på den specifikke dato. *@
             <div class="day-cellv3 
                 @(day.Month != CurrentDate.Month ? "inactivev3" : "") 
                  @(TaskDates.Any(d => d.Date == day.Date) ? "event-dayv3" : "")"
@@ -31,28 +38,40 @@
 </div>
 
 @code {
+    // Holder styr på hvilken måned der vises lige nu
     private DateTime CurrentDate = DateTime.Today;
+    // Liste over alle de datoer (42 stk), der skal vises i grid'et
     private List<DateTime> Days = new();
     private string[] DayNames = new[] { "Ma", "Tir", "Ons", "Tor", "Fr", "Lør", "Søn" };
 
+    // Parameter: Modtager en liste af datoer fra forældre-komponenten, hvor der er opgaver
     [Parameter] public List<DateTime> TaskDates { get; set; } = new();
 
+    // EventCallback: Giver besked til forældre-komponenten, når brugeren klikker på en dato
     [Parameter] public EventCallback<DateTime> OnDateSelected { get; set; }
 
+    // Lifecycle method: Køres når komponenten initialiseres
     protected override void OnInitialized()
     {
         LoadCalendar();
     }
 
+    // Logik til at udregne hvilke dage der skal vises
     private void LoadCalendar()
     {
         Days.Clear();
 
+        // Find den første dag i måneden
         var firstDay = new DateTime(CurrentDate.Year, CurrentDate.Month, 1);
+        
+        // Beregn offset for at få mandag som ugens start (ISO-standard).
+        // DayOfWeek 0 er søndag, så vi lægger 6 til og bruger modulo 7 for at rykke det.
         int offset = ((int)firstDay.DayOfWeek + 6) % 7;
 
+        // Startdatoen er den første i måneden minus offset (dvs. de grå dage fra forrige måned)
         var startDate = firstDay.AddDays(-offset);
 
+        // Vi fylder altid 42 dage (6 uger) for at sikre at kalenderen beholder sin form
         for (int i = 0; i < 42; i++)
         {
             Days.Add(startDate.AddDays(i));
@@ -71,10 +90,10 @@
         LoadCalendar();
     }
 
+    // Håndterer klik på en dag og sender datoen videre op i systemet via EventCallback
     private async Task DayClicked(DateTime date)
     {
         if (OnDateSelected.HasDelegate)
             await OnDateSelected.InvokeAsync(date);
     }
-
 }

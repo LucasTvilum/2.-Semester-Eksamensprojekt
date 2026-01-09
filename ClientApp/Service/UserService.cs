@@ -3,6 +3,11 @@ using Core.Models;
 
 namespace ClientApp.Service;
 
+/**
+ * UserService bruges til at håndtere al kommunikation vedrørende brugere (Kunder og Medarbejdere) 
+ * mellem klienten og serverens API. Den indkapsler HTTP-kald (GET, POST, PUT, DELETE) 
+ * og sørger for korrekt type-håndtering, specielt ved brug af arv (Inheritance).
+ */
 public class UserService : IUser
 {
     private HttpClient http;
@@ -14,35 +19,23 @@ public class UserService : IUser
 
     public async Task<User[]> GetAll()
     {
-        Console.WriteLine("GetAll from mock");
+        // Henter alle brugere uanset type
         var BookingList = await http.GetFromJsonAsync<User[]>("/api/user");
-
         return BookingList;
     }
     
     public async Task<User> Get(string userid)
     {
-        Console.WriteLine("Get from userservice");
+        // Henter en specifik bruger baseret på ID
         var user = await http.GetFromJsonAsync<User>($"/api/user/{userid}");
-
         return user;
     }
 
     public async Task Add(User user)
     {
-        Console.WriteLine("Runtime type service: " + user.GetType().Name);
-
-        if (user is Customer customer)
-        {
-            Console.WriteLine("serviceCustomer Address: " + customer.Address);
-            Console.WriteLine("serviceCustomer Region: " + customer.Region);
-            Console.WriteLine("serviceCustomer City: " + customer.City);
-        }
-
-        Console.WriteLine("Add userservice attempted");
-
-        // Cast to runtime type to include derived properties
-        //Chatgpt magi for at fixe inheritance, uden det så bliver ekstra customer fields ikke inkluderet i payload
+        // Da 'User' er en basisklasse, vil standard JSON-serialisering kun tage felter fra 'User'.
+        // Ved at bruge et 'switch' og cast'e til den specifikke type (Customer eller Worker), 
+        // sikrer vi, at alle ekstra felter (som Adresse, Region osv.) kommer med i JSON-payloaden til serveren.
         object payload = user switch
         {
             Customer c => c,
@@ -55,62 +48,46 @@ public class UserService : IUser
         if (!response.IsSuccessStatusCode)
         {
             var errorText = await response.Content.ReadAsStringAsync();
-            Console.WriteLine("Server returned error:");
-            Console.WriteLine(errorText);
             throw new Exception($"User create failed: {errorText}");
         }
-
-        Console.WriteLine("User created successfully");
     }
+
     public async Task Delete(string id)
     {
+        // Sletter en bruger via API'et
         await http.DeleteAsync($"/api/user/{id}");
     }
     
     public async Task<User> ValidateUser(User user)
     {
-        Console.WriteLine("Validate user service");
-        
-        
+        // Bruges til login-validering. Sender brugeroplysninger til serveren,
+        // som tjekker om login er korrekt og returnerer den fulde brugerprofil.
         var response = await http.PutAsJsonAsync<User>("/api/user/login", user);
         
         if (response.IsSuccessStatusCode)
         {
-            
-            var usertoreturn = await response.Content.ReadFromJsonAsync<User>();
-            Console.WriteLine("Raw JSON received: ");
-            Console.WriteLine(usertoreturn);
-            
-            return usertoreturn;
+            return await response.Content.ReadFromJsonAsync<User>();
         }
         else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
         {
-            Console.WriteLine("Invalid username or password.");
-            return null;
+            return null; // Forkert login
         }
-        else
-        {
-            Console.WriteLine($"Unexpected status code: {response.StatusCode}");
-            return null;
-        }
-        
+        return null;
     }
 
+    // Specifikke kald til at hente filtrerede lister direkte fra backend
     public async Task<List<Worker>> GetWorkers()
     {
-        var WorkerList = await http.GetFromJsonAsync<List<Worker>>("/api/user/workers");
-        return WorkerList;
+        return await http.GetFromJsonAsync<List<Worker>>("/api/user/workers");
     }
 
     public async Task<List<Customer>> GetCustomers()
     {
-        var CustomerList = await http.GetFromJsonAsync<List<Customer>>("/api/user/customers");
-        return CustomerList;
+        return await http.GetFromJsonAsync<List<Customer>>("/api/user/customers");
     }
     
     public async Task<Customer> GetCustomerById(string customerid)
     {
-        var customer = await http.GetFromJsonAsync<Customer>($"/api/user/customers/{customerid}");
-        return customer;
+        return await http.GetFromJsonAsync<Customer>($"/api/user/customers/{customerid}");
     }
 }
